@@ -1,0 +1,67 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "catsnboard/location",
+  "version": "1.0.0",
+  "title": "Our Location (Cats'N'Board)",
+  "category": "catsnboard",
+  "icon": "location",
+  "description": "Cała podstrona „Our Facilities / Our Location” (hero + sekcja lokalizacji z ilustrowaną mapą) z edytowalnymi tekstami. Mapa i jej etykieta zostają.",
+  "keywords": [
+    "location",
+    "map",
+    "facilities",
+    "cats",
+    "catsnboard"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "align": false
+  },
+  "textdomain": "catsnboard",
+  "attributes": {
+    "heroEyebrow": {
+      "type": "string",
+      "default": "Come and visit"
+    },
+    "heroTitle": {
+      "type": "string",
+      "default": "Our facilities"
+    },
+    "heroLead": {
+      "type": "string",
+      "default": "Sunny rooms, cosy nooks and plenty of window sills — a calm holiday home in the heart of Żoliborz."
+    },
+    "secEyebrow": {
+      "type": "string",
+      "default": "Come and visit"
+    },
+    "secTitle": {
+      "type": "string",
+      "default": "Our location"
+    },
+    "secP1": {
+      "type": "string",
+      "default": "You'll find us on a quiet street in the heart of Żoliborz — sunny rooms, cosy nooks and plenty of window sills for sunbathing."
+    },
+    "secP2": {
+      "type": "string",
+      "default": "Drop by for a tour, meet the team and let your cat sniff out its new holiday home."
+    },
+    "address": {
+      "type": "string",
+      "default": ""
+    },
+    "mapLabel": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

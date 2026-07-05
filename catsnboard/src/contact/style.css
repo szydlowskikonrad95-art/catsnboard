@@ -1,0 +1,16 @@
+/**
+ * Front + editor shared styles for catsnboard/contact.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero,
+ * .contact-sec, .cgrid, .cinfo, .cform etc. This file only makes sure the block
+ * wrapper adds no layout of its own, so the sections sit flush like
+ * page-contact.php.
+ */
+.cnb-contact {
+	display: block;
+}
+
+.cnb-contact > .page-hero,
+.cnb-contact > .contact-sec {
+	width: 100%;
+}

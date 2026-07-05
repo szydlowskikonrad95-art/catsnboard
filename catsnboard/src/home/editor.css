@@ -1,0 +1,77 @@
+/**
+ * Editor-only styles for catsnboard/home.
+ * Loaded exclusively in the block editor (never on the front).
+ */
+.cnb-home-editor .hero {
+	min-height: auto;
+}
+
+/* Image placeholders shown when no custom image is set. */
+.cnb-home-editor .cnb-ph {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	min-height: 220px;
+	padding: 24px;
+	text-align: center;
+	background: repeating-linear-gradient(
+		45deg,
+		rgba(0, 0, 0, 0.04),
+		rgba(0, 0, 0, 0.04) 10px,
+		rgba(0, 0, 0, 0.07) 10px,
+		rgba(0, 0, 0, 0.07) 20px
+	);
+	border-radius: 12px;
+	color: #555;
+	font-size: 0.9rem;
+}
+.cnb-home-editor .cnb-ph.small {
+	min-height: 120px;
+}
+
+.cnb-home-editor .cnb-imgbtns,
+.cnb-home-editor .cnb-gbtn {
+	margin-top: 8px;
+}
+.cnb-home-editor .cnb-imgbtns {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+/* Editor gallery grid — simple responsive tiles with per-slot controls. */
+.cnb-home-editor .cnb-gallery-grid {
+	display: grid;
+	grid-template-columns: repeat( 3, 1fr );
+	gap: 16px;
+	margin: 16px 0;
+}
+.cnb-home-editor .cnb-gslot {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 10px;
+	background: rgba(0, 0, 0, 0.03);
+	border-radius: 12px;
+}
+.cnb-home-editor .cnb-gslot img {
+	width: 100%;
+	height: 130px;
+	object-fit: cover;
+	border-radius: 8px;
+}
+
+.cnb-home-editor .cnb-note {
+	margin: 8px 0;
+	padding: 10px 14px;
+	background: rgba(222, 101, 79, 0.08);
+	border-left: 3px solid #de654f;
+	border-radius: 6px;
+	font-size: 0.85rem;
+	color: #555;
+}
+
+/* Make RichText button placeholders read as buttons in the editor. */
+.cnb-home-editor .btn {
+	cursor: text;
+}

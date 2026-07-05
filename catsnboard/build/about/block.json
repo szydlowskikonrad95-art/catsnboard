@@ -1,0 +1,91 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "catsnboard/about",
+  "version": "1.0.0",
+  "title": "About us (Cats'N'Board)",
+  "category": "catsnboard",
+  "icon": "groups",
+  "description": "Cała podstrona O nas Cats'N'Board (hero + sekcja „nasza historia” + kafelki wartości) z edytowalnymi tekstami.",
+  "keywords": [
+    "about",
+    "o nas",
+    "story",
+    "cats",
+    "catsnboard"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "align": false
+  },
+  "textdomain": "catsnboard",
+  "attributes": {
+    "heroEyebrow": {
+      "type": "string",
+      "default": "Nice to meet you"
+    },
+    "heroTitle": {
+      "type": "string",
+      "default": "About us"
+    },
+    "heroLead": {
+      "type": "string",
+      "default": "A small, cat-obsessed team giving your companion a calm, loving second home in the heart of Żoliborz."
+    },
+    "storyEyebrow": {
+      "type": "string",
+      "default": "Our story"
+    },
+    "storyTitle": {
+      "type": "string",
+      "default": "Made by people who truly love cats"
+    },
+    "storyP1": {
+      "type": "string",
+      "default": "Cats'N'Board started with a simple idea: cats deserve a holiday spot as gentle and unhurried as they are. No cages, no stress — just sunny rooms, cosy nooks and people who understand the feline point of view."
+    },
+    "storyP2": {
+      "type": "string",
+      "default": "Every guest is welcomed at their own pace. We keep things calm and predictable, learn each cat's little routines, and send you photos so you never miss a whisker while you're away."
+    },
+    "valuesTitle": {
+      "type": "string",
+      "default": "What we care about"
+    },
+    "value1Title": {
+      "type": "string",
+      "default": "Calm first"
+    },
+    "value1Text": {
+      "type": "string",
+      "default": "A quiet, unhurried space where shy cats can settle in on their own terms."
+    },
+    "value2Title": {
+      "type": "string",
+      "default": "Genuine care"
+    },
+    "value2Text": {
+      "type": "string",
+      "default": "Patient, cat-obsessed carers who treat every guest like their own companion."
+    },
+    "value3Title": {
+      "type": "string",
+      "default": "Always in touch"
+    },
+    "value3Text": {
+      "type": "string",
+      "default": "Regular photos and updates, so you always know your cat is happy and safe."
+    },
+    "ctaText": {
+      "type": "string",
+      "default": "Come and meet us →"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

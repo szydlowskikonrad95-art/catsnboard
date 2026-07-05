@@ -1,0 +1,49 @@
+/**
+ * Front + editor shared styles for catsnboard/about.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero,
+ * .location, .lgrid, .svc etc. This file only (1) keeps the block wrapper from
+ * constraining the full-bleed sections, and (2) adds the small amount of layout
+ * the value cards need, since the theme's .svc tiles carry a single <b> while
+ * our value cards stack a title + a short description.
+ */
+.cnb-about {
+	display: block;
+}
+
+/* Block wrapper must not constrain the full-bleed sections. */
+.cnb-about > .page-hero,
+.cnb-about > .location {
+	width: 100%;
+}
+
+/* Values column heading spacing (matches the story column rhythm). */
+.cnb-about .cnb-about-values > .eyebrow {
+	display: block;
+	margin-bottom: 20px;
+}
+
+/* Values grid: one column of reveal cards (reuses theme .svc + .sgrid). */
+.cnb-about .cnb-values-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: clamp( 20px, 3vw, 30px );
+}
+
+/* Stack the title + short description inside each .svc value card. */
+.cnb-about .svc .cnb-value-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.cnb-about .svc .cnb-value-copy b {
+	font-family: "Varela Round", sans-serif;
+	font-weight: 400;
+	font-size: 1.12rem;
+	line-height: 1.3;
+}
+.cnb-about .svc .cnb-value-copy small {
+	font-size: 0.95rem;
+	line-height: 1.5;
+	opacity: 0.85;
+}

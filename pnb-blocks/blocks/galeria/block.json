@@ -1,0 +1,32 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pnb/galeria",
+	"version": "1.1.0",
+	"title": "Galeria (PNB Toolkit)",
+	"category": "catsnboard",
+	"icon": "format-gallery",
+	"description": "Galeria kotów (taśma kinowa) — zdjęcia i teksty hero edytowalne tu, w edytorze. Front pokazuje pełną animowaną galerię.",
+	"keywords": [ "galeria", "gallery", "zdjęcia", "koty", "pnb" ],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false,
+		"align": false
+	},
+	"textdomain": "pnb-toolkit",
+	"attributes": {
+		"heroEyebrow":   { "type": "string", "default": "Gallery" },
+		"heroTitle":     { "type": "string", "default": "Our days in frames." },
+		"heroHint":      { "type": "string", "default": "Scroll — photos ride. Click — a frame grows." },
+		"heroImageId":   { "type": "number", "default": 0 },
+		"heroImageUrl":  { "type": "string", "default": "" },
+		"hintKeep":      { "type": "string", "default": "— keep scrolling —" },
+		"midTitle":      { "type": "string", "default": "Moments that <em>stay</em>." },
+		"ctaTitle":      { "type": "string", "default": "They look even better <em>in person</em>." },
+		"ctaLead":       { "type": "string", "default": "Come say hi — your cat will love it here." },
+		"ctaBtn":        { "type": "string", "default": "Book a visit" },
+		"imageIds":      { "type": "array", "default": [], "items": { "type": "number" } },
+		"momentsIds":    { "type": "array", "default": [], "items": { "type": "number" } }
+	}
+}

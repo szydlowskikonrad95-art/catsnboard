@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "catsnboard/staff",
+  "version": "1.0.0",
+  "title": "Our Team (Cats'N'Board)",
+  "category": "catsnboard",
+  "icon": "groups",
+  "description": "Cała podstrona Zespół Cats'N'Board (hero + siatka członków zespołu) z edytowalnym nagłówkiem i leadem.",
+  "keywords": [
+    "team",
+    "staff",
+    "zespół",
+    "cats",
+    "catsnboard",
+    "people"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "align": false
+  },
+  "textdomain": "catsnboard",
+  "attributes": {
+    "heroEyebrow": {
+      "type": "string",
+      "default": "The people your cat will love"
+    },
+    "heroTitle": {
+      "type": "string",
+      "default": "Best Animal Aunties & Uncles"
+    },
+    "heroLead": {
+      "type": "string",
+      "default": "Calm, patient and genuinely cat-obsessed — meet the team who will look after your companion like their own."
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

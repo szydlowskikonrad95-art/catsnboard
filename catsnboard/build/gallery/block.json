@@ -1,0 +1,53 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "catsnboard/gallery",
+  "version": "1.0.0",
+  "title": "Gallery (Cats'N'Board)",
+  "category": "catsnboard",
+  "icon": "format-gallery",
+  "description": "Cała podstrona Gallery Cats'N'Board (hero + pełna mozaika zdjęć) z edytowalnym tekstem hero i wszystkimi zdjęciami galerii.",
+  "keywords": [
+    "gallery",
+    "photos",
+    "masonry",
+    "cats",
+    "catsnboard"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "align": false
+  },
+  "textdomain": "catsnboard",
+  "attributes": {
+    "heroEyebrow": {
+      "type": "string",
+      "default": "Happy guests"
+    },
+    "heroTitle": {
+      "type": "string",
+      "default": "Gallery"
+    },
+    "heroLead": {
+      "type": "string",
+      "default": "A few of the calm, curious and very spoiled cats who have stayed with us. Tap any photo to view it larger."
+    },
+    "galleryImages": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

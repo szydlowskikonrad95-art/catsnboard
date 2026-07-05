@@ -1,0 +1,31 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "pnb/wydarzenia",
+	"version": "1.0.0",
+	"title": "Wydarzenia (PNB Toolkit)",
+	"category": "catsnboard",
+	"icon": "calendar-alt",
+	"description": "Kalendarz wydarzeń — teksty hero edytujesz tu, w edytorze, a pod spodem zarządzasz wydarzeniami (dodaj/edytuj, kto się zapisał). Front pokazuje pełną galerię wydarzeń.",
+	"keywords": [ "wydarzenia", "events", "kalendarz", "koty", "pnb" ],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false,
+		"align": false
+	},
+	"textdomain": "pnb-toolkit",
+	"attributes": {
+		"heroEyebrow":  { "type": "string", "default": "Cats'N'Board · what's on" },
+		"heroTitle":    { "type": "string", "default": "Save the date." },
+		"heroLead1":    { "type": "string", "default": "Adoption days, cat classes and open doors at the pension." },
+		"heroLead2":    { "type": "string", "default": "Sign up below — spots are limited." },
+		"heroImageId":  { "type": "number", "default": 0 },
+		"heroImageUrl": { "type": "string", "default": "" },
+		"mapEyebrow":   { "type": "string", "default": "Where to find us" },
+		"mapTitle":     { "type": "string", "default": "Come say <em>hi</em>." },
+		"mapLead":      { "type": "string", "default": "All events happen at the pension — a quiet street in the heart of Żoliborz." },
+		"mapAddress":   { "type": "string", "default": "" },
+		"mapLabel":     { "type": "string", "default": "" }
+	}
+}

@@ -1,0 +1,16 @@
+/**
+ * Front + editor shared styles for catsnboard/gallery.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero, .gallery,
+ * .masonry etc. This file only makes sure the block wrapper itself adds no layout
+ * of its own, so the sections sit flush like page-gallery.php.
+ */
+.cnb-gallery {
+	display: block;
+}
+
+/* Block wrapper must not constrain the full-bleed sections. */
+.cnb-gallery > .page-hero,
+.cnb-gallery > .gallery {
+	width: 100%;
+}

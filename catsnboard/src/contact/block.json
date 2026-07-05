@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "catsnboard/contact",
+	"version": "1.0.0",
+	"title": "Contact (Cats'N'Board)",
+	"category": "catsnboard",
+	"icon": "email",
+	"description": "Cała podstrona Kontakt Cats'N'Board (hero + dane kontaktowe + formularz demo) z edytowalnymi tekstami. Struktura formularza jest stała.",
+	"keywords": [ "contact", "kontakt", "form", "cats", "catsnboard" ],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false,
+		"align": false
+	},
+	"textdomain": "catsnboard",
+	"attributes": {
+		"heroEyebrow": { "type": "string", "default": "Let's talk about your cat" },
+		"heroTitle":   { "type": "string", "default": "Please call or write!" },
+		"heroLead":    { "type": "string", "default": "Whether it's a weekend getaway or full-time care, reach out and we'll find the purr-fect plan." },
+
+		"infoEyebrow": { "type": "string", "default": "Get in touch" },
+		"infoTitle":   { "type": "string", "default": "Say hello" },
+		"infoLead":    { "type": "string", "default": "We usually reply within a day. Pop in for a tour any time — the kettle (and the treats) are always on." },
+		"infoPhone":   { "type": "string", "default": "" },
+		"infoEmail":   { "type": "string", "default": "" },
+		"infoAddress": { "type": "string", "default": "" },
+
+		"formName":  { "type": "string", "default": "Your name" },
+		"formEmail": { "type": "string", "default": "Email" },
+		"formCat":   { "type": "string", "default": "Your cat's name" },
+		"formMsg":   { "type": "string", "default": "Message" },
+		"formSend":  { "type": "string", "default": "Send message →" },
+		"formNote":  { "type": "string", "default": "This is a demo form — it doesn't send anything yet. Connect a form plugin (e.g. Contact Form 7 / WPForms) to go live." }
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

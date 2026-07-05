@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PNB Auto PL 0.1.0\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+msgid "Auto PL"
+msgstr "Auto PL"
+
+msgid "Auto PL — AI translation"
+msgstr "Auto PL — tłumaczenie AI"
+
+msgid "Auto PL — automatic Polish translation (Claude AI)"
+msgstr "Auto PL — automatyczne tłumaczenie na polski (Claude AI)"
+
+msgid "This plugin adds a Polish version of your site automatically using Claude AI. When you add or change English text, the Polish version is generated for you. Visitors switch with the PL / EN toggle."
+msgstr "Ta wtyczka automatycznie dodaje polską wersję strony przez Claude AI. Gdy dodasz lub zmienisz tekst po angielsku, polska wersja utworzy się sama. Odwiedzający przełączają językiem PL / EN."
+
+msgid "Anthropic API key"
+msgstr "Klucz API Anthropic"
+
+msgid "Your own Claude key from %s. Translations are billed to your account."
+msgstr "Twój własny klucz Claude z %s. Za tłumaczenia płacisz na swoim koncie."
+
+msgid "Key saved."
+msgstr "Klucz zapisany."
+
+msgid "Model"
+msgstr "Model"
+
+msgid "Haiku 4.5 — fast & cheap (recommended for translation)"
+msgstr "Haiku 4.5 — szybki i tani (zalecany do tłumaczenia)"
+
+msgid "Opus 4.8 — highest quality (more expensive)"
+msgstr "Opus 4.8 — najwyższa jakość (droższy)"
+
+msgid "Haiku is enough for most sites. Opus for nuanced marketing copy."
+msgstr "Haiku wystarcza dla większości stron. Opus do niuansowych tekstów marketingowych."
+
+msgid "Save settings"
+msgstr "Zapisz ustawienia"
+
+msgid "Test connection"
+msgstr "Sprawdź połączenie"
+
+msgid "Check that your key works and Claude can translate."
+msgstr "Sprawdź czy klucz działa i Claude tłumaczy."
+
+msgid "Testing…"
+msgstr "Sprawdzam…"
+
+msgid "Connection OK — Claude is translating."
+msgstr "Połączenie OK — Claude tłumaczy."
+
+msgid "Request failed."
+msgstr "Żądanie nie powiodło się."
+
+msgid "No permission."
+msgstr "Brak uprawnień."
+
+msgid "No Anthropic API key set — add it in settings."
+msgstr "Nie ustawiono klucza API Anthropic — dodaj go w ustawieniach."
+
+msgid "Claude returned no translation."
+msgstr "Claude nie zwrócił tłumaczenia."
+
+msgid "All fragments already cached."
+msgstr "Wszystkie fragmenty już w pamięci podręcznej."

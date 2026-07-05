@@ -1,0 +1,17 @@
+/**
+ * Front + editor shared styles for catsnboard/services.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero,
+ * .services, .training etc. This file only makes sure the block wrapper itself
+ * adds no layout of its own, so the sections sit flush like page-services.php.
+ */
+.cnb-services {
+	display: block;
+}
+
+/* Block wrapper must not constrain the full-bleed sections. */
+.cnb-services > .page-hero,
+.cnb-services > .services,
+.cnb-services > .training {
+	width: 100%;
+}

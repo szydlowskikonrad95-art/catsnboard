@@ -1,0 +1,19 @@
+/**
+ * Front + editor shared styles for catsnboard/home.
+ *
+ * The Cats'N'Board theme's global style.css already styles .hero, .services,
+ * .gallery, .final etc. This file only makes sure the block wrapper itself adds
+ * no layout of its own, so the sections sit flush like front-page.php.
+ */
+.cnb-home {
+	display: block;
+}
+
+/* Block wrapper must not constrain the full-bleed sections. */
+.cnb-home > .hero,
+.cnb-home > .training,
+.cnb-home > .services,
+.cnb-home > .gallery,
+.cnb-home > .final {
+	width: 100%;
+}

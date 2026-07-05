@@ -1,0 +1,473 @@
+/* Kalendarz wydarzeń PNB v2 — OŚ CZASU premium (wzór Luma) w rodzinie efektów galerii.
+   Głębia planów: plamy (-1) · watermark (0) · karty (1). Marka Cats'N'Board: koral/turkus, słonecznie.
+   UWAGA sticky: żadnego overflow:hidden na przodkach chipów — tylko overflow:clip (lekcja motywu). */
+.pnb-events{
+  --coral:#DE654F; --coral-d:#D15842; --teal:#A3CFD8; --teal-d:#45A3B8;
+  --peach:#FBD2C8; --peach-d:#EC9B82; --ink:#555; --ease:cubic-bezier(.16,1,.3,1);
+  --pnb-shadow:0 2px 6px rgba(69,163,184,.10), 0 18px 40px rgba(69,163,184,.16), 0 60px 120px rgba(222,101,79,.10);
+  --pnb-shadow-h:0 4px 10px rgba(69,163,184,.14), 0 26px 60px rgba(69,163,184,.22), 0 80px 150px rgba(222,101,79,.14);
+  /* full-bleed: sekcja wyrywa się z kontenera dowolnego motywu */
+  width:100vw; max-width:100vw; margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw);
+  font-family:'Poppins',sans-serif; color:var(--ink); position:relative;
+  background:linear-gradient(175deg,#F4FBFC 0%,#FDF5F1 55%,#F2FAFB 100%);
+}
+/* --teal-mono: przyciemniony wariant teala TYLKO pod drobny tekst mono (sędzia r5: #45A3B8 na białej
+   karcie = 2.87:1, poniżej AA). #2E7A93 na karcie ≈ 4.6:1 — czytelne, marka zachowana. */
+.pnb-events{--teal-mono:#2E7A93;}
+.pnb-ev-mono{font-family:ui-monospace,'JetBrains Mono',Consolas,monospace;font-size:.72rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mono);line-height:1.7;}
+.pnb-events .is-hidden{display:none !important;}
+
+/* ═══ HERO ~72vh: zdjęcie kota (paralaksa JS) + lżejszy welon + ziarno + typografia×foto ═══
+   overflow:VISIBLE — „date." nachodzi na dolną krawędź welonu (sygnaturowy zderzak);
+   clipping paralaksy przejął .pnb-evh-img. */
+/* min-height 72→58vh + górny padding 6-9rem→3.5-6rem: usuwa jałowy bufor zdjęcia NAD tekstem
+   (diagnoza z audytu: „za nisko” = hero za wysokie, nie pustka między lead a h1). Zderzak (h1 przełamuje
+   krawędź) i flex-end ZOSTAJĄ nietknięte — tekst dalej kotwiczy u dołu, tło kota wchodzi w zwarty kadr. */
+.pnb-evh{position:relative;min-height:58vh;display:flex;align-items:flex-end;justify-content:center;
+  text-align:center;overflow:visible;
+  /* teksty przy dole = pozycja POŚREDNIA (nie na samym dnie, nie na środku). Dolny padding
+     PODNOSI blok znad krawędzi — 11vh (~96px) podnosił za mocno (h1 na 64% = „za wysoko”).
+     6vh (~53px) opuszcza h1 do ~69% wys. hero, zostawiając ~41px oddechu od dołu:
+     zmierzone w przeglądarce, w sam raz między środkiem a dnem. Zderzak (margin-bottom h1) nietknięty. */
+  padding:clamp(3rem,8vh,5rem) clamp(1rem,5vw,4rem) clamp(2rem,6vh,4rem);
+  background:linear-gradient(160deg,var(--teal) 0%,var(--peach) 100%);}
+.pnb-evh-img{position:absolute;inset:0;overflow:hidden;}
+.pnb-evh-img img{width:100%;height:100%;object-fit:cover;object-position:center 38%;display:block;will-change:transform;}
+/* KADR LISTY (P2): oczy kota w górnej 1/3 przy załadowaniu — hero=attachment 82 (dwa koty na wieży,
+   oczy ~31% wys. zdjęcia); 86/79 geometrycznie NIE dają oczu poniżej pływającego nav (104px).
+   Singiel zostaje przy bazowym 38% (featured różnych wydarzeń). */
+.pnb-evh:not(.pnb-evh--single) .pnb-evh-img img{object-position:center 29%;}
+/* SZEW (P2): dolna krawędź hero TOPNIEJE w tło strony (#F4FBFC) — zero półprzezroczystego brudu
+   na styku ze strefą chipów; „date." z kropką ląduje na czystym rozpływie, nie na pasie */
+.pnb-evh:not(.pnb-evh--single) .pnb-evh-img::after{content:'';position:absolute;left:0;right:0;bottom:0;
+  height:22%;background:linear-gradient(180deg,rgba(244,251,252,0) 0%,rgba(244,251,252,.45) 55%,#F4FBFC 100%);}
+/* welon odchudzony (.62/.42/.55 → .38/.22/.30); winieta dołem daje kontrast pod typografię,
+   ale przy samej krawędzi GAŚNIE do zera (P2: bez szarego brudu nad rozpływem w tło) */
+.pnb-evh-veil{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(30,60,66,0) 46%,rgba(30,60,66,.46) 78%,rgba(30,60,66,.10) 94%,rgba(30,60,66,0) 100%),
+    linear-gradient(165deg,rgba(69,163,184,.38) 0%,rgba(222,101,79,.22) 60%,rgba(251,210,200,.30) 100%);}
+/* ziarno: SVG fractalNoise (jak w galerii) — zdejmuje „mleczność", daje fakturę druku */
+.pnb-evh-grain{position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+/* max-width szerszy (920→min(1120px,92vw)): dwa DŁUGIE polskie słowa „Zarezerwuj termin."
+   (10+7 znaków) mieszczą się OBOK siebie w jednej linii jak krótkie EN „Save the date." —
+   przy 920px brakowało ~kilku px na spację między inline-block .pnb-wm i słowo spadało niżej.
+   min(…,92vw) = na wąskich ekranach zostaje 92vw, więc bez wypchnięcia poza kadr. */
+.pnb-evh-in{position:relative;z-index:2;max-width:min(1120px,92vw);
+  display:flex;flex-direction:column;align-items:center;}
+/* kolejność WIZUALNA: eyebrow → lead → wielki h1 przy krawędzi (DOM zostaje: h1 przed p — a11y) */
+.pnb-evh-in .pnb-ev-eyebrow{order:0;}
+.pnb-evh-in .pnb-ev-lead{order:1;}
+.pnb-evh-in .pnb-ev-h1{order:2;}
+.pnb-ev-eyebrow{display:inline-block;font-family:ui-monospace,'JetBrains Mono',Consolas,monospace;
+  font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#fff;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);
+  padding:.4rem 1.1rem;border-radius:999px;margin-bottom:1.4rem;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+/* h1 XXL, margin-bottom UJEMNY = „date." przełamuje dolną krawędź welonu na tło strony */
+/* pułap fontu 7rem→6rem + vw 9→8: dłuższe PL („Zarezerwuj termin.") mieści się w jednej linii
+   obok siebie (nie w słupku). EN („Save the date.") dalej duże i ładne (jednolinijkowe). font i
+   kontener dzielą jednostkę vw → skalują się razem, więc PL zostaje 1-linijkowe też na tablecie. */
+.pnb-ev-h1{font-family:'Varela Round',sans-serif;font-weight:400;color:#fff;
+  font-size:clamp(3rem,8vw,6rem);line-height:1.02;letter-spacing:-.02em;
+  margin:1.2rem 0 -.11em;
+  text-shadow:0 2px 18px rgba(30,60,66,.38),0 1px 3px rgba(30,60,66,.22);}
+.pnb-ev-h1 em{font-style:italic;color:var(--peach);font-family:'Poppins',sans-serif;font-weight:600;}
+/* kropka po „date." w koralu — czytelna i na zdjęciu, i na jasnym rozpływie dolnej krawędzi (P2) */
+.pnb-ev-h1dot{color:var(--coral);}
+/* słowa-schodki CZYSTYM CSS (wzorzec .pnb-wm/.pnb-wi z galerii — odporne na zdublowany GSAP motywu) */
+.pnb-wm{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em;}
+.pnb-wi{display:inline-block;transform:translateY(115%);animation:pnbWup .9s cubic-bezier(.16,1,.3,1) forwards;}
+.pnb-wm:nth-child(1) .pnb-wi{animation-delay:.15s}
+.pnb-wm:nth-child(2) .pnb-wi{animation-delay:.23s}
+.pnb-wm:nth-child(3) .pnb-wi{animation-delay:.31s}
+.pnb-wm:nth-child(4) .pnb-wi{animation-delay:.39s}
+.pnb-wm:nth-child(5) .pnb-wi{animation-delay:.47s}
+@keyframes pnbWup{to{transform:translateY(0);}}
+.pnb-ev-lead{color:rgba(255,255,255,.95);font-size:clamp(1rem,1.6vw,1.15rem);line-height:1.65;
+  max-width:58ch;margin:0 auto;text-shadow:0 1px 12px rgba(30,60,66,.3);}
+/* cue pionowo przy prawej krawędzi hero (h1 zszedł na dół — cue nie może z nim kolidować) */
+.pnb-evh-cue{position:absolute;right:clamp(1rem,3vw,2.6rem);bottom:2.4rem;z-index:2;color:#fff;
+  writing-mode:vertical-rl;display:flex;align-items:center;gap:.5rem;}
+.pnb-evh-cue span{display:inline-block;animation:pnbCue 1.6s ease-in-out infinite;}
+@keyframes pnbCue{50%{transform:translateY(7px);}}
+
+/* komunikaty zapisu — nad osią */
+.pnb-ev-msgs{padding:1.6rem clamp(1rem,5vw,4rem) 0;}
+.pnb-ev-msg{max-width:640px;margin:0 auto;padding:1rem 1.4rem;border-radius:14px;
+  font-family:'Varela Round',sans-serif;text-align:center;animation:pnbEvIn .6s var(--ease) backwards;}
+.pnb-ev-ok{background:rgba(163,207,216,.45);color:#2c6e7f;}
+.pnb-ev-err{background:rgba(222,101,79,.14);color:var(--coral-d);}
+.pnb-ev-empty{text-align:center;font-size:1.05rem;padding:2.5rem 1rem;}
+@keyframes pnbEvIn{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:none;}}
+
+/* ═══ CHIPS FILTRÓW — sticky przy SAMEJ górze (nav motywu jest absolute i odjeżdża ze scrollem).
+   ŻADNEGO pełnoszerokiego tła/pasa: rząd jest przezroczysty i przepuszcza klik (pointer-events:none),
+   jedyne „ciało" to wąska szklana pigułka .pnb-ev-chips-in — nic nie zasłania CTA kart. ═══ */
+/* top:calc(10px − padding-top rzędu) → GÓRNA KRAWĘDŹ PIGUŁKI realnie 10px od góry okna (P4:
+   samo top:10px kleiło rząd, a pigułka siedziała 10px+padding ≈ 27px) */
+.pnb-ev-chips{position:sticky;top:calc(10px - 1.1rem);z-index:60;display:flex;justify-content:center;
+  padding:1.1rem clamp(.8rem,3vw,2rem);pointer-events:none;background:none;}
+/* zalogowani: pasek admina WP jest fixed NAD stroną — pigułka schodzi o jego wysokość (32/46px) */
+body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
+@media(max-width:782px){body.admin-bar .pnb-ev-chips{top:calc(56px - 1.1rem);}}
+@media(max-width:600px){body.admin-bar .pnb-ev-chips{top:calc(10px - 1.1rem);}} /* ≤600px adminbar jest absolute (odjeżdża) */
+.pnb-ev-chips-in{pointer-events:auto;display:flex;align-items:center;gap:.3rem;max-width:100%;
+  overflow-x:auto;scrollbar-width:none;padding:.45rem;border-radius:999px;
+  background:rgba(255,255,255,.74);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.65);
+  /* cień ciasny przy pigułce (P4: 34px rozmycia malowało mętny pół-pas mgiełki na treści pod spodem) */
+  box-shadow:0 4px 14px rgba(69,163,184,.16), 0 1px 4px rgba(69,163,184,.10);}
+.pnb-ev-chips-in::-webkit-scrollbar{display:none;}
+.pnb-ev-chip{flex:none;display:inline-flex;align-items:center;gap:.45rem;border:none;cursor:pointer;
+  font-family:'Varela Round',sans-serif;font-size:.92rem;color:var(--ink);line-height:1;
+  background:transparent;border-radius:999px;padding:.58rem 1.05rem;
+  transition:background .3s,color .3s,box-shadow .35s var(--ease);}
+.pnb-ev-chip:hover{background:rgba(251,210,200,.5);}
+.pnb-ev-chip.is-active{background:var(--coral);color:var(--peach);box-shadow:0 8px 20px rgba(222,101,79,.35);}
+/* filtr z licznikiem 0 (np. „This week") — wygaszony; OŻYWA sam, bo warunek liczy PHP przy renderze */
+.pnb-ev-chip:disabled{opacity:.45;pointer-events:none;cursor:default;}
+/* ikony inline SVG (stroke 1.6 currentColor) — dziedziczą kolor chipa/wiersza */
+.pnb-ev-ico{width:15px;height:15px;flex:none;display:inline-block;}
+.pnb-ev-place .pnb-ev-ico{width:14px;height:14px;color:var(--teal-d);}
+.pnb-ev-gcal .pnb-ev-ico{width:14px;height:14px;}
+.pnb-ev-dot{width:9px;height:9px;border-radius:50%;flex:none;background:#9AA7AB;}
+.pnb-ev-dot[data-c="adoption"]{background:var(--coral);}
+.pnb-ev-dot[data-c="class"]{background:var(--teal-d);}
+.pnb-ev-dot[data-c="openday"]{background:var(--peach-d);}
+.pnb-ev-chip.is-active .pnb-ev-dot{box-shadow:0 0 0 2px rgba(255,255,255,.55);}
+/* WYRÓWNANIE PIONOWE chipów filtrów: align-items:center centruje na PEŁNYM boxie tekstu
+   (line-height:1 zostawia ~1.7px zjazdu na descendery pod baseline), przez co kropka i ikona
+   siadały optycznie ~1.7px za nisko względem liter. Podbijamy je o 1.5px do środka x-height.
+   Scope TYLKO w .pnb-ev-chip — nie ruszamy tych samych kropek/ikon w tagach kart (.pnb-ev-tag) ani miejscach. */
+.pnb-ev-chip .pnb-ev-dot{position:relative;top:-1.5px;}
+.pnb-ev-chip .pnb-ev-ico{position:relative;top:-1.5px;}
+.pnb-ev-chip-n{font-family:ui-monospace,Consolas,monospace;font-size:.68rem;color:var(--teal-d);
+  background:rgba(163,207,216,.3);border-radius:999px;padding:.14rem .5rem;}
+.pnb-ev-chip.is-active .pnb-ev-chip-n{color:var(--peach);background:rgba(255,255,255,.2);}
+
+/* ═══ OŚ CZASU — linia+kropki po lewej, grupy dat, karty 2-kolumnowe ═══ */
+/* overflow:CLIP (nie hidden!) — przycina watermark/plamy, NIE psuje sticky chipów (clip ≠ scroll container) */
+.pnb-ev-tl{position:relative;overflow:clip;
+  padding:clamp(2rem,5vh,3.5rem) clamp(1rem,5vw,4rem) clamp(1.6rem,4vh,2.4rem);}
+/* plan -1: plamy ambient dryfują w scrubie (JS) */
+.pnb-ev-blob{position:absolute;border-radius:50%;filter:blur(70px);z-index:0;pointer-events:none;will-change:transform;}
+.pnb-ev-blob-a{width:520px;height:520px;top:4%;left:-140px;background:rgba(163,207,216,.55);}
+.pnb-ev-blob-b{width:460px;height:460px;bottom:2%;right:-120px;background:rgba(251,210,200,.65);}
+/* plan 0: watermark outline za osią, wolniejszy scrub (JS) */
+/* rozmiar ≤ szerokość kolumny kart (r4: przy 24vw obrys „E" wystawał zza lewej krawędzi 1. karty) */
+.pnb-ev-wm{position:absolute;top:14rem;left:50%;transform:translateX(-50%);z-index:0;
+  font-family:'Varela Round',sans-serif;line-height:1;white-space:nowrap;
+  font-size:clamp(7rem,20vw,17.5rem);letter-spacing:-.02em;
+  color:transparent;-webkit-text-stroke:2px rgba(69,163,184,.12);
+  pointer-events:none;user-select:none;will-change:transform;}
+/* plan 1: oś + karty */
+.pnb-ev-tl-in{--tlx:11px;--tlpad:52px;position:relative;z-index:1;max-width:1040px;margin:0 auto;
+  padding-left:var(--tlpad);}
+.pnb-ev-line{position:absolute;left:var(--tlx);top:14px;bottom:10px;width:3px;border-radius:3px;
+  background:linear-gradient(180deg,var(--teal-d),var(--teal) 55%,var(--peach-d));opacity:.55;will-change:transform;}
+.pnb-ev-group{padding:.4rem 0 1rem;}
+.pnb-ev-ghead{position:relative;display:flex;align-items:baseline;gap:.55rem;margin:0 0 1.1rem;
+  font-family:'Varela Round',sans-serif;font-weight:400;}
+.pnb-ev-ghead::before{content:'';position:absolute;top:.3em;
+  left:calc(var(--tlx) + 1.5px - var(--tlpad) - 5.5px);
+  width:11px;height:11px;border-radius:50%;background:var(--coral);
+  box-shadow:0 0 0 4px rgba(222,101,79,.16), 0 0 0 1.5px #fff inset;}
+.pnb-ev-gd{font-size:1.22rem;color:var(--ink);}
+.pnb-ev-gw{font-family:'Poppins',sans-serif;font-size:.92rem;color:#9AA7AB;}
+
+/* wrapper karty = kanał pod-scrubu (±10px naprzemiennie, JS); transform KARTY należy do reveal */
+.pnb-ev-cardwrap{will-change:transform;}
+/* karta: treść | zdjęcie — transform karty NALEŻY do reveal (GSAP); hover tylko cień */
+.pnb-ev-card{position:relative;display:grid;grid-template-columns:1.55fr 1fr;gap:clamp(1.2rem,3vw,2.2rem);align-items:center;
+  background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.75);border-radius:18px;
+  padding:clamp(1.3rem,3vw,2rem);margin-bottom:clamp(1.2rem,3vh,1.8rem);
+  box-shadow:var(--pnb-shadow);transition:box-shadow .5s var(--ease);}
+.pnb-ev-card:hover{box-shadow:var(--pnb-shadow-h);}
+/* „Edytuj wydarzenie" (tylko admin) — w PRAWYM GÓRNYM ROGU karty (decyzja klienta), nie w rzędzie akcji.
+   absolute względem karty (position:relative wyżej). Dyskretny, nie zabiera miejsca guzikom klienta. */
+.pnb-ev-card .pnb-ev-edit{position:absolute;top:clamp(.9rem,2vw,1.4rem);right:clamp(.9rem,2vw,1.4rem);
+  z-index:3;margin:0;}
+.pnb-ev-time{color:var(--coral-d);margin-bottom:.5rem;}
+.pnb-ev-title{font-family:'Varela Round',sans-serif;font-weight:400;color:var(--ink);
+  font-size:clamp(1.4rem,2.6vw,1.85rem);line-height:1.15;margin:0 0 .5rem;}
+/* tytuł/zdjęcie karty = linki do singla — dziedziczą wygląd, hover sygnalizuje klikalność */
+.pnb-ev-title a{color:inherit;text-decoration:none;transition:color .3s;}
+.pnb-ev-title a:hover{color:var(--coral-d);}
+.pnb-ev-plink{display:block;color:inherit;text-decoration:none;}
+.pnb-ev-place{font-size:.93rem;color:#7C8A8E;margin-bottom:.7rem;display:flex;align-items:center;gap:.4rem;}
+.pnb-ev-tag{display:inline-flex;align-items:center;gap:.42rem;font-family:'Varela Round',sans-serif;
+  font-size:.8rem;line-height:1;border-radius:999px;padding:.32rem .85rem;margin-bottom:.95rem;
+  background:rgba(163,207,216,.25);color:var(--teal-d);}
+.pnb-ev-tag[data-c="adoption"]{background:rgba(222,101,79,.12);color:var(--coral-d);}
+.pnb-ev-tag[data-c="class"]{background:rgba(69,163,184,.14);color:var(--teal-d);}
+.pnb-ev-tag[data-c="openday"]{background:rgba(236,155,130,.22);color:#B5654A;}
+.pnb-ev-desc{font-size:.97rem;line-height:1.75;max-width:58ch;margin:0 0 1rem;}
+.pnb-ev-desc p{margin:0 0 .7rem;}
+.pnb-ev-state{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:0 0 1.15rem;}
+.pnb-ev-badge{display:inline-flex;align-items:center;font-family:'Varela Round',sans-serif;
+  font-size:.8rem;line-height:1;border-radius:999px;padding:.34rem .9rem;}
+.pnb-ev-badge--left{background:rgba(222,101,79,.14);color:var(--coral-d);}
+.pnb-ev-badge--near{background:rgba(232,163,61,.2);color:#9A6B15;}
+.pnb-ev-badge--full{background:#C74A35;color:#fff;box-shadow:0 6px 16px rgba(199,74,53,.35);}
+.pnb-ev-going{color:var(--teal-mono);} /* mono na białej karcie — czytelny wariant (r5 kontrast) */
+
+/* ══ CTA PRZEBUDOWANE (v2.12.0) — decyzja klienta: FORMULARZ ZAPISU POZA KARTĄ ═══════════════
+   STARY BUG: formularz <details> wpięty MIĘDZY guziki (flex-wrap) → po otwarciu rozpychał rząd,
+   guziki skakały w słupek (zmierzone: 4 różne Y). NAPRAWA U ŹRÓDŁA:
+   • W KARCIE (.pnb-ev-cta) zostają TYLKO guziki akcji: GCal + Event details + Edit — rząd (.pnb-ev-actrow).
+   • Guzik „Sign up" + formularz WYJECHAŁY POZA kartę → .pnb-ev-signup (rodzeństwo .pnb-ev-card).
+   Formularz nie jest w karcie, więc jego rozwinięcie fizycznie NIE MOŻE rozepchać kafelka. */
+.pnb-ev-cta{display:flex;flex-direction:column;align-items:stretch;gap:.55rem;}
+/* RZĄD GUZIKÓW: zawsze poziomo; flex-wrap zawija równymi parami gdy ciasno (align:center = równa linia bazowa) */
+.pnb-ev-actrow{display:flex;flex-wrap:wrap;align-items:center;gap:.7rem;}
+/* PANEL Event details pod rzędem (drobne linki w karcie); [hidden] = zamknięty (twardo znika z layoutu) */
+.pnb-ev-panels{display:flex;flex-direction:column;}
+.pnb-ev-panel[hidden]{display:none;}
+.pnb-ev-panel{margin-top:.35rem;}
+.pnb-ev-panel:not([hidden]){animation:pnb-ev-slide .34s var(--ease) both;}
+@keyframes pnb-ev-slide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── ZAPIS POZA KARTĄ (.pnb-ev-signup): pasek pod kafelkiem na osi. Guzik koralowy + panel formularza
+   pod nim, na całą szerokość osi. Wcięty w linię tekstu karty (align z .pnb-ev-main — nie pod zdjęciem). */
+.pnb-ev-signup{margin:.9rem 0 .2rem;}
+.pnb-ev-signup-panel{margin-top:.85rem;max-width:640px;}
+.pnb-ev-signup-panel[hidden]{display:none;}
+.pnb-ev-signup-panel:not([hidden]){animation:pnb-ev-slide .34s var(--ease) both;}
+.pnb-ev-signup-full{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:0;}
+
+/* GUZIK-PRZEŁĄCZNIK „Sign up" = koralowy pill (był summary; teraz <button>, ten sam wygląd) */
+.pnb-ev-toggle{list-style:none;display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;
+  border:none;font-family:'Varela Round',sans-serif;line-height:1;}
+.pnb-ev-signbtn{background:var(--coral);color:var(--peach);border-radius:100px;padding:.82rem 1.7rem;
+  font-size:1rem;box-shadow:0 10px 24px rgba(222,101,79,.32);
+  transition:background .3s,box-shadow .35s var(--ease);}
+.pnb-ev-signbtn:hover{background:var(--coral-d);box-shadow:0 16px 36px rgba(222,101,79,.44);}
+.pnb-ev-arrow{transition:transform .35s var(--ease);}
+.pnb-ev-signbtn:hover .pnb-ev-arrow{transform:translateX(4px);}
+.pnb-ev-signbtn[aria-expanded="true"] .pnb-ev-arrow{transform:rotate(90deg);}
+
+.pnb-ev-gcal{display:inline-flex;align-items:center;gap:.5rem;
+  border:1.5px solid rgba(69,163,184,.4);color:var(--teal-d);background:transparent;
+  border-radius:100px;padding:.72rem 1.35rem;font-family:'Varela Round',sans-serif;
+  font-size:.92rem;line-height:1;text-decoration:none;
+  transition:background .3s,border-color .3s;}
+.pnb-ev-gcal:hover{background:rgba(163,207,216,.22);border-color:var(--teal-d);color:var(--teal-d);}
+
+/* GUZIK-PRZEŁĄCZNIK „Event details" = ghost (obrys neutralny, nie konkuruje z koralem) */
+.pnb-ev-detbtn{background:transparent;color:var(--ink);border:1.5px solid rgba(45,42,38,.16);
+  border-radius:100px;padding:.72rem 1.35rem;font-size:.92rem;
+  transition:background .3s,border-color .3s;}
+.pnb-ev-detbtn:hover{background:rgba(45,42,38,.05);border-color:rgba(45,42,38,.3);}
+.pnb-ev-chev{transition:transform .3s var(--ease);}
+.pnb-ev-detbtn[aria-expanded="true"] .pnb-ev-chev{transform:rotate(180deg);}
+
+/* „Open event page →" W ŚRODKU panelu — tekst-strzałka, nie konkuruje z guzikami */
+.pnb-ev-det{display:inline-flex;align-items:center;gap:.5rem;color:var(--coral-d);
+  font-family:'Varela Round',sans-serif;font-size:.92rem;line-height:1;text-decoration:none;
+  padding:.72rem .35rem;}
+.pnb-ev-det:hover{color:var(--coral);}
+.pnb-ev-det:hover .pnb-ev-arrow{transform:translateX(4px);}
+
+/* formularz zapisu — 1:1 stara mechanika, świeży płaszcz */
+.pnb-ev-form{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:1.1rem;max-width:640px;}
+.pnb-ev-form input{
+  padding:.85rem 1rem;border:1.5px solid rgba(69,163,184,.35);border-radius:12px;
+  font-family:'Poppins',sans-serif;font-size:.95rem;color:var(--ink);background:#fff;
+  transition:border-color .3s,box-shadow .3s;}
+.pnb-ev-form input:focus{outline:none;border-color:var(--teal-d);box-shadow:0 0 0 3px rgba(163,207,216,.35);}
+.pnb-ev-form input[name="pnb_tel"]{grid-column:1;}
+.pnb-ev-form button{
+  grid-column:2;background:var(--coral);color:var(--peach);border:none;border-radius:100px;
+  font-family:'Varela Round',sans-serif;font-size:1rem;padding:.85rem 1.6rem;cursor:pointer;
+  box-shadow:0 10px 24px rgba(222,101,79,.32);transition:background .3s,box-shadow .35s var(--ease);}
+.pnb-ev-form button:hover{background:var(--coral-d);box-shadow:0 16px 36px rgba(222,101,79,.44);}
+.pnb-hp{position:absolute !important;left:-9999px !important;width:1px;height:1px;opacity:0;}
+
+/* zdjęcie karty: zoom żyje TYLKO na IMG w masce (osobny kanał transform niż reveal karty).
+   r6: zdjęcie WYPEŁNIA wysokość kolumny tekstu (stretch) — koniec pustki pod małym zdjęciem
+   przyklejonym do góry. Łańcuch flex photo→plink→zoom→img niesie 100% wysokości karty. */
+.pnb-ev-photo{position:relative;}
+.pnb-ev-plink{display:block;}
+.pnb-ev-zoom{display:block;overflow:hidden;border-radius:14px;box-shadow:var(--pnb-shadow);}
+/* zdjęcie: stały, ładny format eventowy (nie rozciągane na całą kartę — to wypychało je poza
+   przyciski przy długim opisie; nie przyklejone do góry — align-items:center karty centruje kolumnę). */
+.pnb-ev-zoom img{width:100%;height:clamp(300px,32vw,420px);object-fit:cover;display:block;
+  transition:transform .9s var(--ease);will-change:transform;}
+.pnb-ev-card:hover .pnb-ev-zoom img{transform:scale(1.06);}
+.pnb-ev-photo-brak{height:clamp(190px,24vw,250px);display:flex;align-items:center;justify-content:center;
+  font-size:3rem;background:linear-gradient(150deg,var(--teal),var(--peach));}
+.pnb-ev-none{text-align:center;padding:2.2rem 0 .5rem;}
+
+/* ŁĄCZNIK oś→mapa: kreskowana trasa (jak route na mapie) zamiast pustego pasa (P4, -40% spacingu).
+   Końcówka path-a wychodzi POZA viewBox (overflow:visible) i dotyka karty mapy przy pinezce (P3) —
+   pointer-events:none, żeby zwis nad sekcją mapy nie łapał kliknięć */
+.pnb-ev-path{padding:0 clamp(1rem,5vw,4rem);margin-top:-.4rem;position:relative;z-index:1;pointer-events:none;}
+.pnb-ev-path svg{display:block;width:100%;height:clamp(72px,11vh,110px);max-width:1040px;margin:0 auto;overflow:visible;}
+.pnb-ev-path-d{fill:none;stroke:var(--coral);stroke-width:3;stroke-linecap:round;
+  stroke-dasharray:2 10;opacity:.7;}
+.pnb-ev-path-end{fill:var(--coral);opacity:.85;}
+
+/* ═══ MAPA „Where to find us" — adres mono + stylizowana mapa marki z pinezką ═══ */
+.pnb-ev-map{max-width:1080px;margin:0 auto;position:relative;z-index:1;
+  padding:clamp(1rem,3vh,2rem) clamp(1rem,5vw,4rem) clamp(5rem,12vh,7rem);
+  display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(2rem,5vw,4.5rem);align-items:center;}
+.pnb-ev-eyebrow2{display:inline-block;color:var(--coral);background:rgba(251,210,200,.4);
+  padding:.4rem 1.1rem;border-radius:999px;margin-bottom:1rem;}
+.pnb-ev-map h2{font-family:'Varela Round',sans-serif;font-weight:400;color:var(--ink);
+  font-size:clamp(1.9rem,4vw,3rem);line-height:1.1;margin:0 0 .9rem;}
+.pnb-ev-map h2 em{font-style:italic;color:var(--coral);font-family:'Poppins',sans-serif;font-weight:600;}
+.pnb-ev-map-txt p{font-size:.98rem;line-height:1.7;max-width:44ch;margin:0 0 1rem;}
+.pnb-ev-addr{margin:0 0 1.5rem;font-size:.78rem;}
+.pnb-ev-dirs{display:inline-flex;align-items:center;gap:.55rem;background:var(--coral);color:var(--peach);
+  border-radius:100px;padding:.8rem 1.6rem;font-family:'Varela Round',sans-serif;font-size:.98rem;
+  line-height:1;text-decoration:none;box-shadow:0 10px 24px rgba(222,101,79,.32);
+  transition:background .3s,box-shadow .35s var(--ease);}
+.pnb-ev-dirs:hover{background:var(--coral-d);color:var(--peach);box-shadow:0 16px 36px rgba(222,101,79,.44);}
+.pnb-ev-dirs:hover .pnb-ev-arrow{transform:translateX(4px);}
+.pnb-ev-mapbox{position:relative;aspect-ratio:16/11;border-radius:24px;overflow:hidden;
+  background:linear-gradient(135deg,#D4EBF0,#A3CFD8 55%,#8FC0CB);
+  border:1px solid rgba(255,255,255,.5);box-shadow:var(--pnb-shadow);}
+.pnb-ev-streets{position:absolute;inset:0;width:100%;height:100%;}
+.pnb-ev-road{stroke:#fff;stroke-linecap:round;fill:none;opacity:.85;}
+.pnb-ev-road-big{stroke-width:9;}
+.pnb-ev-road-sm{stroke-width:5;opacity:.6;}
+.pnb-ev-route{stroke:var(--coral);stroke-width:4;stroke-linecap:round;stroke-dasharray:2 9;fill:none;opacity:.9;}
+.pnb-ev-park{fill:rgba(255,255,255,.16);}
+.pnb-ev-pin{position:absolute;top:44%;left:50%;transform:translate(-50%,-100%);width:48px;height:48px;
+  color:var(--coral);filter:drop-shadow(0 8px 12px rgba(0,0,0,.28));z-index:3;}
+.pnb-ev-lab{position:absolute;bottom:18px;left:22px;background:#fff;border-radius:14px;padding:9px 17px;
+  font-family:'Varela Round',sans-serif;color:var(--teal-d);box-shadow:0 8px 22px rgba(69,163,184,.22);z-index:3;}
+
+/* ═══ SINGIEL WYDARZENIA — hero ~55vh (lżejszy welon), panel info, opis, karta zapisu ═══
+   overflow:clip (NIE hidden — lekcja sticky), brak sticky elementów w środku. */
+.pnb-events--single{overflow:clip;}
+.pnb-evh--single{min-height:55vh;padding-bottom:clamp(2rem,5vh,3rem);}
+/* welon lżejszy niż na liście (.38/.22/.30 → .28/.14/.18) — zdjęcie wydarzenia gra pierwsze skrzypce */
+.pnb-evh--single .pnb-evh-veil{
+  background:linear-gradient(180deg,rgba(30,60,66,0) 40%,rgba(30,60,66,.5) 100%),
+    linear-gradient(165deg,rgba(69,163,184,.28) 0%,rgba(222,101,79,.14) 60%,rgba(251,210,200,.18) 100%);}
+/* h1 mniejszy niż „Save the date.", bez ujemnego zderzaka (pod nim mono-linia) + kolejność: eyebrow→h1→meta */
+.pnb-evh--single .pnb-evh-in .pnb-ev-h1{order:1;font-size:clamp(2.4rem,6.5vw,4.6rem);margin:1rem 0 1.1rem;}
+.pnb-evs-meta{order:2;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:.4rem .9rem;color:#fff;font-size:.76rem;margin:0;text-shadow:0 1px 10px rgba(30,60,66,.35);}
+.pnb-evs-meta>span{display:inline-flex;align-items:center;gap:.4rem;}
+.pnb-evs-meta .pnb-ev-ico{width:13px;height:13px;color:#fff;}
+.pnb-evs-sep{opacity:.65;}
+/* body: wąska kolumna treści na tle sekcji */
+.pnb-evs-body{position:relative;z-index:1;max-width:880px;margin:0 auto;
+  padding:clamp(1.8rem,4vh,2.6rem) clamp(1rem,5vw,4rem) clamp(4.5rem,10vh,6.5rem);}
+.pnb-evs-back{display:inline-flex;align-items:center;gap:.5rem;margin-bottom:1.4rem;
+  text-decoration:none;transition:color .3s;}
+.pnb-evs-back:hover{color:var(--coral);}
+.pnb-evs-back .pnb-ev-arrow{display:inline-block;}
+.pnb-evs-back:hover .pnb-ev-arrow{transform:translateX(-4px);}
+/* panel info: karta jak na osi, kolumny auto-fit + rząd akcji pod kreskowaną linią */
+.pnb-evs-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.2rem 1.6rem;
+  background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.75);border-radius:18px;
+  padding:clamp(1.3rem,3vw,1.9rem);box-shadow:var(--pnb-shadow);
+  animation:pnbEvIn .7s var(--ease) .15s backwards;}
+.pnb-evs-k{display:block;margin-bottom:.35rem;color:#9AA7AB;}
+.pnb-evs-v{font-family:'Varela Round',sans-serif;font-size:1.02rem;color:var(--ink);line-height:1.35;}
+.pnb-evs-v .pnb-ev-tag{margin-bottom:0;}
+.pnb-evs-full{color:#C74A35;}
+.pnb-evs-actions{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:.7rem;
+  border-top:1px dashed rgba(69,163,184,.3);padding-top:1.1rem;margin-top:.2rem;}
+/* opis pełny */
+.pnb-evs-desc{margin:clamp(1.8rem,4vh,2.6rem) 0;font-size:1rem;line-height:1.8;max-width:62ch;
+  animation:pnbEvIn .7s var(--ease) .25s backwards;}
+.pnb-evs-desc p{margin:0 0 .9rem;}
+/* karta zapisu (kotwica #event-{id} redirectu) — komunikaty nad formularzem */
+.pnb-evs-signup{background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.75);border-radius:18px;
+  padding:clamp(1.3rem,3vw,2rem);box-shadow:var(--pnb-shadow);
+  animation:pnbEvIn .7s var(--ease) .35s backwards;}
+.pnb-evs-signup h2{font-family:'Varela Round',sans-serif;font-weight:400;color:var(--ink);
+  font-size:clamp(1.3rem,2.4vw,1.7rem);margin:0 0 .4rem;}
+.pnb-evs-signup .pnb-ev-msgs{padding:.4rem 0 0;}
+.pnb-evs-signup .pnb-ev-msg{max-width:none;}
+.pnb-evs-signup .pnb-ev-form{margin-top:1rem;max-width:none;}
+.pnb-evs-fullnote{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:.6rem 0 0;}
+@media(max-width:880px){
+  .pnb-evh--single .pnb-evh-in .pnb-ev-h1{font-size:clamp(2rem,9vw,2.6rem);}
+  .pnb-evs-panel{grid-template-columns:1fr 1fr;}
+}
+
+/* KURSOR „Join" — koralowy krążek nad kartami (wzorzec galerii, tylko precyzyjna mysz) */
+.pnb-cursor{
+  position:fixed;top:0;left:0;z-index:9989;pointer-events:none;
+  width:66px;height:66px;margin:-33px 0 0 -33px;border-radius:50%;
+  background:var(--coral,#DE654F);color:#FBD2C8;
+  font-family:'Varela Round',sans-serif;font-size:.78rem;
+  display:flex;align-items:center;justify-content:center;
+  transform:scale(0);transition:transform .35s cubic-bezier(.16,1,.3,1);}
+.pnb-cursor.is-on{transform:scale(1);}
+
+/* ═══ MOBILE: oś chowa linię+kropki, karty stack (zdjęcie na górze) ═══ */
+@media(max-width:880px){
+  .pnb-ev-tl-in{--tlpad:0px;padding-left:0;}
+  .pnb-ev-line,.pnb-ev-ghead::before{display:none;}
+  .pnb-ev-path{display:none;} /* trasa doklejona do osi — bez osi nie ma sensu */
+  .pnb-evh-cue{display:none;} /* pionowy cue koliduje z h1 na wąskim ekranie */
+  .pnb-evh{padding-left:7vw;padding-right:7vw;} /* P2: „Save the date." dostaje ~7% oddechu od krawędzi */
+  /* mobilny kadr hero (lista): przesunięcie w lewo = twarze obu kotów w pionowym wycinku, oczy u góry */
+  .pnb-evh:not(.pnb-evh--single) .pnb-evh-img img{object-position:30% 25%;}
+  .pnb-ev-card{grid-template-columns:1fr;gap:1rem;}
+  .pnb-ev-photo{order:-1;}
+  .pnb-ev-zoom img,.pnb-ev-photo-brak{height:190px;}
+  .pnb-ev-map{grid-template-columns:1fr;}
+  .pnb-ev-chips{top:10px;justify-content:flex-start;}
+  /* r5: REALNY peek — pigułka wyraźnie węższa od ekranu, więc następny chip wystaje zza prawej
+     krawędzi, a maska ścina go w pół = jednoznaczny „przewiń w bok" (sama mgiełka nie wystarczała).
+     mask sięga głębiej (56px) niż w poprzedniej próbie, żeby ucięty chip był widoczny NIE tylko jako mgła. */
+  .pnb-ev-chips{padding-right:0;} /* rząd na całą szerokość — pigułka sama trzyma margines lewy */
+  /* r5-fix (sędzia): łagodne ZANIKANIE zamiast twardego ucięcia w pół słowa — maska startuje wcześniej
+     (85%) i schodzi miękko do 0; peek następnego chipa nadal jest, ale wygląda jak fade, nie jak przycięcie. */
+  .pnb-ev-chips-in{max-width:calc(100vw - 2.4rem);
+    -webkit-mask-image:linear-gradient(90deg,#000 85%,transparent 99%);
+    mask-image:linear-gradient(90deg,#000 85%,transparent 99%);padding-right:1.6rem;}
+  /* mobile: guziki akcji w karcie na pełną szerokość (stack, równe) — czytelniejsze niż wąskie pigułki */
+  .pnb-ev-actrow{flex-direction:column;align-items:stretch;}
+  .pnb-ev-actrow>.pnb-ev-gcal,.pnb-ev-actrow>.pnb-ev-detbtn,.pnb-ev-actrow>.pnb-ev-edit{
+    width:100%;justify-content:center;}
+  /* mobile: guzik „Sign up" poza kartą też pełna szerokość, formularz pod nim jednokolumnowy */
+  .pnb-ev-signbtn{width:100%;justify-content:center;}
+  .pnb-ev-signup-panel{max-width:none;}
+  .pnb-ev-form{grid-template-columns:1fr;}
+  .pnb-ev-form input[name="pnb_tel"],.pnb-ev-form button{grid-column:1;}
+}
+
+/* dostępność: bez ruchu wszystko po prostu STOI i jest widoczne (filtry działają w JS i bez animacji);
+   nowe scruby (paralaksa hero, cardwrap) żyją TYLKO w JS za guardem reduced-motion — tu sprzątamy will-change */
+@media (prefers-reduced-motion: reduce){
+  .pnb-wi{transform:none;animation:none;}
+  .pnb-evh-cue span{animation:none;}
+  .pnb-ev-msg{animation:none;}
+  .pnb-ev-zoom img{transition:none;will-change:auto;}
+  .pnb-ev-card:hover .pnb-ev-zoom img{transform:none;}
+  .pnb-ev-arrow,.pnb-ev-chev,.pnb-ev-card,.pnb-ev-chip{transition:none;}
+  .pnb-ev-detbtn[aria-expanded="true"] .pnb-ev-chev,
+  .pnb-ev-signbtn[aria-expanded="true"] .pnb-ev-arrow{transform:none;}
+  .pnb-ev-line,.pnb-ev-wm,.pnb-ev-blob{will-change:auto;}
+  .pnb-evh-img img,.pnb-ev-cardwrap{will-change:auto;}
+  .pnb-cursor{display:none;}
+  /* singiel + linki kart + panele CTA: wjazdy paneli i hovery stoją w miejscu */
+  .pnb-evs-panel,.pnb-evs-desc,.pnb-evs-signup,.pnb-ev-panel:not([hidden]){animation:none;}
+  .pnb-ev-title a,.pnb-ev-det,.pnb-evs-back{transition:none;}
+  .pnb-ev-det:hover .pnb-ev-arrow,.pnb-evs-back:hover .pnb-ev-arrow{transform:none;}
+}
+
+/* PANEL „Event details" (v2.12.0): w środku tylko akcje (dojazd + pełna strona). Guzik-przełącznik
+   (.pnb-ev-detbtn, ghost z chevronem ▾) siedzi w rzędzie WYŻEJ; ten panel to jego treść POD rzędem. */
+.pnb-ev-chev{display:inline-block;font-size:.82em;}
+.pnb-ev-detacts{display:flex;flex-wrap:wrap;align-items:center;gap:1rem;padding:.2rem 0 .3rem;}
+
+/* Przycisk „Edytuj wydarzenie" — widoczny TYLKO zalogowanemu właścicielowi (gość go nie dostaje w HTML).
+   Dyskretny obrys, nie konkuruje z CTA gościa. */
+/* Edytuj (tylko właściciel): w rzędzie z resztą akcji. BEZ margin-left:auto — auto wypychało go
+   na prawą krawędź i przy rozwijaniu formularza robiło rozjazd (przycisk odrywał się od rzędu). */
+.pnb-ev-edit{display:inline-flex;align-items:center;gap:.4rem;
+  font-family:'Varela Round',sans-serif;font-size:.82rem;line-height:1;
+  color:#8a94a6;background:rgba(138,148,166,.10);border:1px dashed rgba(138,148,166,.5);
+  border-radius:100px;padding:.5rem 1rem;text-decoration:none;transition:all .25s;}
+.pnb-ev-edit:hover{color:#fff;background:#8a94a6;border-color:#8a94a6;}

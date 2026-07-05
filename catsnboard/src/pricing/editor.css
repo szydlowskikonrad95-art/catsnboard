@@ -1,0 +1,43 @@
+/**
+ * Editor-only styles for catsnboard/pricing.
+ * Loaded exclusively in the block editor (never on the front).
+ */
+
+/* Info panel note, matching the other Cats'N'Board blocks. */
+.cnb-pricing-editor .cnb-note {
+	margin: 8px 0;
+	padding: 10px 14px;
+	background: rgba(222, 101, 79, 0.08);
+	border-left: 3px solid #de654f;
+	border-radius: 6px;
+	font-size: 0.85rem;
+	color: #555;
+}
+
+/* Price amount + unit are separate RichText spans; keep them on one line so the
+ * editor preview reads like the front (e.g. "49 zł  / day"). */
+.cnb-pricing-editor .pprice .cnb-price-amount,
+.cnb-pricing-editor .pprice small,
+.cnb-pricing-editor .pprice .cnb-price-unit {
+	display: inline;
+}
+
+/* Feature list items hold an inline RichText span each. */
+.cnb-pricing-editor .pfeat .cnb-feat {
+	display: inline;
+}
+
+/* Empty RichText fields still need a clickable target — give inline editable
+ * spans a little minimum width so an empty price/unit/feature can be clicked. */
+.cnb-pricing-editor .cnb-price-amount:empty::before,
+.cnb-pricing-editor .cnb-price-unit:empty::before,
+.cnb-pricing-editor .cnb-feat:empty::before {
+	content: '';
+	display: inline-block;
+	min-width: 2ch;
+}
+
+/* Make the RichText button placeholder read as a button in the editor. */
+.cnb-pricing-editor .btn {
+	cursor: text;
+}

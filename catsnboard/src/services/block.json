@@ -1,0 +1,29 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "catsnboard/services",
+	"version": "1.0.0",
+	"title": "Services (Cats'N'Board)",
+	"category": "catsnboard",
+	"icon": "screenoptions",
+	"description": "Cała podstrona Usługi Cats'N'Board (hero + siatka 8 usług + pasek szkolenia) z edytowalnymi tekstami.",
+	"keywords": [ "services", "usługi", "cats", "catsnboard", "offer" ],
+	"supports": {
+		"html": false,
+		"multiple": false,
+		"reusable": false,
+		"align": false
+	},
+	"textdomain": "catsnboard",
+	"attributes": {
+		"heroEyebrow": { "type": "string", "default": "What we offer" },
+		"heroTitle":   { "type": "string", "default": "Our services" },
+		"heroLead":    { "type": "string", "default": "Everything your cat needs under one roof — boarding, daycare, sitting, gentle training and simple care, always at your cat's pace." },
+		"servicesCta": { "type": "string", "default": "See the pricing →" }
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./render.php"
+}

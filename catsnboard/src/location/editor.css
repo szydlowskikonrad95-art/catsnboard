@@ -1,0 +1,27 @@
+/**
+ * Editor-only styles for catsnboard/location.
+ * Loaded exclusively in the block editor (never on the front).
+ *
+ * The theme's global CSS styles .location / .map / .lab, so the block looks
+ * like the front inside the editor. These rules only smooth over the editing
+ * experience (cursors, and keeping the editable map label clickable).
+ */
+
+/* RichText fields that look like plain text should still read as editable. */
+.cnb-location-editor .addr,
+.cnb-location-editor .lab {
+	cursor: text;
+}
+
+/* The map label is absolutely-positioned inside .map; make sure it stays on
+   top and is comfortably clickable in the editor. */
+.cnb-location-editor .map .lab {
+	z-index: 4;
+	min-width: 40px;
+}
+
+/* Keep the decorative map non-interactive (only its label is editable). */
+.cnb-location-editor .map .streets,
+.cnb-location-editor .map .pin {
+	pointer-events: none;
+}

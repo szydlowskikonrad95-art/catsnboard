@@ -1,0 +1,31 @@
+/**
+ * Editor-only styles for catsnboard/contact.
+ * Loaded exclusively in the block editor (never on the front).
+ */
+
+/* The hero background is dark teal; keep editable text readable in the editor. */
+.cnb-contact-editor .page-hero {
+	padding: clamp(60px, 10vh, 120px) 0 clamp(30px, 5vw, 60px);
+}
+
+/* Disabled form inputs in the editor preview — look like the real thing but
+   can't be typed into, so the client edits labels, not field values. */
+.cnb-contact-editor .cnb-form-preview input,
+.cnb-contact-editor .cnb-form-preview textarea {
+	pointer-events: none;
+	opacity: 0.75;
+}
+
+/* Contact-info lines that map to <a> on the front — hint they are links. */
+.cnb-contact-editor .cnb-cinfo-line {
+	color: var(--teal-dark, #2c7a8c);
+	font-family: "Varela Round", sans-serif;
+	font-size: 1.15rem;
+	margin-bottom: 10px;
+}
+
+/* Make RichText button/label placeholders behave as text targets. */
+.cnb-contact-editor .btn,
+.cnb-contact-editor label {
+	cursor: text;
+}

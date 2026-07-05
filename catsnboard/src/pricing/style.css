@@ -1,0 +1,17 @@
+/**
+ * Front + editor shared styles for catsnboard/pricing.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero,
+ * .pricing-sec, .pgrid, .pcard etc. This file only makes sure the block wrapper
+ * itself adds no layout of its own, so the sections sit flush like
+ * page-pricing.php.
+ */
+.cnb-pricing {
+	display: block;
+}
+
+/* Block wrapper must not constrain the full-bleed sections. */
+.cnb-pricing > .page-hero,
+.cnb-pricing > .pricing-sec {
+	width: 100%;
+}

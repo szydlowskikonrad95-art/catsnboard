@@ -1,0 +1,16 @@
+/**
+ * Front + editor shared styles for catsnboard/location.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero,
+ * .location, .lgrid, .map, .streets, .pin, .lab etc. This file only makes sure
+ * the block wrapper itself adds no layout of its own, so the sections sit flush
+ * like page-our-location.php.
+ */
+.cnb-location {
+	display: block;
+}
+
+.cnb-location > .page-hero,
+.cnb-location > .location {
+	width: 100%;
+}

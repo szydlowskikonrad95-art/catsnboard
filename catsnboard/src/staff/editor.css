@@ -1,0 +1,18 @@
+/**
+ * Editor-only styles for catsnboard/staff.
+ * Loaded exclusively in the block editor (never on the front).
+ */
+.cnb-staff-editor .cnb-note {
+	margin: 8px 0;
+	padding: 10px 14px;
+	background: rgba(222, 101, 79, 0.08);
+	border-left: 3px solid #de654f;
+	border-radius: 6px;
+	font-size: 0.85rem;
+	color: #555;
+}
+
+/* Make the RichText hero read cleanly in the editor. */
+.cnb-staff-editor .page-hero {
+	padding: 24px 0;
+}

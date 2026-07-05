@@ -1,0 +1,132 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "catsnboard/pricing",
+  "version": "1.0.0",
+  "title": "Pricing (Cats'N'Board)",
+  "category": "catsnboard",
+  "icon": "money-alt",
+  "description": "Cała podstrona Cennik Cats'N'Board (hero + 3 karty cen: Daycare / Boarding / Sitting) z edytowalnymi tekstami, cenami i pozycjami — klient zmienia ceny myszką.",
+  "keywords": [
+    "pricing",
+    "cennik",
+    "ceny",
+    "cats",
+    "catsnboard",
+    "plans"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "align": false
+  },
+  "textdomain": "catsnboard",
+  "attributes": {
+    "heroEyebrow": {
+      "type": "string",
+      "default": "Simple, honest prices"
+    },
+    "heroTitle": {
+      "type": "string",
+      "default": "Pricing"
+    },
+    "heroLead": {
+      "type": "string",
+      "default": "Transparent rates with no surprises. Longer stays and multiple cats get a friendly discount — just ask."
+    },
+    "daycareTitle": {
+      "type": "string",
+      "default": "Daycare"
+    },
+    "daycarePrice": {
+      "type": "string",
+      "default": "49 zł"
+    },
+    "daycareUnit": {
+      "type": "string",
+      "default": "/ day"
+    },
+    "daycareF1": {
+      "type": "string",
+      "default": "Supervised play & rest"
+    },
+    "daycareF2": {
+      "type": "string",
+      "default": "Fresh food & water"
+    },
+    "daycareF3": {
+      "type": "string",
+      "default": "Sunny window spots"
+    },
+    "daycareF4": {
+      "type": "string",
+      "default": "Daily photo update"
+    },
+    "boardingTitle": {
+      "type": "string",
+      "default": "Boarding"
+    },
+    "boardingPrice": {
+      "type": "string",
+      "default": "89 zł"
+    },
+    "boardingUnit": {
+      "type": "string",
+      "default": "/ night"
+    },
+    "boardingF1": {
+      "type": "string",
+      "default": "Cosy private room"
+    },
+    "boardingF2": {
+      "type": "string",
+      "default": "Two play sessions daily"
+    },
+    "boardingF3": {
+      "type": "string",
+      "default": "Litter & grooming care"
+    },
+    "boardingF4": {
+      "type": "string",
+      "default": "Photo & message updates"
+    },
+    "sittingTitle": {
+      "type": "string",
+      "default": "Cat sitting"
+    },
+    "sittingPrice": {
+      "type": "string",
+      "default": "59 zł"
+    },
+    "sittingUnit": {
+      "type": "string",
+      "default": "/ visit"
+    },
+    "sittingF1": {
+      "type": "string",
+      "default": "Care in your own home"
+    },
+    "sittingF2": {
+      "type": "string",
+      "default": "Feeding & litter"
+    },
+    "sittingF3": {
+      "type": "string",
+      "default": "Play & cuddles"
+    },
+    "sittingF4": {
+      "type": "string",
+      "default": "Plant watering on request"
+    },
+    "bookLabel": {
+      "type": "string",
+      "default": "Book now →"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

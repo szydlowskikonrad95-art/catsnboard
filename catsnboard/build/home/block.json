@@ -1,0 +1,101 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "catsnboard/home",
+  "version": "1.0.0",
+  "title": "Home (Cats'N'Board)",
+  "category": "catsnboard",
+  "icon": "admin-home",
+  "description": "Cała strona główna Cats'N'Board (hero + usługi + galeria + CTA) z edytowalnymi tekstami i zdjęciami.",
+  "keywords": [
+    "home",
+    "hero",
+    "cats",
+    "catsnboard",
+    "landing"
+  ],
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "reusable": false,
+    "align": false
+  },
+  "textdomain": "catsnboard",
+  "attributes": {
+    "heroEyebrow": {
+      "type": "string",
+      "default": "Check in with us!"
+    },
+    "heroTitle": {
+      "type": "string",
+      "default": "Cats, kittens, <em>all welcome!</em>"
+    },
+    "heroLead": {
+      "type": "string",
+      "default": "A warm, calm second home for your cat — boarding, daycare and gentle care in Żoliborz, Warsaw."
+    },
+    "heroCta": {
+      "type": "string",
+      "default": "Contact us! →"
+    },
+    "heroImageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "heroImageAlt": {
+      "type": "string",
+      "default": "A calm tabby cat looking into the camera"
+    },
+    "servicesTitle": {
+      "type": "string",
+      "default": "Our services"
+    },
+    "servicesCta": {
+      "type": "string",
+      "default": "Read more →"
+    },
+    "galleryEyebrow": {
+      "type": "string",
+      "default": "Happy guests"
+    },
+    "galleryTitle": {
+      "type": "string",
+      "default": "Gallery"
+    },
+    "galleryCta": {
+      "type": "string",
+      "default": "See the full gallery →"
+    },
+    "galleryImages": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    },
+    "finalEyebrow": {
+      "type": "string",
+      "default": "Let's talk about your cat"
+    },
+    "finalTitle": {
+      "type": "string",
+      "default": "Please call or write!"
+    },
+    "finalLead": {
+      "type": "string",
+      "default": "Whether it's a weekend getaway or full-time care, we'd love to hear about your cat. Reach out and we'll find the purr-fect plan."
+    },
+    "finalCta": {
+      "type": "string",
+      "default": "Contact us! →"
+    }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

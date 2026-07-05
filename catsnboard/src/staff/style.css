@@ -1,0 +1,16 @@
+/**
+ * Front + editor shared styles for catsnboard/staff.
+ *
+ * The Cats'N'Board theme's global style.css already styles .page-hero, .team,
+ * .tgrid, .member etc. This file only makes sure the block wrapper itself adds
+ * no layout of its own, so the sections sit flush like page-our-staff.php.
+ */
+.cnb-staff {
+	display: block;
+}
+
+/* Block wrapper must not constrain the full-bleed sections. */
+.cnb-staff > .page-hero,
+.cnb-staff > .team {
+	width: 100%;
+}
