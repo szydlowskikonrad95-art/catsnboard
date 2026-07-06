@@ -1,5 +1,19 @@
 # Historia zmian
 
+## v2.0.1 — 6 lipca 2026
+
+Poprawka porządkowa — nic nie zmienia w działaniu strony:
+
+- Dołączone pełne teksty licencji (plik `LICENSE`) do obu wtyczek oraz spis bibliotek
+  zewnętrznych z ich licencjami (`CREDITS.md`) do wtyczki galerii i wydarzeń.
+- Uzupełnione nagłówki wtyczek i motywu (informacje o licencji i wymaganiach).
+- Instrukcja i opisy nie wskazują już konkretnych numerów wersji plików — zawsze aktualne.
+- Motyw wyraźnie oznaczony jako **testowy** (poligon do sprawdzania wtyczek) — nie do
+  wgrania na prawdziwą stronę.
+- Z paczki motywu usunięte pliki deweloperskie (niepotrzebne do działania).
+
+Wersje: pnb-blocks **1.4.3** · pnb-auto-pl **0.3.2** · motyw **1.1.7**.
+
 ## v2.0.0 — 5 lipca 2026
 
 Pierwsze wydanie paczki: wtyczki + motyw dla strony Cats'N'Board.

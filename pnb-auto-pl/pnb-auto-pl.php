@@ -4,12 +4,14 @@
  * Description:       Polska wersja strony z przełącznikiem PL/EN: przycisk „Przetłumacz witrynę" tłumaczy
  *                    całość przez Claude AI, a każdy zapis strony automatycznie dotłumacza zmiany.
  *                    Goście dostają gotowy polski (zero AI przy wejściu). Właściciel podaje swój klucz API.
- * Version:           0.3.1
+ * Version:           0.3.2
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
  * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       pnb-auto-pl
+ * Domain Path:       /languages
  *
  * ARCHITEKTURA v0.2 (prosta wersja — po 3 niezależnych audytach + wzorce z żywego kodu TranslatePress):
  * „Tłumacz RAZ przyciskiem → zapisz do słownika → front tylko podmienia gotowe pary (strtr)".
@@ -25,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PNB_AUTO_PL_VERSION', '0.3.1' );
+define( 'PNB_AUTO_PL_VERSION', '0.3.2' );
 define( 'PNB_AUTO_PL_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once PNB_AUTO_PL_DIR . 'inc/slownik.php';      // tabela słownika + pary do podmiany (cache)

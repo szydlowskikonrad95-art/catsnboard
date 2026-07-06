@@ -4,8 +4,8 @@ Cześć! W paczce są **dwie wtyczki** do Twojej strony:
 
 | Plik | Co robi |
 |---|---|
-| `pnb-blocks-1.3.1.zip` | **Galeria i Wydarzenia** — ładna galeria zdjęć + kalendarz wydarzeń z zapisami gości |
-| `pnb-auto-pl-0.3.1.zip` | **Polska Wersja (AI)** — cała strona po polsku z przełącznikiem PL/EN |
+| plik zaczynający się od `pnb-blocks` | **Galeria i Wydarzenia** — ładna galeria zdjęć + kalendarz wydarzeń z zapisami gości |
+| plik zaczynający się od `pnb-auto-pl` | **Polska Wersja (AI)** — cała strona po polsku z przełącznikiem PL/EN |
 
 ---
 
@@ -13,8 +13,8 @@ Cześć! W paczce są **dwie wtyczki** do Twojej strony:
 
 1. Zaloguj się do panelu swojej strony: `twojastrona.com/wp-admin`
 2. W menu po lewej: **Wtyczki → Dodaj nową → Wyślij wtyczkę na serwer**
-3. Wybierz plik `pnb-blocks-1.3.1.zip` → **Zainstaluj** → **Włącz**
-4. Powtórz to samo z `pnb-auto-pl-0.3.1.zip`
+3. Wybierz plik zaczynający się od `pnb-blocks` → **Zainstaluj** → **Włącz**
+4. Powtórz to samo z plikiem zaczynającym się od `pnb-auto-pl`
 
 > ⚠️ **WAŻNE — WPML:** na Twojej stronie jest zainstalowana wtyczka **WPML** (nieużywana).
 > **Wyłącz ją** (Wtyczki → WPML → Wyłącz) zanim włączysz Polską Wersję — dwie wtyczki

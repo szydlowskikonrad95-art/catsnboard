@@ -2,11 +2,12 @@
 /*
  * Plugin Name:       PNB Galeria i Wydarzenia
  * Description:       Galeria premium (taśma kinowa + sekcja „Moments") i kalendarz wydarzeń z zapisami gości — dwa bloki Gutenberg (strony Gallery i Events), edytowalne w edytorze bloków. Nie ingeruje w resztę strony.
- * Version:           1.4.2
+ * Version:           1.4.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
  * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       pnb-toolkit
  * Domain Path:       /languages
  */
@@ -15,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Stałe — nazwy PNB_TOOLKIT_* zachowane (moduły galerii/kalendarza ich używają; brak przepisywania). */
-define( 'PNB_TOOLKIT_VERSION', '1.4.2' );
+define( 'PNB_TOOLKIT_VERSION', '1.4.3' );
 define( 'PNB_TOOLKIT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PNB_TOOLKIT_URL', plugin_dir_url( __FILE__ ) );
 
