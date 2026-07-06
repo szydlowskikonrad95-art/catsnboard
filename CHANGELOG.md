@@ -1,5 +1,17 @@
 # Historia zmian
 
+## v2.0.2 — 7 lipca 2026
+
+Języki wtyczek po standardzie WordPressa (działanie strony bez zmian):
+
+- Wtyczki mówią teraz językiem PANELU: panel po angielsku → wtyczki po angielsku,
+  panel po polsku (Users → Profile → Language → Polski) → wtyczki po polsku.
+- Wcześniej nazwy, opisy i ekran tłumaczenia były po polsku na stałe — nawet
+  w angielskim panelu (niespójność wychwycona przy testach).
+- Polskie teksty siedzą teraz w plikach tłumaczeń (languages/*.mo), nie w kodzie.
+
+Wersje: pnb-blocks **1.4.4** · pnb-auto-pl **0.3.3** · motyw **1.1.7** (bez zmian).
+
 ## v2.0.1 — 6 lipca 2026
 
 Poprawka porządkowa — nic nie zmienia w działaniu strony:

@@ -1,66 +1,134 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: PNB Auto PL 0.1.0\n"
+"Project-Id-Version: PNB Auto PL 0.3.3\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
 
-msgid "Auto PL"
-msgstr "Auto PL"
+# ── Nagłówek wtyczki (lista wtyczek) ──
+msgid "PNB Polish Version (AI)"
+msgstr "PNB Polska Wersja (AI)"
 
-msgid "Auto PL — AI translation"
-msgstr "Auto PL — tłumaczenie AI"
+msgid "Polish version of the site with a PL/EN switcher: the \"Translate site\" button translates everything with Claude AI, and every page save auto-translates the changes. Visitors get ready-made Polish (zero AI calls per visit)."
+msgstr "Polska wersja strony z przełącznikiem PL/EN: przycisk „Przetłumacz witrynę” tłumaczy całość przez Claude AI, a każdy zapis strony automatycznie dotłumacza zmiany. Goście dostają gotowy polski (zero AI przy wejściu)."
 
-msgid "Auto PL — automatic Polish translation (Claude AI)"
-msgstr "Auto PL — automatyczne tłumaczenie na polski (Claude AI)"
+# ── Panel ustawień ──
+msgid "Settings saved."
+msgstr "Ustawienia zapisane."
 
-msgid "This plugin adds a Polish version of your site automatically using Claude AI. When you add or change English text, the Polish version is generated for you. Visitors switch with the PL / EN toggle."
-msgstr "Ta wtyczka automatycznie dodaje polską wersję strony przez Claude AI. Gdy dodasz lub zmienisz tekst po angielsku, polska wersja utworzy się sama. Odwiedzający przełączają językiem PL / EN."
+msgid "No permission."
+msgstr "Brak uprawnień."
+
+msgid "Home page"
+msgstr "Strona główna"
+
+msgid "PNB Auto PL — site translation (Claude)"
+msgstr "PNB Auto PL — tłumaczenie strony (Claude)"
+
+msgid "%s detected."
+msgstr "Wykryto %s."
+
+msgid "Two language systems on one site may clash. Recommendation: use ONE — either this plugin or %s (deactivate the other)."
+msgstr "Dwa systemy językowe na jednej stronie mogą się gryźć. Zalecenie: używaj JEDNEGO — albo tej wtyczki, albo %s (tamten wyłącz)."
 
 msgid "Anthropic API key"
 msgstr "Klucz API Anthropic"
 
-msgid "Your own Claude key from %s. Translations are billed to your account."
-msgstr "Twój własny klucz Claude z %s. Za tłumaczenia płacisz na swoim koncie."
+msgid "Key saved (ends with %s). Enter a new one only to change it."
+msgstr "Klucz zapisany (kończy się na %s). Wpisz nowy tylko żeby zmienić."
 
-msgid "Key saved."
-msgstr "Klucz zapisany."
+msgid "Paste your key from console.anthropic.com."
+msgstr "Wklej swój klucz z console.anthropic.com."
 
 msgid "Model"
 msgstr "Model"
 
-msgid "Haiku 4.5 — fast & cheap (recommended for translation)"
-msgstr "Haiku 4.5 — szybki i tani (zalecany do tłumaczenia)"
+msgid "Haiku 4.5 — fast & cheap (recommended)"
+msgstr "Haiku 4.5 — tani, szybki (zalecany)"
 
-msgid "Opus 4.8 — highest quality (more expensive)"
-msgstr "Opus 4.8 — najwyższa jakość (droższy)"
+msgid "Sonnet 5 — better wording, pricier"
+msgstr "Sonnet 5 — lepszy język, drożej"
 
-msgid "Haiku is enough for most sites. Opus for nuanced marketing copy."
-msgstr "Haiku wystarcza dla większości stron. Opus do niuansowych tekstów marketingowych."
+msgid "Daily character limit"
+msgstr "Dzienny limit znaków"
+
+msgid "Cost safety valve: above the limit, translation pauses until tomorrow."
+msgstr "Bezpiecznik kosztu: powyżej limitu tłumaczenie się zatrzymuje do jutra."
+
+msgid "Used today: <strong>%s</strong> characters."
+msgstr "Dziś zużyte: <strong>%s</strong> znaków."
 
 msgid "Save settings"
 msgstr "Zapisz ustawienia"
 
 msgid "Test connection"
-msgstr "Sprawdź połączenie"
+msgstr "Testuj połączenie"
 
-msgid "Check that your key works and Claude can translate."
-msgstr "Sprawdź czy klucz działa i Claude tłumaczy."
+msgid "Site translation"
+msgstr "Tłumaczenie witryny"
 
-msgid "Testing…"
-msgstr "Sprawdzam…"
+msgid "Dictionary: <strong>%1$s</strong> translated phrases (%2$s corrected by hand). Pages to translate: <strong>%3$s</strong>."
+msgstr "Słownik: <strong>%1$s</strong> przetłumaczonych fraz (%2$s poprawionych ręcznie). Stron do przetłumaczenia: <strong>%3$s</strong>."
 
-msgid "Connection OK — Claude is translating."
-msgstr "Połączenie OK — Claude tłumaczy."
+msgid "Translate site to Polish"
+msgstr "Przetłumacz witrynę na polski"
 
-msgid "Request failed."
-msgstr "Żądanie nie powiodło się."
+# ── Postęp tłumaczenia (JS) ──
+msgid "Works"
+msgstr "Działa"
 
-msgid "No permission."
-msgstr "Brak uprawnień."
+msgid "error"
+msgstr "błąd"
 
+msgid "Page"
+msgstr "Strona"
+
+msgid "segments:"
+msgstr "segmentów:"
+
+msgid "from cache:"
+msgstr "z pamięci:"
+
+msgid "new:"
+msgstr "nowych:"
+
+msgid "skipped:"
+msgstr "pominiętych:"
+
+msgid "Daily character limit reached — the rest tomorrow (or raise the limit)."
+msgstr "Dzienny limit znaków wyczerpany — reszta jutro (albo podnieś limit)."
+
+msgid "Done. New translations:"
+msgstr "Gotowe. Nowych tłumaczeń:"
+
+msgid "Check the site with the PL switcher."
+msgstr "Sprawdź stronę z przełącznikiem PL."
+
+# ── Tłumaczenie po zapisie / notki ──
+msgid "Empty page HTML."
+msgstr "Pusty HTML strony."
+
+msgid "Exception: "
+msgstr "Wyjątek: "
+
+msgid "Polish version updated"
+msgstr "Polska wersja zaktualizowana"
+
+msgid "new translations"
+msgstr "nowych tłumaczeń"
+
+msgid "%d page changed since the last translation"
+msgid_plural "%d pages changed since the last translation"
+msgstr[0] "%d strona zmieniona po ostatnim tłumaczeniu"
+msgstr[1] "%d strony zmienione po ostatnim tłumaczeniu"
+msgstr[2] "%d stron zmienionych po ostatnim tłumaczeniu"
+
+msgid "translate again"
+msgstr "przetłumacz ponownie"
+
+# ── Silnik Claude ──
 msgid "No Anthropic API key set — add it in settings."
 msgstr "Nie ustawiono klucza API Anthropic — dodaj go w ustawieniach."
 
@@ -69,3 +137,6 @@ msgstr "Claude nie zwrócił tłumaczenia."
 
 msgid "All fragments already cached."
 msgstr "Wszystkie fragmenty już w pamięci podręcznej."
+
+msgid "Request failed."
+msgstr "Żądanie nie powiodło się."

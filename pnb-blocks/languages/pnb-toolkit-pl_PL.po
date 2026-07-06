@@ -612,3 +612,10 @@ msgstr "Adres — użyje go przycisk „Get directions”…"
 
 msgid "Short label on the map pin…"
 msgstr "Krótka etykieta na pinezce mapy…"
+
+# ── Nagłówek wtyczki (lista wtyczek, dodane 2026-07-07) ──
+msgid "PNB Gallery & Events"
+msgstr "PNB Galeria i Wydarzenia"
+
+msgid "Premium gallery (film strip + \"Moments\" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site."
+msgstr "Galeria premium (taśma kinowa + sekcja „Moments”) i kalendarz wydarzeń z zapisami gości — dwa bloki Gutenberg (strony Gallery i Events), edytowalne w edytorze bloków. Nie ingeruje w resztę strony."

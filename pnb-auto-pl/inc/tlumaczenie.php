@@ -20,13 +20,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 add_action( 'wp_ajax_pnb_pl_tlumacz_strone', function () {
 	check_ajax_referer( 'pnb_pl_tlumacz', 'nonce' );
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( array( 'blad' => 'Brak uprawnień.' ), 403 );
+		wp_send_json_error( array( 'blad' => __( 'No permission.', 'pnb-auto-pl' ) ), 403 );
 	}
 
 	$url  = esc_url_raw( wp_unslash( $_POST['url'] ?? '' ) );
 	$html = (string) wp_unslash( $_POST['html'] ?? '' ); // surowy HTML strony — tylko czytamy, nie wykonujemy
 	if ( '' === $html || strlen( $html ) < 200 ) {
-		wp_send_json_error( array( 'blad' => 'Pusty HTML strony.' ) );
+		wp_send_json_error( array( 'blad' => __( 'Empty page HTML.', 'pnb-auto-pl' ) ) );
 	}
 
 	try {
@@ -34,7 +34,7 @@ add_action( 'wp_ajax_pnb_pl_tlumacz_strone', function () {
 		$raport['url'] = $url;
 		wp_send_json_success( $raport );
 	} catch ( \Throwable $e ) {
-		wp_send_json_error( array( 'blad' => 'Wyjątek: ' . $e->getMessage() ) );
+		wp_send_json_error( array( 'blad' => __( 'Exception: ', 'pnb-auto-pl' ) . $e->getMessage() ) );
 	}
 } );
 
@@ -239,7 +239,7 @@ add_action( 'admin_print_footer_scripts', function () {
 				wToku=false;
 				if(j.success&&wp.data.dispatch('core/notices')){
 					wp.data.dispatch('core/notices').createNotice('success',
-						'🌍 Polska wersja zaktualizowana ('+j.data.przetlumaczone+' nowych tłumaczeń)',
+						'🌍 '+<?php echo wp_json_encode( __( 'Polish version updated', 'pnb-auto-pl' ) ); ?>+' ('+j.data.przetlumaczone+' '+<?php echo wp_json_encode( __( 'new translations', 'pnb-auto-pl' ) ); ?>+')',
 						{isDismissible:true});
 				}
 			}).catch(function(){wToku=false;});
@@ -257,7 +257,7 @@ add_action( 'admin_notices', function () {
 	}
 	$link = esc_url( admin_url( 'options-general.php?page=pnb-auto-pl' ) );
 	echo '<div class="notice notice-warning"><p><strong>PNB Auto PL:</strong> '
-		. esc_html( sprintf( _n( '%d strona zmieniona po ostatnim tłumaczeniu', '%d stron(y) zmienione po ostatnim tłumaczeniu', count( $stale ), 'pnb-auto-pl' ), count( $stale ) ) )
+		. esc_html( sprintf( _n( '%d page changed since the last translation', '%d pages changed since the last translation', count( $stale ), 'pnb-auto-pl' ), count( $stale ) ) )
 		. ' (' . esc_html( implode( ', ', array_slice( array_values( $stale ), 0, 5 ) ) ) . ') — '
-		. '<a href="' . $link . '">' . esc_html__( 'przetłumacz ponownie', 'pnb-auto-pl' ) . '</a>.</p></div>';
+		. '<a href="' . $link . '">' . esc_html__( 'translate again', 'pnb-auto-pl' ) . '</a>.</p></div>';
 } );

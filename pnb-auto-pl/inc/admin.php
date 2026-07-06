@@ -9,6 +9,8 @@
  *
  * Bezpieczeństwo (z audytów): klucz NIE wraca do HTML w całości (maska ...końcówka), nonce+manage_options,
  * ostrzeżenie gdy wykryty WPML/Polylang (dwa systemy językowe się gryzą).
+ *
+ * i18n: WSZYSTKIE napisy po angielsku przez __()/esc_html__ (standard WP) — polski w languages/*.mo.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -41,7 +43,7 @@ add_action( 'admin_init', function () {
 add_action( 'wp_ajax_pnb_pl_test', function () {
 	check_ajax_referer( 'pnb_pl_tlumacz', 'nonce' );
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( array( 'blad' => 'Brak uprawnień.' ), 403 );
+		wp_send_json_error( array( 'blad' => __( 'No permission.', 'pnb-auto-pl' ) ), 403 );
 	}
 	$w = pnb_auto_pl_test_polaczenia();
 	if ( is_wp_error( $w ) ) {
@@ -54,7 +56,7 @@ add_action( 'wp_ajax_pnb_pl_test', function () {
 add_action( 'wp_ajax_pnb_pl_wyczysc_stale', function () {
 	check_ajax_referer( 'pnb_pl_tlumacz', 'nonce' );
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( array( 'blad' => 'Brak uprawnień.' ), 403 );
+		wp_send_json_error( array( 'blad' => __( 'No permission.', 'pnb-auto-pl' ) ), 403 );
 	}
 	pnb_pl_wyczysc_nieaktualne();
 	wp_send_json_success();
@@ -67,7 +69,7 @@ function pnb_pl_lista_stron() {
 		'post_status' => 'publish',
 		'numberposts' => 200,
 	) );
-	$lista = array( array( 'tytul' => 'Strona główna', 'url' => home_url( '/' ) ) );
+	$lista = array( array( 'tytul' => __( 'Home page', 'pnb-auto-pl' ), 'url' => home_url( '/' ) ) );
 	foreach ( $posty as $p ) {
 		$lista[] = array( 'tytul' => $p->post_title, 'url' => get_permalink( $p ) );
 	}
@@ -91,58 +93,74 @@ function pnb_pl_ekran_admina() {
 	settings_errors( 'pnb_pl' );
 	?>
 	<div class="wrap">
-		<h1>PNB Auto PL — tłumaczenie strony (Claude)</h1>
+		<h1><?php esc_html_e( 'PNB Auto PL — site translation (Claude)', 'pnb-auto-pl' ); ?></h1>
 
 		<?php if ( $wpml || $polylang ) : ?>
-		<div class="notice notice-error"><p><strong>⚠️ Wykryto <?php echo $wpml ? 'WPML' : 'Polylang'; ?>.</strong>
-			Dwa systemy językowe na jednej stronie mogą się gryźć. Zalecenie: używaj JEDNEGO —
-			albo tej wtyczki, albo <?php echo $wpml ? 'WPML' : 'Polylang'; ?> (tamten wyłącz).</p></div>
+		<div class="notice notice-error"><p><strong>⚠️ <?php
+			/* translators: %s: name of the conflicting plugin (WPML or Polylang) */
+			echo esc_html( sprintf( __( '%s detected.', 'pnb-auto-pl' ), $wpml ? 'WPML' : 'Polylang' ) ); ?></strong>
+			<?php
+			/* translators: %s: name of the conflicting plugin (WPML or Polylang) */
+			echo esc_html( sprintf( __( 'Two language systems on one site may clash. Recommendation: use ONE — either this plugin or %s (deactivate the other).', 'pnb-auto-pl' ), $wpml ? 'WPML' : 'Polylang' ) ); ?></p></div>
 		<?php endif; ?>
 
 		<form method="post">
 			<?php wp_nonce_field( 'pnb_pl_ustawienia' ); ?>
 			<table class="form-table" role="presentation">
 				<tr>
-					<th><label for="pnb_klucz">Klucz API Anthropic</label></th>
+					<th><label for="pnb_klucz"><?php esc_html_e( 'Anthropic API key', 'pnb-auto-pl' ); ?></label></th>
 					<td>
 						<input type="password" id="pnb_klucz" name="pnb_klucz" class="regular-text"
 							placeholder="<?php echo esc_attr( $maska ?: 'sk-ant-…' ); ?>" autocomplete="new-password">
-						<p class="description"><?php echo $klucz ? 'Klucz zapisany (kończy się na ' . esc_html( $maska ) . '). Wpisz nowy tylko żeby zmienić.' : 'Wklej swój klucz z console.anthropic.com.'; ?></p>
+						<p class="description"><?php
+							if ( $klucz ) {
+								/* translators: %s: masked ending of the saved API key */
+								echo esc_html( sprintf( __( 'Key saved (ends with %s). Enter a new one only to change it.', 'pnb-auto-pl' ), $maska ) );
+							} else {
+								esc_html_e( 'Paste your key from console.anthropic.com.', 'pnb-auto-pl' );
+							}
+						?></p>
 					</td>
 				</tr>
 				<tr>
-					<th><label for="pnb_model">Model</label></th>
+					<th><label for="pnb_model"><?php esc_html_e( 'Model', 'pnb-auto-pl' ); ?></label></th>
 					<td>
 						<select id="pnb_model" name="pnb_model">
-							<option value="claude-haiku-4-5" <?php selected( $model, 'claude-haiku-4-5' ); ?>>Haiku 4.5 — tani, szybki (zalecany)</option>
-							<option value="claude-sonnet-5" <?php selected( $model, 'claude-sonnet-5' ); ?>>Sonnet 5 — lepszy język, drożej</option>
+							<option value="claude-haiku-4-5" <?php selected( $model, 'claude-haiku-4-5' ); ?>><?php esc_html_e( 'Haiku 4.5 — fast & cheap (recommended)', 'pnb-auto-pl' ); ?></option>
+							<option value="claude-sonnet-5" <?php selected( $model, 'claude-sonnet-5' ); ?>><?php esc_html_e( 'Sonnet 5 — better wording, pricier', 'pnb-auto-pl' ); ?></option>
 						</select>
 					</td>
 				</tr>
 				<tr>
-					<th><label for="pnb_limit">Dzienny limit znaków</label></th>
+					<th><label for="pnb_limit"><?php esc_html_e( 'Daily character limit', 'pnb-auto-pl' ); ?></label></th>
 					<td>
 						<input type="number" id="pnb_limit" name="pnb_limit" value="<?php echo esc_attr( $limit ); ?>" min="1000" step="1000">
-						<p class="description">Bezpiecznik kosztu: powyżej limitu tłumaczenie się zatrzymuje do jutra.
-							Dziś zużyte: <strong><?php echo esc_html( number_format_i18n( pnb_pl_licznik_dzis() ) ); ?></strong> znaków.</p>
+						<p class="description"><?php
+							esc_html_e( 'Cost safety valve: above the limit, translation pauses until tomorrow.', 'pnb-auto-pl' );
+							echo ' ';
+							/* translators: %s: number of characters used today */
+							echo wp_kses( sprintf( __( 'Used today: <strong>%s</strong> characters.', 'pnb-auto-pl' ), number_format_i18n( pnb_pl_licznik_dzis() ) ), array( 'strong' => array() ) );
+						?></p>
 					</td>
 				</tr>
 			</table>
 			<p class="submit">
-				<button type="submit" name="pnb_pl_zapisz" value="1" class="button button-primary">Zapisz ustawienia</button>
-				<button type="button" class="button" id="pnb-test">Testuj połączenie</button>
+				<button type="submit" name="pnb_pl_zapisz" value="1" class="button button-primary"><?php esc_html_e( 'Save settings', 'pnb-auto-pl' ); ?></button>
+				<button type="button" class="button" id="pnb-test"><?php esc_html_e( 'Test connection', 'pnb-auto-pl' ); ?></button>
 				<span id="pnb-test-wynik" style="margin-left:8px;"></span>
 			</p>
 		</form>
 
 		<hr>
-		<h2>Tłumaczenie witryny</h2>
-		<p>Słownik: <strong><?php echo esc_html( $staty['gotowe'] ); ?></strong> przetłumaczonych fraz
-			(<?php echo esc_html( $staty['czlowiek'] ); ?> poprawionych ręcznie).
-			Stron do przetłumaczenia: <strong><?php echo esc_html( count( $strony ) ); ?></strong>.</p>
+		<h2><?php esc_html_e( 'Site translation', 'pnb-auto-pl' ); ?></h2>
+		<p><?php
+			/* translators: 1: number of translated phrases, 2: number of manually corrected phrases, 3: number of pages */
+			echo wp_kses( sprintf( __( 'Dictionary: <strong>%1$s</strong> translated phrases (%2$s corrected by hand). Pages to translate: <strong>%3$s</strong>.', 'pnb-auto-pl' ),
+				esc_html( $staty['gotowe'] ), esc_html( $staty['czlowiek'] ), esc_html( count( $strony ) ) ), array( 'strong' => array() ) );
+		?></p>
 		<p>
 			<button type="button" class="button button-primary button-hero" id="pnb-tlumacz-wszystko">
-				🌍 Przetłumacz witrynę na polski
+				🌍 <?php esc_html_e( 'Translate site to Polish', 'pnb-auto-pl' ); ?>
 			</button>
 		</p>
 		<div id="pnb-postep" style="display:none;max-width:640px;">
@@ -159,6 +177,18 @@ function pnb_pl_ekran_admina() {
 		var strony = <?php echo wp_json_encode( $strony ); ?>;
 		var nonce  = <?php echo wp_json_encode( $nonce ); ?>;
 		var ajax   = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
+		var t      = <?php echo wp_json_encode( array(
+			'dziala'    => __( 'Works', 'pnb-auto-pl' ),
+			'blad'      => __( 'error', 'pnb-auto-pl' ),
+			'strona'    => __( 'Page', 'pnb-auto-pl' ),
+			'segmenty'  => __( 'segments:', 'pnb-auto-pl' ),
+			'zPamieci'  => __( 'from cache:', 'pnb-auto-pl' ),
+			'nowych'    => __( 'new:', 'pnb-auto-pl' ),
+			'pominiete' => __( 'skipped:', 'pnb-auto-pl' ),
+			'limitStop' => __( 'Daily character limit reached — the rest tomorrow (or raise the limit).', 'pnb-auto-pl' ),
+			'gotowe'    => __( 'Done. New translations:', 'pnb-auto-pl' ),
+			'sprawdz'   => __( 'Check the site with the PL switcher.', 'pnb-auto-pl' ),
+		) ); ?>;
 
 		document.getElementById('pnb-test').addEventListener('click', function () {
 			var w = document.getElementById('pnb-test-wynik');
@@ -166,7 +196,7 @@ function pnb_pl_ekran_admina() {
 			fetch(ajax, { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 				body: new URLSearchParams({ action: 'pnb_pl_test', nonce: nonce }) })
 				.then(function (r) { return r.json(); })
-				.then(function (j) { w.textContent = j.success ? '✅ Działa' : ('❌ ' + (j.data && j.data.blad || 'błąd')); })
+				.then(function (j) { w.textContent = j.success ? ('✅ ' + t.dziala) : ('❌ ' + (j.data && j.data.blad || t.blad)); })
 				.catch(function (e) { w.textContent = '❌ ' + e; });
 		});
 
@@ -180,7 +210,7 @@ function pnb_pl_ekran_admina() {
 
 			for (var i = 0; i < strony.length; i++) {
 				var s = strony[i];
-				status.textContent = 'Strona ' + (i + 1) + '/' + strony.length + ': ' + s.tytul;
+				status.textContent = t.strona + ' ' + (i + 1) + '/' + strony.length + ': ' + s.tytul;
 				pasek.style.width = Math.round((i / strony.length) * 100) + '%';
 				try {
 					// pobierz stronę jak GOŚĆ (bez cookies = czysty HTML bez admin-bara)
@@ -192,23 +222,23 @@ function pnb_pl_ekran_admina() {
 					if (odp.success) {
 						var d = odp.data;
 						razem += d.przetlumaczone;
-						log.insertAdjacentHTML('beforeend', '<li>✅ ' + s.tytul + ' — segmentów: ' + d.segmenty +
-							', z pamięci: ' + d.z_cache + ', nowych: ' + d.przetlumaczone +
-							(d.pominiete ? ', pominiętych: ' + d.pominiete : '') + '</li>');
+						log.insertAdjacentHTML('beforeend', '<li>✅ ' + s.tytul + ' — ' + t.segmenty + ' ' + d.segmenty +
+							', ' + t.zPamieci + ' ' + d.z_cache + ', ' + t.nowych + ' ' + d.przetlumaczone +
+							(d.pominiete ? ', ' + t.pominiete + ' ' + d.pominiete : '') + '</li>');
 						if (d.limit_wyczerpany) { limitStop = true; }
 					} else {
-						log.insertAdjacentHTML('beforeend', '<li>❌ ' + s.tytul + ' — ' + (odp.data && odp.data.blad || 'błąd') + '</li>');
+						log.insertAdjacentHTML('beforeend', '<li>❌ ' + s.tytul + ' — ' + (odp.data && odp.data.blad || t.blad) + '</li>');
 					}
 				} catch (e) {
 					log.insertAdjacentHTML('beforeend', '<li>❌ ' + s.tytul + ' — ' + e + '</li>');
 				}
 				if (limitStop) {
-					log.insertAdjacentHTML('beforeend', '<li>⛔ Dzienny limit znaków wyczerpany — reszta jutro (albo podnieś limit).</li>');
+					log.insertAdjacentHTML('beforeend', '<li>⛔ ' + t.limitStop + '</li>');
 					break;
 				}
 			}
 			pasek.style.width = '100%';
-			status.textContent = 'Gotowe. Nowych tłumaczeń: ' + razem + '. Sprawdź stronę z przełącznikiem PL.';
+			status.textContent = t.gotowe + ' ' + razem + '. ' + t.sprawdz;
 			// wyczyść listę "nieaktualne"
 			fetch(ajax, { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 				body: new URLSearchParams({ action: 'pnb_pl_wyczysc_stale', nonce: nonce }) });

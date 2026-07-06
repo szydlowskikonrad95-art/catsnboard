@@ -1,10 +1,8 @@
 <?php
 /*
- * Plugin Name:       PNB Polska Wersja (AI)
- * Description:       Polska wersja strony z przełącznikiem PL/EN: przycisk „Przetłumacz witrynę" tłumaczy
- *                    całość przez Claude AI, a każdy zapis strony automatycznie dotłumacza zmiany.
- *                    Goście dostają gotowy polski (zero AI przy wejściu). Właściciel podaje swój klucz API.
- * Version:           0.3.2
+ * Plugin Name:       PNB Polish Version (AI)
+ * Description:       Polish version of the site with a PL/EN switcher: the "Translate site" button translates everything with Claude AI, and every page save auto-translates the changes. Visitors get ready-made Polish (zero AI calls per visit).
+ * Version:           0.3.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
@@ -27,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PNB_AUTO_PL_VERSION', '0.3.2' );
+define( 'PNB_AUTO_PL_VERSION', '0.3.3' );
 define( 'PNB_AUTO_PL_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once PNB_AUTO_PL_DIR . 'inc/slownik.php';      // tabela słownika + pary do podmiany (cache)
