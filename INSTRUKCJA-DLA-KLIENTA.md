@@ -20,6 +20,12 @@ Cześć! W paczce są **dwie wtyczki** do Twojej strony:
 > **Wyłącz ją** (Wtyczki → WPML → Wyłącz) zanim włączysz Polską Wersję — dwie wtyczki
 > językowe na raz mogą się gryźć. Nasza wtyczka i tak robi wszystko czego potrzebujesz.
 
+5. **Dodaj stronę Events do menu strony** — wtyczka tworzy stronę z kalendarzem, ale NIE
+   dopisuje się sama do Twojego menu (nie ruszamy Twojej nawigacji). Wejdź w
+   **Wygląd → Menu** *(Appearance → Menus)* → zaznacz po lewej stronę **Events** →
+   **Dodaj do menu** → przeciągnij gdzie chcesz → **Zapisz menu**. Bez tego goście
+   nie znajdą kalendarza z nawigacji (strona działa pod adresem `/events/`).
+
 > 💡 **Chcesz mieć panel WordPressa po polsku?** Wejdź w **Users → Profile → Language →
 > Polski** (język ustawiony w Twoim profilu). Wtedy przyciski wtyczek też będą po polsku.
 > ⚠️ Ale **NIE zmieniaj „Site Language"** w Settings → General — język całej WITRYNY musi
@@ -69,6 +75,11 @@ etykieta przy pinezce*. Dopóki ich nie wypełnisz, adres się nie pokazuje (nic
 
 **Dobra wiadomość:** domyślne teksty strony są **już przetłumaczone** (słownik jedzie
 w paczce) — przełącznik **PL | EN** działa od pierwszego dnia, bez żadnej konfiguracji.
+
+> 💡 Jeśli po przełączeniu na PL **jakiś napis został po angielsku** (np. pozycja Twojego
+> menu albo tekst, który sam dopisałeś) — to normalne: słownik z paczki zna domyślne
+> teksty strony, a Twoje własne dotłumaczy przycisk. Podepnij klucz (kroki niżej)
+> i kliknij **„Przetłumacz witrynę"** — wyłapie całą resztę.
 
 **Klucz API** potrzebujesz po to, żeby **Twoje zmiany i nowe treści** tłumaczyły się same
 (to „silnik" tłumaczenia — Claude AI; płacisz tylko za faktyczne tłumaczenie, ~grosze):

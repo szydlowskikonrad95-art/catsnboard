@@ -308,6 +308,21 @@ function pnb_galeria_render() {
 	return $out;
 }
 
+/* Płynny scroll (Lenis) dla podstron wtyczki. Ładujemy własną kopię TYLKO gdy strona nie ma jeszcze
+ * Lenisa (nasz motyw ma; obce motywy klienta zwykle nie). Starter (lenis-start.js) sam sprawdza w JS,
+ * czy nie ma już żywego zegara — tu decydujemy tylko czy w ogóle dowozić bibliotekę. $gsap_dep = handle
+ * GSAP, pod który starter ma się załadować (żeby ticker GSAP istniał zanim Lenis się wepnie). */
+function pnb_zapewnij_lenis( $gsap_dep ) {
+	// Czy strona już dostarcza Lenisa (motyw/inna wtyczka)? Jeśli tak — nie dublujemy biblioteki.
+	$obcy_lenis = pnb_galeria_znajdz_handle_po_src( array( 'lenis' ), 'pnb-' );
+	if ( $obcy_lenis ) {
+		return; // motyw ma swój płynny scroll — starter i tak by się nie odpalił (bezpiecznik w JS)
+	}
+	wp_enqueue_script( 'pnb-lenis', PNB_TOOLKIT_URL . 'assets/lib/lenis.min.js', array(), '1.1.13', true );
+	$dep = is_array( $gsap_dep ) ? array_merge( array( 'pnb-lenis' ), $gsap_dep ) : array( 'pnb-lenis' );
+	wp_enqueue_script( 'pnb-lenis-start', PNB_TOOLKIT_URL . 'assets/js/lenis-start.js', $dep, PNB_TOOLKIT_VERSION, true );
+}
+
 /* Zapewnia DOKŁADNIE JEDNĄ kopię GSAP+ScrollTrigger na stronie i zwraca handle-zależności dla naszego JS.
  * Jeśli motyw/wtyczka już zarejestrowały GSAP (typowe handle: gsap, gsap-js, gsap-scrolltrigger,
  * scrolltrigger...) — używamy ich (zero drugiej kopii = zero konfliktu scroll-tickera). W przeciwnym razie
@@ -372,6 +387,7 @@ function pnb_galeria_zaladuj_assety( $pula = array(), $pula_moments = array() ) 
 	// kopii). Nasz galeria-front.js działa na window.gsap czyjkolwiek (GSAP 3.x API stabilne). Fallback:
 	// gdy strona nie ma GSAP — ładujemy własny (offline; licencja no-charge, nota w CREDITS.md).
 	$gsap_dep = pnb_galeria_zapewnij_gsap();
+	pnb_zapewnij_lenis( $gsap_dep ); // płynny scroll DLA PODSTRON WTYCZKI (gdy motyw swojego nie ma)
 	wp_enqueue_script( 'pnb-galeria-front', PNB_TOOLKIT_URL . 'assets/js/galeria-front.js', $gsap_dep, PNB_TOOLKIT_VERSION, true );
 	if ( $pula ) {
 		// pool = taśma (górna karuzela), momentsPool = rzeki „Moments" (osobny zestaw; fallback = pool).

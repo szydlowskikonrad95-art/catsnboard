@@ -1,5 +1,17 @@
 # Historia zmian
 
+## v2.0.3 — 8 lipca 2026
+
+Ulepszenia po testach (działanie tylko lepsze):
+
+- **Płynne przewijanie galerii i kalendarza działa teraz zawsze** — także na Twoim
+  motywie, nie tylko na naszym testowym (płynność wbudowana w samą wtyczkę).
+- **Galeria i wydarzenia mają komplet zdjęć demo od razu** — nawet zanim wgrasz własne
+  (zdjęcia jadą w paczce wtyczki).
+- Drobne poprawki polskich napisów (menu, przyciski, komunikaty) i porządki.
+
+Wersje: pnb-blocks **1.5.2** · pnb-auto-pl **0.3.5** · motyw **1.1.7**.
+
 ## v2.0.2 — 7 lipca 2026
 
 Języki wtyczek po standardzie WordPressa (działanie strony bez zmian):

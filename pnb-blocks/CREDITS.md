@@ -8,6 +8,11 @@ Ta wtyczka dołącza poniższe biblioteki. Każda pozostaje pod własną licencj
 - Darmowa do użytku komercyjnego (od 30.04.2025). Nota o prawach autorskich w plikach zachowana (wymóg licencji).
 - Pliki: `assets/lib/gsap.min.js`, `assets/lib/ScrollTrigger.min.js`
 
+## Lenis 1.1.13 (smooth scroll)
+- © 2024 darkroom.engineering
+- Licencja: **MIT** — pełny tekst w `assets/lib/lenis.LICENSE.txt`
+- Plik: `assets/lib/lenis.min.js`
+
 ## Fonty (Google Fonts)
 - Varela Round, Poppins — licencja **SIL Open Font License 1.1** (wolno bundlować).
 - Pliki: `assets/fonts/` (lokalne .woff2, aby wtyczka działała offline, bez pobierania z Google).

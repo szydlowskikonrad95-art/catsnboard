@@ -719,10 +719,18 @@ function pnb_kalendarz_ikona( $nazwa ) {
 function pnb_kalendarz_zaladuj_assety() {
 	wp_enqueue_style( 'pnb-fonty', PNB_TOOLKIT_URL . 'assets/fonts/fonts.css', array(), PNB_TOOLKIT_VERSION ); // fonty LOKALNIE (OFL), offline
 	wp_enqueue_style( 'pnb-kalendarz', PNB_TOOLKIT_URL . 'assets/css/kalendarz.css', array(), PNB_TOOLKIT_VERSION );
-	// GSAP + ScrollTrigger LOKALNIE (paczka offline; licencja GSAP no-charge — nota w pliku, CREDITS.md).
-	wp_enqueue_script( 'pnb-gsap', PNB_TOOLKIT_URL . 'assets/lib/gsap.min.js', array(), '3.12.5', true );
-	wp_enqueue_script( 'pnb-gsap-scrolltrigger', PNB_TOOLKIT_URL . 'assets/lib/ScrollTrigger.min.js', array( 'pnb-gsap' ), '3.12.5', true );
-	wp_enqueue_script( 'pnb-kalendarz-front', PNB_TOOLKIT_URL . 'assets/js/kalendarz-front.js', array( 'pnb-gsap-scrolltrigger' ), PNB_TOOLKIT_VERSION, true );
+	// GSAP+ScrollTrigger: JEDNA kopia (jak galeria) — jeśli motyw już je ma, wpinamy się pod nie, inaczej
+	// ładujemy własne offline (licencja GSAP no-charge — nota w pliku, CREDITS.md).
+	$gsap_dep = function_exists( 'pnb_galeria_zapewnij_gsap' ) ? pnb_galeria_zapewnij_gsap() : array();
+	if ( ! $gsap_dep ) {
+		wp_enqueue_script( 'pnb-gsap', PNB_TOOLKIT_URL . 'assets/lib/gsap.min.js', array(), '3.12.5', true );
+		wp_enqueue_script( 'pnb-gsap-scrolltrigger', PNB_TOOLKIT_URL . 'assets/lib/ScrollTrigger.min.js', array( 'pnb-gsap' ), '3.12.5', true );
+		$gsap_dep = array( 'pnb-gsap-scrolltrigger' );
+	}
+	if ( function_exists( 'pnb_zapewnij_lenis' ) ) {
+		pnb_zapewnij_lenis( $gsap_dep ); // płynny scroll dla podstrony wydarzeń (gdy motyw swojego nie ma)
+	}
+	wp_enqueue_script( 'pnb-kalendarz-front', PNB_TOOLKIT_URL . 'assets/js/kalendarz-front.js', $gsap_dep, PNB_TOOLKIT_VERSION, true );
 }
 
 /* Formularz zapisu — JEDEN render dla listy i singla (pola/nonce/honeypot 1:1, mechanika handlera nietknięta). */
@@ -741,9 +749,17 @@ function pnb_kalendarz_formularz_html( $event_id ) {
 	return $out;
 }
 
-/* Komunikaty po powrocie z handlera (?pnb_zapis=…) — jeden słownik dla listy i singla. */
-function pnb_kalendarz_komunikaty_html() {
+/* Komunikaty po powrocie z handlera (?pnb_zapis=…) — jeden słownik dla listy i singla.
+ * $id > 0  → render TYLKO gdy pnb_event w URL wskazuje to wydarzenie (komunikat przy właściwej karcie,
+ *            nie przy wszystkich naraz — zgłoszenie Dzidka 2026-07-07).
+ * $id == 0 → slot ogólny (góra listy): renderuje WYŁĄCZNIE gdy w URL brak pnb_event (awaryjne błędy
+ *            walidacji bez ID) — w normalnym przepływie nic nie pokazuje. */
+function pnb_kalendarz_komunikaty_html( $id = 0 ) {
 	$status = isset( $_GET['pnb_zapis'] ) ? sanitize_key( $_GET['pnb_zapis'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$ev     = isset( $_GET['pnb_event'] ) ? (int) $_GET['pnb_event'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ( $id > 0 && $ev > 0 && $ev !== $id ) || ( 0 === $id && $ev > 0 ) ) {
+		return ''; // przy niedopasowanym ID cicho; błąd bez ID ($ev=0) zostaje widoczny (single/slot ogólny)
+	}
 	$mapa   = array(
 		'ok'      => array( 'pnb-ev-ok', __( 'Thank you! You are on the list — see you there. 🐾', 'pnb-toolkit' ) ),
 		'full'    => array( 'pnb-ev-err', __( 'Sorry — this event is fully booked.', 'pnb-toolkit' ) ),
@@ -869,7 +885,7 @@ function pnb_kalendarz_render() {
 	$out .= '<div class="pnb-evh-cue pnb-ev-mono" aria-hidden="true"><span>→</span> ' . esc_html__( 'scroll', 'pnb-toolkit' ) . '</div>'; // → w vertical-rl wskazuje w dół
 	$out .= '</header>';
 
-	/* komunikaty zapisu — nad osią */
+	/* slot awaryjny (tylko błędy bez ID wydarzenia) — normalny komunikat renderuje się przy karcie */
 	$out .= pnb_kalendarz_komunikaty_html();
 
 	if ( ! $items ) {
@@ -1025,7 +1041,7 @@ function pnb_kalendarz_render() {
 				$out .= '<button type="button" class="pnb-ev-toggle pnb-ev-signbtn" aria-expanded="' . ( $otworz ? 'true' : 'false' ) . '" aria-controls="' . esc_attr( $form_id ) . '">'
 					. '<span>' . esc_html__( 'Sign up', 'pnb-toolkit' ) . '</span><span class="pnb-ev-arrow" aria-hidden="true">→</span></button>';
 				$out .= '<div class="pnb-ev-signup-panel" id="' . esc_attr( $form_id ) . '"' . ( $otworz ? '' : ' hidden' ) . '>';
-				$out .= pnb_kalendarz_komunikaty_html(); // komunikat OK/błąd po powrocie z handlera (jak na singlu)
+				$out .= pnb_kalendarz_komunikaty_html( (int) $id ); // komunikat TYLKO przy zapisanej karcie
 				$out .= pnb_kalendarz_formularz_html( $id ); // wspólny render z singlem — logika NIETKNIĘTA
 				$out .= '</div>';
 			}
@@ -1249,7 +1265,7 @@ function pnb_kalendarz_render_single() {
 	// zapis: kotwica #event-{id} = cel redirectu handlera; komunikaty NAD formularzem
 	$out .= '<section class="pnb-evs-signup" id="event-' . (int) $id . '">';
 	$out .= '<h2>' . esc_html__( 'Sign up', 'pnb-toolkit' ) . '</h2>';
-	$out .= pnb_kalendarz_komunikaty_html();
+	$out .= pnb_kalendarz_komunikaty_html( (int) $id );
 	if ( $pelne ) {
 		$out .= '<p class="pnb-evs-fullnote"><span class="pnb-ev-badge pnb-ev-badge--full">' . esc_html__( 'Fully booked', 'pnb-toolkit' ) . '</span> <span class="pnb-ev-going pnb-ev-mono">' . esc_html__( 'Sold out', 'pnb-toolkit' ) . '</span></p>';
 	} else {

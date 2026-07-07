@@ -29,7 +29,7 @@
 	var gheroImg = ghero ? ghero.querySelector('.pnb-ghero-img img') : null;
 	if (maGsap && !rm && gheroImg) {
 		gsap.fromTo(gheroImg, { yPercent: -6, scale: 1.13 }, { yPercent: 6, scale: 1.13, ease: 'none',
-			scrollTrigger: { trigger: '.pnb-ghero', start: 'top top', end: 'bottom top', scrub: true } });
+			scrollTrigger: { trigger: '.pnb-ghero', start: 'top top', end: 'bottom top', scrub: 0.8 } });
 	}
 
 	/* TAŚMA: scroll pionowy przewija kadry poziomo + GŁĘBIA (warstwy w różnych tempach) */

@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       PNB Gallery & Events
  * Description:       Premium gallery (film strip + "Moments" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site.
- * Version:           1.4.4
+ * Version:           1.5.2
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Stałe — nazwy PNB_TOOLKIT_* zachowane (moduły galerii/kalendarza ich używają; brak przepisywania). */
-define( 'PNB_TOOLKIT_VERSION', '1.4.4' );
+define( 'PNB_TOOLKIT_VERSION', '1.5.2' );
 define( 'PNB_TOOLKIT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PNB_TOOLKIT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -52,6 +52,7 @@ function pnb_blocks_aktywacja() {
 			'post_title'   => 'Events',
 			'post_name'    => 'events',
 			'post_content' => '<!-- wp:pnb/wydarzenia /-->',
+			'post_author'  => 0, // jak reszta stron witryny — bez autora (aktywacja z panelu podpisywałaby admina)
 		) );
 	}
 	/* Gallery: motyw sieje prostą galerię (blok catsnboard/gallery) — podmieniamy ją
@@ -65,6 +66,7 @@ function pnb_blocks_aktywacja() {
 			'post_title'   => 'Gallery',
 			'post_name'    => 'gallery',
 			'post_content' => pnb_blocks_demo_galeria_tresc(),
+			'post_author'  => 0, // jak reszta stron witryny — bez autora
 		) );
 	} elseif ( '<!-- wp:catsnboard/gallery /-->' === trim( $galeria->post_content ) ) {
 		wp_update_post( array(
@@ -105,6 +107,11 @@ function pnb_blocks_demo_zalacznik( $plik ) {
 	}
 	$zrodlo = get_template_directory() . '/assets/img/' . $plik;
 	if ( ! file_exists( $zrodlo ) ) {
+		// Obcy motyw (brak zdjęć motywu) → wtyczka jest samowystarczalna: własny komplet demo
+		// w assets/img-demo/ (decyzja 2026-07-07: pełna galeria/kalendarz też bez naszego motywu).
+		$zrodlo = PNB_TOOLKIT_DIR . 'assets/img-demo/' . $plik;
+	}
+	if ( ! file_exists( $zrodlo ) ) {
 		return 0;
 	}
 	$up = wp_upload_bits( $plik, null, (string) file_get_contents( $zrodlo ) );
@@ -130,7 +137,7 @@ function pnb_blocks_demo_zalacznik( $plik ) {
 
 /* Treść bloku galerii z kotami DEMO jako prawdziwymi załącznikami w bibliotece mediów —
    klient od pierwszej chwili EDYTUJE kafelki w edytorze (przestawia/kasuje/dodaje),
-   zamiast patrzeć na „Choose photos (0)". Na obcym motywie (brak plików) — goły blok. */
+   zamiast patrzeć na „Choose photos (0)". Zdjęcia: najpierw motyw, bez motywu — komplet demo z wtyczki. */
 function pnb_blocks_demo_galeria_tresc() {
 	$pliki = array(
 		'kot-1.jpg', 'kot-6.jpg', 'kot-3.jpg', 'kot-8.jpg', 'kot-2.jpg', 'kot-15.jpg',
