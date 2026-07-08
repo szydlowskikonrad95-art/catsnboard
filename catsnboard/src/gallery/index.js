@@ -35,6 +35,30 @@ const GALLERY_SLOTS = [
 	{ cls: '', label: 'Small' },
 ];
 
+// Default theme photo per slot — 1:1 with $gallery_defaults in render.php.
+// Shown in the editor when a slot has no client-uploaded image, so the
+// editor preview matches what visitors already see on the front.
+const GALLERY_DEFAULTS = [
+	{ file: 'kot-1.jpg', alt: 'Cat with toy' },
+	{ file: 'kot-6.jpg', alt: 'Cat portrait' },
+	{ file: 'kot-3.jpg', alt: 'Cat relaxing' },
+	{ file: 'kot-8.jpg', alt: 'Cat playing' },
+	{ file: 'kot-2.jpg', alt: 'Cat looking up' },
+	{ file: 'kot-15.jpg', alt: 'Cat resting' },
+	{ file: 'kot-4.jpg', alt: 'Cat by window' },
+	{ file: 'kot-11.jpg', alt: 'Curious cat' },
+	{ file: 'kot-7.jpg', alt: 'Sleepy cat' },
+	{ file: 'kot-13.jpg', alt: 'Cat on blanket' },
+	{ file: 'kot-10.jpg', alt: 'Cat close up' },
+	{ file: 'kot-16.jpg', alt: 'Playful kitten' },
+];
+
+// Theme image base URL, passed from PHP via wp_localize_script (see
+// catsnboard_gallery_editor_assets() in functions.php). Empty when the
+// localize call didn't run (e.g. block previewed outside wp-admin).
+const IMG_BASE = window.catsnboardGallery?.imgBase || '';
+const defaultImgUrl = ( file ) => IMG_BASE + file;
+
 registerBlockType( metadata.name, {
 	edit: ( { attributes, setAttributes } ) => {
 		const blockProps = useBlockProps( { className: 'cnb-gallery-editor' } );
@@ -106,15 +130,24 @@ registerBlockType( metadata.name, {
 					<div className="cnb-gallery-grid">
 						{ GALLERY_SLOTS.map( ( slot, i ) => {
 							const img = gallery[ i ];
+							const hasCustomImg = !! ( img && img.url );
+							const def = GALLERY_DEFAULTS[ i ];
+							const defaultUrl = def && IMG_BASE ? defaultImgUrl( def.file ) : '';
 							return (
 								<div className="cnb-gslot" key={ i }>
 									<span className="cnb-gslot-tag">
 										{ `#${ i + 1 } · ${ slot.label }` }
 									</span>
-									{ img && img.url ? (
+									{ hasCustomImg ? (
 										<img
 											src={ img.url }
 											alt={ img.alt || '' }
+										/>
+									) : defaultUrl ? (
+										<img
+											className="cnb-default-img"
+											src={ defaultUrl }
+											alt={ def.alt }
 										/>
 									) : (
 										<div className="cnb-ph small">
