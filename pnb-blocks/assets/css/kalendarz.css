@@ -190,8 +190,20 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
 .pnb-ev-card .pnb-ev-edit{position:absolute;top:clamp(.9rem,2vw,1.4rem);right:clamp(.9rem,2vw,1.4rem);
   z-index:3;margin:0;}
 .pnb-ev-time{color:var(--coral-d);margin-bottom:.5rem;}
-.pnb-ev-title{font-family:'Varela Round',sans-serif;font-weight:400;color:var(--ink);
+/* Font tytułu WYMUSZONY na obu (H2 + link w środku) z !important + smoothing — żeby żaden inny
+   arkusz/stan ładowania nie podmienił go na fallback. Wszystkie tytuły renderują się identycznie Varelą. */
+.pnb-events .pnb-ev-title,
+.pnb-events .pnb-ev-title a{
+  font-family:'Varela Round',sans-serif !important;
+  font-weight:400 !important;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+.pnb-ev-title{color:var(--ink);
   font-size:clamp(1.4rem,2.6vw,1.85rem);line-height:1.15;margin:0 0 .5rem;}
+  /* Normalizacja WIELKICH tytułów → Title Case robiona jest w scraperze (zrodlo_eventbrite._norm_tytul)
+     ORAZ przy zapisie własnych — nie CSS-em (capitalize nie ruszał liter już-wielkich, np. YOGA→YOGA). */
 /* tytuł/zdjęcie karty = linki do singla — dziedziczą wygląd, hover sygnalizuje klikalność */
 .pnb-ev-title a{color:inherit;text-decoration:none;transition:color .3s;}
 .pnb-ev-title a:hover{color:var(--coral-d);}
@@ -205,6 +217,17 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
 .pnb-ev-tag[data-c="openday"]{background:rgba(236,155,130,.22);color:#B5654A;}
 .pnb-ev-desc{font-size:.97rem;line-height:1.75;max-width:58ch;margin:0 0 1rem;}
 .pnb-ev-desc p{margin:0 0 .7rem;}
+/* Linki w opisie (np. z importu wydarzeń) — wyraźnie klikalne w kolorze akcentu motywu.
+   Motyw ma globalne `a{color:inherit;text-decoration:none}` (style.css:31) — dlatego
+   wzmacniamy selektor (.pnb-events prefix) + !important, żeby na pewno wygrać. */
+.pnb-events .pnb-ev-desc a,
+.pnb-events .pnb-evs-desc a{
+  color:var(--coral-d) !important;
+  text-decoration:underline !important;
+  text-underline-offset:2px;
+  font-weight:600;word-break:break-word;transition:color .2s var(--ease);}
+.pnb-events .pnb-ev-desc a:hover,
+.pnb-events .pnb-evs-desc a:hover{color:var(--coral) !important;text-decoration-thickness:2px;}
 .pnb-ev-state{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:0 0 1.15rem;}
 .pnb-ev-badge{display:inline-flex;align-items:center;font-family:'Varela Round',sans-serif;
   font-size:.8rem;line-height:1;border-radius:999px;padding:.34rem .9rem;}
@@ -231,7 +254,9 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
 
 /* ── ZAPIS POZA KARTĄ (.pnb-ev-signup): pasek pod kafelkiem na osi. Guzik koralowy + panel formularza
    pod nim, na całą szerokość osi. Wcięty w linię tekstu karty (align z .pnb-ev-main — nie pod zdjęciem). */
-.pnb-ev-signup{margin:.9rem 0 .2rem;}
+/* Odstęp: przycisk NALEŻY WIZUALNIE do karty NAD nim → mały odstęp od góry (blisko swojej karty),
+   DUŻY od dołu (żeby nie sklejał się z następną kartą; wcześniej .2rem = wyglądał jak przy złej karcie). */
+.pnb-ev-signup{margin:.7rem 0 2.6rem;}
 .pnb-ev-signup-panel{margin-top:.85rem;max-width:640px;}
 .pnb-ev-signup-panel[hidden]{display:none;}
 .pnb-ev-signup-panel:not([hidden]){animation:pnb-ev-slide .34s var(--ease) both;}
@@ -471,3 +496,41 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
   color:#8a94a6;background:rgba(138,148,166,.10);border:1px dashed rgba(138,148,166,.5);
   border-radius:100px;padding:.5rem 1rem;text-decoration:none;transition:all .25s;}
 .pnb-ev-edit:hover{color:#fff;background:#8a94a6;border-color:#8a94a6;}
+
+/* Przycisk „View event & tickets" — dla wydarzeń zaimportowanych (link do oryginału zamiast zapisu). */
+.pnb-events .pnb-ev-extlink{margin-top:.4rem;}
+.pnb-events .pnb-ev-extbtn{display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--coral);color:#fff !important;text-decoration:none !important;
+  font-family:'Varela Round',sans-serif;font-size:1rem;padding:.7rem 1.5rem;border-radius:999px;
+  box-shadow:0 8px 22px rgba(222,101,79,.28);transition:transform .25s var(--ease),box-shadow .25s var(--ease);}
+.pnb-events .pnb-ev-extbtn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(222,101,79,.4);color:#fff !important;}
+
+/* „Good to know" — karty z praktycznymi info (parking, wiek, zwroty) wzorem Eventbrite. */
+.pnb-events .pnb-evs-gtk{margin:1.6rem 0;}
+.pnb-events .pnb-evs-gtk-title{font-family:'Varela Round',sans-serif;font-size:1.3rem;color:var(--ink);margin:0 0 1rem;}
+.pnb-events .pnb-evs-gtk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;}
+.pnb-events .pnb-evs-gtk-card{background:rgba(255,255,255,.6);border:1px solid rgba(69,163,184,.16);
+  border-radius:16px;padding:1.1rem 1.3rem;}
+.pnb-events .pnb-evs-gtk-card h4{font-family:'Varela Round',sans-serif;font-size:1rem;color:var(--teal-mono);
+  margin:0 0 .7rem;text-transform:uppercase;letter-spacing:.04em;}
+.pnb-events .pnb-evs-gtk-card ul{list-style:none;margin:0;padding:0;}
+.pnb-events .pnb-evs-gtk-card li{display:flex;align-items:center;gap:.6rem;padding:.35rem 0;font-size:.95rem;color:var(--ink);}
+.pnb-events .pnb-evs-gtk-card li svg{width:18px;height:18px;flex:none;color:var(--coral);}
+.pnb-events .pnb-evs-gtk-card p{margin:0;font-size:.95rem;color:var(--ink);}
+
+/* Wyszukiwarka wydarzeń — W ŚRODKU lepkiego paska filtrów (jedzie z chipami przy scrollu).
+   Kompaktowa (jak dodatkowy chip), rozwija się lekko przy focusie. */
+.pnb-events .pnb-ev-search{position:relative;display:flex;align-items:center;flex:none;margin-left:.35rem;}
+.pnb-events .pnb-ev-search-ico{position:absolute;left:12px;display:flex;color:var(--teal-mono);pointer-events:none;}
+.pnb-events .pnb-ev-search-ico svg{width:16px;height:16px;}
+.pnb-events .pnb-ev-search-input{width:132px;padding:.5rem .7rem .5rem 2.1rem;border:1px solid rgba(69,163,184,.28);
+  border-radius:999px;background:rgba(255,255,255,.78);font-family:'Poppins',sans-serif;font-size:.86rem;color:var(--ink);
+  transition:width .3s var(--ease),border-color .25s var(--ease),box-shadow .25s var(--ease);-webkit-appearance:none;appearance:none;}
+.pnb-events .pnb-ev-search-input::placeholder{color:#9bb3ba;}
+.pnb-events .pnb-ev-search-input:focus{outline:none;width:180px;border-color:var(--coral);box-shadow:0 0 0 3px rgba(222,101,79,.12);}
+@media(max-width:600px){.pnb-events .pnb-ev-search-input{width:100px;}.pnb-events .pnb-ev-search-input:focus{width:136px;}}
+
+/* Cena przy przycisku „kup bilet" (sekcja Interested?) — wyraźna, jak na Eventbrite. */
+.pnb-events .pnb-evs-price{margin:0 0 1rem;display:flex;align-items:baseline;gap:.5rem;}
+.pnb-events .pnb-evs-price-label{font-size:.85rem;color:var(--teal-mono);text-transform:uppercase;letter-spacing:.06em;}
+.pnb-events .pnb-evs-price-val{font-family:'Varela Round',sans-serif;font-size:1.5rem;color:var(--ink);font-weight:600;}

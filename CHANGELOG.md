@@ -1,5 +1,28 @@
 # Historia zmian
 
+## v2.1.0 — 8 lipca 2026
+
+Automatyczny import wydarzeń — nowa duża funkcja (wtyczka sama dodaje wydarzenia ze źródła):
+
+- **Wtyczka sama pobiera wydarzenia** z zewnętrznego źródła (Eventbrite) i dodaje je na
+  stronę — bez ręcznej roboty. Wpisujesz adres źródła w panelu (Wydarzenia → Ustawienia)
+  i wtyczka sprawdza co jakiś czas, dorzucając nowe.
+- **Wszystko w jednej wtyczce** — nie trzeba osobnego programu ani serwera. Import chodzi
+  wewnątrz WordPressa (przez wbudowany harmonogram WP-Cron).
+- **Odporny na awarie** — gdy źródło chwilowo padnie albo zwróci błąd, wtyczka spokojnie
+  czeka i próbuje później, nie psując tego co już jest na stronie.
+- **Chroni Twoje ręczne zmiany** — jeśli sam poprawisz zaimportowane wydarzenie, wtyczka
+  tego nie nadpisze przy następnym sprawdzeniu.
+- **Sprząta po sobie** — wydarzenia które znikną ze źródła trafiają do kosza; zdjęcia
+  usuniętych wydarzeń też są czyszczone.
+- Ekran stanu w panelu pokazuje kiedy był ostatni import i czy wszystko działa.
+
+⚠️ Uwaga o źródle: upewnij się, że masz prawo korzystać z danych źródła zgodnie z jego
+regulaminem. Dla wydarzeń których jesteś organizatorem zalecane jest oficjalne API serwisu.
+
+Wersje: pnb-blocks **1.9.2** · pnb-auto-pl **0.3.5** · motyw **1.1.7**.
+
+
 ## v2.0.3 — 8 lipca 2026
 
 Ulepszenia po testach (działanie tylko lepsze):
