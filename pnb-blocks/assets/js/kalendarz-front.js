@@ -30,7 +30,12 @@
 			gsap.to(karta.querySelectorAll('.pnb-ev-main > *'), { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out', stagger: 0.05, overwrite: 'auto' });
 		}
 	}
+	var aktywnyFiltr = 'all'; // ostatni wybrany chip — łączy się z wyszukiwarką (AND)
+	var szukajFraza = '';      // tekst z pola szukania (lowercase)
+
 	function filtruj(f) {
+		if (f) aktywnyFiltr = f;
+		var f2 = aktywnyFiltr;
 		var dzis = ymd(new Date());
 		var eow = koniecTygodnia();
 		var mies = dzis.slice(0, 7);
@@ -39,14 +44,22 @@
 			var when = k.getAttribute('data-when') || '';
 			var kat = k.getAttribute('data-cat') || '';
 			var pokaz = true;
-			if (f === 'week') { pokaz = !!when && when <= eow; }
-			else if (f === 'month') { pokaz = when.slice(0, 7) === mies; }
-			else if (f.indexOf('cat-') === 0) { pokaz = kat === f.slice(4); }
-			k.classList.toggle('is-hidden', !pokaz);
+			if (f2 === 'week') { pokaz = !!when && when <= eow; }
+			else if (f2 === 'month') { pokaz = when.slice(0, 7) === mies; }
+			else if (f2.indexOf('cat-') === 0) { pokaz = kat === f2.slice(4); }
+			// Wyszukiwarka: karta musi zawierać frazę w tytule/opisie (data-search).
+			if (pokaz && szukajFraza) {
+				var tekst = (k.getAttribute('data-search') || '').toLowerCase();
+				pokaz = tekst.indexOf(szukajFraza) !== -1;
+			}
+			// Ukrywamy CAŁY wrapper (karta + jej przycisk Sign up/View event są rodzeństwem w .pnb-ev-cardwrap).
+			// Ukrycie samej karty zostawiało przycisk-sierotę, który wizualnie kleił się do następnej karty.
+			var wrap = k.closest ? k.closest('.pnb-ev-cardwrap') : k.parentNode;
+			(wrap || k).classList.toggle('is-hidden', !pokaz);
 			if (pokaz) { widoczne++; dokoncz(k); }
 		});
 		grupy.forEach(function (g) { // nagłówek grupy bez widocznych kart też znika
-			g.classList.toggle('is-hidden', !g.querySelector('.pnb-ev-card:not(.is-hidden)'));
+			g.classList.toggle('is-hidden', !g.querySelector('.pnb-ev-cardwrap:not(.is-hidden)'));
 		});
 		if (brak) brak.classList.toggle('is-hidden', widoczne > 0);
 		if (maGsap && !rm) ScrollTrigger.refresh(); // układ się zmienił — przelicz triggery
@@ -60,6 +73,19 @@
 			filtruj(ch.getAttribute('data-filter') || 'all');
 		});
 	});
+
+	/* ── WYSZUKIWARKA (vanilla) — filtruje karty po tytule/opisie na żywo, łączy się z chipami ── */
+	var pole = root.querySelector('.pnb-ev-search-input');
+	if (pole) {
+		var t;
+		pole.addEventListener('input', function () {
+			clearTimeout(t); // debounce — nie filtruj przy każdej literze natychmiast
+			t = setTimeout(function () {
+				szukajFraza = pole.value.trim().toLowerCase();
+				filtruj('');
+			}, 150);
+		});
+	}
 
 	/* ── ROZSUWAKI CTA (vanilla — MUSZĄ działać też bez GSAP / przy reduced-motion) ──
 	   Guzik „Sign up" / „Event details" ma aria-controls=id-panelu (panel jest RODZEŃSTWEM POZA rzędem,

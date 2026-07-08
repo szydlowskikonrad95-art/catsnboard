@@ -99,6 +99,68 @@ add_action( 'admin_init', function () {
 		'sanitize_callback' => 'sanitize_email',
 		'default'           => '',
 	) );
+	// Stałe tło hero podstrony Events (ID załącznika). Gdy ustawione — hero NIE zmienia się od
+	// (scrapowanych) wydarzeń, tylko pokazuje to zdjęcie. Puste = fallback: featured 1. wydarzenia.
+	register_setting( 'pnb_events_settings', 'pnb_events_hero_id', array(
+		'type'              => 'integer',
+		'sanitize_callback' => 'absint',
+		'default'           => 0,
+	) );
+	// Źródło importu (URL Eventbrite). Puste = automat nic nie robi. Klient wkleja adres kategorii.
+	register_setting( 'pnb_events_settings', 'pnb_importer_source_url', array(
+		'type'              => 'string',
+		'sanitize_callback' => 'esc_url_raw',
+		'default'           => '',
+	) );
+} );
+
+/* AKTYWNE POWIADOMIENIE: żółty pasek w kokpicie WP gdy importer stanął (>3h bez syncu). Admin widzi
+ * od razu po zalogowaniu — nie musi zaglądać na ekran stanu. Bez emaila (wp_mail→spam, zawodny). */
+add_action( 'admin_notices', function () {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$st = get_option( 'pnb_scraper_status', array() );
+	if ( empty( $st ) || empty( $st['zapisano'] ) ) {
+		return; // scraper nigdy nie wysłał statusu — może dopiero wdrażany, nie strasz
+	}
+	$godzin = ( time() - strtotime( $st['zapisano'] ) ) / 3600;
+	$link   = admin_url( 'edit.php?post_type=pnb_wydarzenie&page=pnb-events-settings' );
+	if ( $godzin >= 3 ) {
+		printf(
+			'<div class="notice notice-warning"><p>⚠️ <strong>%s</strong> %s <a href="%s">%s</a></p></div>',
+			esc_html__( 'Event importer stopped:', 'pnb-toolkit' ),
+			esc_html( sprintf(
+				/* translators: %d = hours since last sync */
+				_n( 'no sync for %d hour — it may have crashed.', 'no sync for %d hours — it may have crashed.', (int) $godzin, 'pnb-toolkit' ),
+				(int) $godzin
+			) ),
+			esc_url( $link ),
+			esc_html__( 'Check status', 'pnb-toolkit' )
+		);
+	} elseif ( ! empty( $st['spadek_alert'] ) ) {
+		printf(
+			'<div class="notice notice-warning"><p>⚠️ <strong>%s</strong> <a href="%s">%s</a></p></div>',
+			esc_html__( 'Event source returned far fewer events than usual — it may have changed. Expiry is paused for safety.', 'pnb-toolkit' ),
+			esc_url( $link ),
+			esc_html__( 'Check status', 'pnb-toolkit' )
+		);
+	}
+} );
+
+/* Przycisk „Sync now" — odpala jeden cykl importu na żądanie (bez czekania na cron). */
+add_action( 'admin_init', function () {
+	if ( ! isset( $_GET['pnb_test_import'] ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( $_GET['_wpnonce'] ), 'pnb_test_import' ) ) {
+		return;
+	}
+	if ( function_exists( 'pnb_importer_jeden_cykl' ) ) {
+		pnb_importer_jeden_cykl();
+	}
+	wp_safe_redirect( admin_url( 'edit.php?post_type=pnb_wydarzenie&page=pnb-events-settings&pnb_synced=1' ) );
+	exit;
 } );
 
 /* Ekran Settings — jedno pole: email na powiadomienia o zapisach. Prosty, dla laika. */
@@ -110,10 +172,74 @@ function pnb_events_ekran_ustawien() {
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e( 'Events settings', 'pnb-toolkit' ); ?></h1>
+
+		<?php
+		// ── MONITORING: stan automatu (importera). Pokazuje że działa — bez wchodzenia na serwer. ──
+		$st = get_option( 'pnb_scraper_status', array() );
+		if ( ! empty( $st ) && ! empty( $st['zapisano'] ) ) {
+			$minut = max( 0, (int) round( ( time() - strtotime( $st['zapisano'] ) ) / 60 ) );
+			// świeżo (<30 min) = zielono, dawno = ostrzeżenie (automat mógł stanąć).
+			$swieze = $minut < 30;
+			$kolor  = $swieze ? '#008a20' : '#b32d2e';
+			$tlo    = $swieze ? '#edfaef' : '#fcf0f1';
+			?>
+			<div style="max-width:760px;margin:14px 0 24px;padding:16px 18px;background:<?php echo esc_attr( $tlo ); ?>;border:1px solid <?php echo esc_attr( $kolor ); ?>33;border-left:4px solid <?php echo esc_attr( $kolor ); ?>;border-radius:8px;">
+				<strong style="font-size:14px;">🤖 <?php esc_html_e( 'Event importer status', 'pnb-toolkit' ); ?></strong>
+				<span style="color:<?php echo esc_attr( $kolor ); ?>;font-weight:600;margin-left:8px;">
+					<?php
+					/* translators: %d = minutes since last sync */
+					printf( esc_html( _n( 'last sync %d minute ago', 'last sync %d minutes ago', $minut, 'pnb-toolkit' ) ), (int) $minut );
+					echo $swieze ? ' ✓' : ' ⚠️';
+					?>
+				</span>
+				<?php if ( ! $swieze ) : ?>
+					<p style="margin:8px 0 0;color:#b32d2e;"><?php esc_html_e( 'The importer has not run recently. WordPress only runs scheduled tasks when someone visits the site — on a quiet site it can lag. Fix: ask your host to add a real cron job (one line), or use a free pinger like cron-job.org to visit your site every 10 minutes.', 'pnb-toolkit' ); ?></p>
+				<?php endif; ?>
+				<div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:13px;color:#50575e;">
+					<span><?php esc_html_e( 'Fetched', 'pnb-toolkit' ); ?>: <strong><?php echo (int) ( $st['pobrane'] ?? 0 ); ?></strong></span>
+					<span><?php esc_html_e( 'Added', 'pnb-toolkit' ); ?>: <strong><?php echo (int) ( $st['wyslane'] ?? 0 ); ?></strong></span>
+					<span><?php esc_html_e( 'On site', 'pnb-toolkit' ); ?>: <strong><?php echo (int) ( $st['juz_jest'] ?? 0 ); ?></strong></span>
+					<span><?php esc_html_e( 'Expired→trash', 'pnb-toolkit' ); ?>: <strong><?php echo (int) ( $st['wygasle'] ?? 0 ); ?></strong></span>
+					<span style="<?php echo ( (int) ( $st['bledy'] ?? 0 ) > 0 ) ? 'color:#b32d2e;font-weight:600;' : ''; ?>"><?php esc_html_e( 'Errors', 'pnb-toolkit' ); ?>: <strong><?php echo (int) ( $st['bledy'] ?? 0 ); ?></strong></span>
+				</div>
+				<?php if ( ! empty( $st['spadek_alert'] ) ) : ?>
+					<p style="margin:8px 0 0;color:#b32d2e;">⚠️ <?php esc_html_e( 'Sudden drop in event count — the source may have changed. Expiry paused for safety.', 'pnb-toolkit' ); ?></p>
+				<?php endif; ?>
+			</div>
+			<?php
+		}
+		?>
+
 		<p style="max-width:640px;color:#50575e;"><?php esc_html_e( 'Set the email address where sign-up notifications are sent. Every time someone signs up for an event, a message goes to this address. Sign-ups are always saved on the event itself too (see “Signed-up guests” when you edit an event), so you never lose them — even if the email fails.', 'pnb-toolkit' ); ?></p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'pnb_events_settings' ); ?>
 			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row"><label for="pnb_importer_source_url">🤖 <?php esc_html_e( 'Event source (Eventbrite URL)', 'pnb-toolkit' ); ?></label></th>
+					<td>
+						<input type="url" id="pnb_importer_source_url" name="pnb_importer_source_url" class="widefat"
+							value="<?php echo esc_attr( get_option( 'pnb_importer_source_url', '' ) ); ?>"
+							placeholder="https://www.eventbrite.com/d/united-states/cats/">
+						<p class="description" style="max-width:640px;">
+							<?php esc_html_e( 'Paste an Eventbrite listing URL. The importer checks it every 10 minutes and adds new events automatically. Leave empty to turn the importer off.', 'pnb-toolkit' ); ?>
+						</p>
+						<details style="max-width:640px;margin-top:6px;">
+							<summary style="cursor:pointer;color:#2271b1;"><?php esc_html_e( 'How does the 10-minute timing work? (important)', 'pnb-toolkit' ); ?></summary>
+							<div style="margin-top:8px;padding:12px;background:#f6f7f7;border-radius:6px;font-size:13px;color:#50575e;">
+								<p style="margin:0 0 8px;"><?php esc_html_e( 'WordPress runs scheduled tasks only when someone visits the site. On a busy site this is fine — visitors trigger the importer often enough. On a very quiet site it may lag (e.g. run only when someone finally visits).', 'pnb-toolkit' ); ?></p>
+								<p style="margin:0;"><strong><?php esc_html_e( 'For clockwork timing (optional):', 'pnb-toolkit' ); ?></strong> <?php esc_html_e( 'ask your host to add a cron job hitting', 'pnb-toolkit' ); ?> <code><?php echo esc_html( home_url( '/wp-cron.php?doing_wp_cron' ) ); ?></code> <?php esc_html_e( 'every 10 minutes — or use a free service like cron-job.org to visit that URL. No code needed.', 'pnb-toolkit' ); ?></p>
+							</div>
+						</details>
+						<?php if ( get_option( 'pnb_importer_source_url', '' ) ) : ?>
+							<p style="margin-top:8px;">
+								<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'edit.php?post_type=pnb_wydarzenie&page=pnb-events-settings&pnb_test_import=1' ), 'pnb_test_import' ) ); ?>" class="button">
+									▶ <?php esc_html_e( 'Sync now (test)', 'pnb-toolkit' ); ?>
+								</a>
+								<span class="description" style="margin-left:8px;"><?php esc_html_e( 'Run one import cycle right now instead of waiting.', 'pnb-toolkit' ); ?></span>
+							</p>
+						<?php endif; ?>
+					</td>
+				</tr>
 				<tr>
 					<th scope="row"><label for="pnb_kalendarz_email"><?php esc_html_e( 'Notification email', 'pnb-toolkit' ); ?></label></th>
 					<td>
@@ -129,6 +255,55 @@ function pnb_events_ekran_ustawien() {
 							);
 							?>
 						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Events page header image', 'pnb-toolkit' ); ?></th>
+					<td>
+						<?php
+						$hero_id  = (int) get_option( 'pnb_events_hero_id', 0 );
+						$hero_url = $hero_id ? wp_get_attachment_image_url( $hero_id, 'medium' ) : '';
+						?>
+						<div id="pnb-hero-podglad" style="margin-bottom:10px;<?php echo $hero_url ? '' : 'display:none;'; ?>">
+							<img src="<?php echo esc_url( $hero_url ); ?>" style="max-width:320px;height:auto;border-radius:8px;display:block;border:1px solid #dcdcde;">
+						</div>
+						<input type="hidden" id="pnb_events_hero_id" name="pnb_events_hero_id" value="<?php echo esc_attr( $hero_id ); ?>">
+						<button type="button" class="button" id="pnb-hero-wybierz"><?php echo $hero_id ? esc_html__( 'Change image', 'pnb-toolkit' ) : esc_html__( 'Choose image', 'pnb-toolkit' ); ?></button>
+						<button type="button" class="button" id="pnb-hero-usun" style="<?php echo $hero_id ? '' : 'display:none;'; ?>"><?php esc_html_e( 'Remove', 'pnb-toolkit' ); ?></button>
+						<p class="description" style="max-width:640px;">
+							<?php esc_html_e( 'The big background image at the top of your Events page. Choose your own photo so it always looks the way you want. Leave empty and the page will use the photo of the next upcoming event instead.', 'pnb-toolkit' ); ?>
+						</p>
+						<script>
+						jQuery( function () {
+							var frame, btn = document.getElementById( 'pnb-hero-wybierz' );
+							var pole = document.getElementById( 'pnb_events_hero_id' );
+							var podglad = document.getElementById( 'pnb-hero-podglad' );
+							var usun = document.getElementById( 'pnb-hero-usun' );
+							if ( ! btn || ! window.wp || ! wp.media ) { return; }
+							btn.addEventListener( 'click', function ( e ) {
+								e.preventDefault();
+								if ( frame ) { frame.open(); return; }
+								frame = wp.media( { title: <?php echo wp_json_encode( __( 'Choose header image', 'pnb-toolkit' ) ); ?>, button: { text: <?php echo wp_json_encode( __( 'Use this image', 'pnb-toolkit' ) ); ?> }, multiple: false, library: { type: 'image' } } );
+								frame.on( 'select', function () {
+									var a = frame.state().get( 'selection' ).first().toJSON();
+									pole.value = a.id;
+									var url = ( a.sizes && a.sizes.medium && a.sizes.medium.url ) || a.url;
+									podglad.querySelector( 'img' ).src = url;
+									podglad.style.display = '';
+									usun.style.display = '';
+									btn.textContent = <?php echo wp_json_encode( __( 'Change image', 'pnb-toolkit' ) ); ?>;
+								} );
+								frame.open();
+							} );
+							if ( usun ) { usun.addEventListener( 'click', function ( e ) {
+								e.preventDefault();
+								pole.value = '';
+								podglad.style.display = 'none';
+								usun.style.display = 'none';
+								btn.textContent = <?php echo wp_json_encode( __( 'Choose image', 'pnb-toolkit' ) ); ?>;
+							} ); }
+						} );
+						</script>
 					</td>
 				</tr>
 			</table>
@@ -217,6 +392,10 @@ add_action( 'admin_enqueue_scripts', function ( $hook ) {
 	if ( ( 'post.php' === $hook || 'post-new.php' === $hook ) && 'pnb_wydarzenie' === get_post_type() ) {
 		wp_enqueue_media();
 	}
+	// Strona „Events settings" (media picker dla stałego tła hero). Hook submenu pod CPT.
+	if ( false !== strpos( (string) $hook, 'pnb-events-settings' ) ) {
+		wp_enqueue_media();
+	}
 } );
 
 /* Wyłącz przycisk „Add Media" NAD edytorem opisu — TYLKO na ekranie wydarzenia (decyzja klienta 2026-07-05):
@@ -303,6 +482,86 @@ function pnb_kalendarz_metabox_dane( $post ) {
 			<option value="<?php echo esc_attr( $klucz ); ?>" <?php selected( $kat ? $kat : 'other', $klucz ); ?>><?php echo esc_html( $nazwa ); ?></option>
 		<?php endforeach; ?>
 		</select></label></p>
+
+	<?php
+	// ── Dodatkowe pola (te same, które pokazują się na stronie wydarzenia). Wcześniej
+	//    wypełniał je TYLKO import (scraper) — własne wydarzenia klienta były na nie ślepe.
+	//    Wartości dropdownów = dokładne klucze whitelisty z pnb_kalendarz_good_to_know_html().
+	$price   = get_post_meta( $post->ID, '_pnb_event_price', true );
+	$address = get_post_meta( $post->ID, '_pnb_event_address', true );
+	$hl      = get_post_meta( $post->ID, '_pnb_event_highlights', true );
+	$hl      = is_array( $hl ) ? $hl : array();
+	$refund  = get_post_meta( $post->ID, '_pnb_event_refund', true );
+	$src_url = get_post_meta( $post->ID, '_pnb_source_url', true );
+	$sel     = function ( $val, $opt ) { return (string) $val === (string) $opt ? ' selected' : ''; };
+	?>
+	<hr style="margin:16px 0;border:0;border-top:1px solid #f0dcd6;">
+	<p style="margin:0 0 6px;"><strong><?php esc_html_e( 'Extra details (optional — shown on the event page)', 'pnb-toolkit' ); ?></strong></p>
+
+	<p><label>🎫 <?php esc_html_e( 'Price', 'pnb-toolkit' ); ?><br>
+		<input type="text" name="pnb_event_price" value="<?php echo esc_attr( $price ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'e.g. 20 USD, Free, £15', 'pnb-toolkit' ); ?>">
+		<span class="description" style="display:block;margin-top:3px;"><?php esc_html_e( 'Leave empty if not applicable. Type "Free" for free events.', 'pnb-toolkit' ); ?></span></label></p>
+
+	<p><label>📍 <?php esc_html_e( 'Full address (for the map / directions)', 'pnb-toolkit' ); ?><br>
+		<input type="text" name="pnb_event_address" value="<?php echo esc_attr( $address ); ?>" class="widefat" placeholder="<?php esc_attr_e( 'Street, city, postcode', 'pnb-toolkit' ); ?>">
+		<span class="description" style="display:block;margin-top:3px;"><?php esc_html_e( 'Used for the "Get directions" button. Leave empty to use the Place name above.', 'pnb-toolkit' ); ?></span></label></p>
+
+	<p style="margin-bottom:4px;"><strong>ℹ️ <?php esc_html_e( 'Good to know', 'pnb-toolkit' ); ?></strong></p>
+	<p style="display:flex;gap:14px;flex-wrap:wrap;">
+		<label><?php esc_html_e( 'Age', 'pnb-toolkit' ); ?><br>
+			<select name="pnb_event_hl_age">
+				<option value=""<?php echo $sel( $hl['age'] ?? '', '' ); ?>><?php esc_html_e( '— none —', 'pnb-toolkit' ); ?></option>
+				<option value="all_ages"<?php echo $sel( $hl['age'] ?? '', 'all_ages' ); ?>><?php esc_html_e( 'All ages welcome', 'pnb-toolkit' ); ?></option>
+				<option value="under_16_with_guardian"<?php echo $sel( $hl['age'] ?? '', 'under_16_with_guardian' ); ?>><?php esc_html_e( 'Under 16 with guardian', 'pnb-toolkit' ); ?></option>
+				<option value="under_18_with_guardian"<?php echo $sel( $hl['age'] ?? '', 'under_18_with_guardian' ); ?>><?php esc_html_e( 'Under 18 with guardian', 'pnb-toolkit' ); ?></option>
+				<option value="over_18"<?php echo $sel( $hl['age'] ?? '', 'over_18' ); ?>><?php esc_html_e( '18 and over', 'pnb-toolkit' ); ?></option>
+				<option value="over_21"<?php echo $sel( $hl['age'] ?? '', 'over_21' ); ?>><?php esc_html_e( '21 and over', 'pnb-toolkit' ); ?></option>
+			</select></label>
+		<label><?php esc_html_e( 'Parking', 'pnb-toolkit' ); ?><br>
+			<select name="pnb_event_hl_parking">
+				<option value=""<?php echo $sel( $hl['parking'] ?? '', '' ); ?>><?php esc_html_e( '— none —', 'pnb-toolkit' ); ?></option>
+				<option value="free"<?php echo $sel( $hl['parking'] ?? '', 'free' ); ?>><?php esc_html_e( 'Free parking', 'pnb-toolkit' ); ?></option>
+				<option value="paid"<?php echo $sel( $hl['parking'] ?? '', 'paid' ); ?>><?php esc_html_e( 'Paid parking', 'pnb-toolkit' ); ?></option>
+				<option value="no"<?php echo $sel( $hl['parking'] ?? '', 'no' ); ?>><?php esc_html_e( 'No parking', 'pnb-toolkit' ); ?></option>
+			</select></label>
+		<label><?php esc_html_e( 'Format', 'pnb-toolkit' ); ?><br>
+			<select name="pnb_event_hl_location">
+				<option value=""<?php echo $sel( $hl['location_type'] ?? '', '' ); ?>><?php esc_html_e( '— none —', 'pnb-toolkit' ); ?></option>
+				<option value="in_person"<?php echo $sel( $hl['location_type'] ?? '', 'in_person' ); ?>><?php esc_html_e( 'In person', 'pnb-toolkit' ); ?></option>
+				<option value="online"<?php echo $sel( $hl['location_type'] ?? '', 'online' ); ?>><?php esc_html_e( 'Online', 'pnb-toolkit' ); ?></option>
+			</select></label>
+		<label><?php esc_html_e( 'Duration (min)', 'pnb-toolkit' ); ?><br>
+			<input type="number" name="pnb_event_hl_duration" min="0" style="width:90px;" value="<?php echo esc_attr( $hl['duration_min'] ?? '' ); ?>"></label>
+	</p>
+
+	<p><label>↩️ <?php esc_html_e( 'Refund policy', 'pnb-toolkit' ); ?><br>
+		<select name="pnb_event_refund">
+			<option value=""<?php echo $sel( $refund, '' ); ?>><?php esc_html_e( '— none —', 'pnb-toolkit' ); ?></option>
+			<option value="no_refunds"<?php echo $sel( $refund, 'no_refunds' ); ?>><?php esc_html_e( 'No refunds', 'pnb-toolkit' ); ?></option>
+			<option value="refund_30"<?php echo $sel( $refund, 'refund_30' ); ?>><?php esc_html_e( 'Refunds up to 30 days before', 'pnb-toolkit' ); ?></option>
+			<option value="refund_7"<?php echo $sel( $refund, 'refund_7' ); ?>><?php esc_html_e( 'Refunds up to 7 days before', 'pnb-toolkit' ); ?></option>
+			<option value="refund_1"<?php echo $sel( $refund, 'refund_1' ); ?>><?php esc_html_e( 'Refunds up to 1 day before', 'pnb-toolkit' ); ?></option>
+		</select></label></p>
+
+	<?php if ( $src_url ) : ?>
+	<p style="margin-top:10px;padding:8px;background:#f4f9f7;border:1px solid #d5ebe4;border-radius:6px;">
+		🔗 <strong><?php esc_html_e( 'Imported event', 'pnb-toolkit' ); ?></strong> —
+		<?php esc_html_e( 'this event was added automatically. Source:', 'pnb-toolkit' ); ?>
+		<a href="<?php echo esc_url( $src_url ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $src_url ); ?></a>
+		<?php if ( get_post_meta( $post->ID, '_pnb_locked', true ) ) : ?>
+			<span style="display:block;margin-top:8px;padding-top:8px;border-top:1px solid #d5ebe4;">
+				🔒 <strong><?php esc_html_e( 'You edited this event', 'pnb-toolkit' ); ?></strong> —
+				<?php esc_html_e( 'the importer keeps your title & description, but still updates facts (date, place, price) and cancellations from the source.', 'pnb-toolkit' ); ?>
+			</span>
+			<label style="display:block;margin-top:8px;">
+				<input type="checkbox" name="pnb_event_unlock" value="1">
+				<?php esc_html_e( 'Sync everything with the source again (discard my manual title/description)', 'pnb-toolkit' ); ?>
+			</label>
+		<?php else : ?>
+			<span class="description" style="display:block;margin-top:3px;"><?php esc_html_e( '(set by the importer — shown as the "View event & tickets" button)', 'pnb-toolkit' ); ?></span>
+		<?php endif; ?>
+	</p>
+	<?php endif; ?>
 	<?php
 }
 
@@ -315,6 +574,105 @@ function pnb_event_tytul( $id ) {
 }
 function pnb_event_opis( $id ) {
 	return (string) get_post_field( 'post_content', $id );
+}
+
+/**
+ * „Co warto wiedzieć" (Good to know) — praktyczne info: parking, wiek, godzina drzwi,
+ * czas trwania, forma (na miejscu/online), polityka zwrotów. Renderowane tylko gdy są dane.
+ * Wartości surowe (z importu) mapowane na czytelne etykiety; własne wydarzenia klienta też
+ * mogą mieć te meta (przez edytor).
+ */
+function pnb_kalendarz_good_to_know_html( $id ) {
+	$id    = (int) $id;
+	$hl    = get_post_meta( $id, '_pnb_event_highlights', true );
+	$refund = get_post_meta( $id, '_pnb_event_refund', true );
+	$items = array();
+
+	if ( is_array( $hl ) ) {
+		// wiek
+		$mapa_wiek = array(
+			'all_ages'                 => __( 'All ages welcome', 'pnb-toolkit' ),
+			'under_16_with_guardian'   => __( 'Under 16 with a parent or guardian', 'pnb-toolkit' ),
+			'under_18_with_guardian'   => __( 'Under 18 with a parent or guardian', 'pnb-toolkit' ),
+			'over_18'                  => __( '18 and over', 'pnb-toolkit' ),
+			'over_21'                  => __( '21 and over', 'pnb-toolkit' ),
+		);
+		if ( ! empty( $hl['age'] ) && isset( $mapa_wiek[ $hl['age'] ] ) ) {
+			$items[] = array( 'ticket', $mapa_wiek[ $hl['age'] ] );
+		}
+		// parking
+		if ( ! empty( $hl['parking'] ) ) {
+			$mapa_p  = array(
+				'free' => __( 'Free parking', 'pnb-toolkit' ),
+				'paid' => __( 'Paid parking', 'pnb-toolkit' ),
+				'no'   => __( 'No parking', 'pnb-toolkit' ),
+			);
+			if ( isset( $mapa_p[ $hl['parking'] ] ) ) {
+				$items[] = array( 'pinezka', $mapa_p[ $hl['parking'] ] );
+			}
+		}
+		// forma
+		if ( ! empty( $hl['location_type'] ) ) {
+			$items[] = array(
+				'pinezka',
+				'online' === $hl['location_type'] ? __( 'Online event', 'pnb-toolkit' ) : __( 'In person', 'pnb-toolkit' ),
+			);
+		}
+		// godzina drzwi (z ISO → HH:MM). WAŻNE: pokazujemy godzinę W STREFIE WYDARZENIA (np. -07 dla
+		// Kalifornii), NIE w strefie serwera — inaczej „19:00" pokazywało się jako „2:00 am" (bug strefy).
+		// DateTime zachowuje offset z ISO stringa; format() nie konwertuje do strefy serwera.
+		if ( ! empty( $hl['door_time'] ) ) {
+			try {
+				$dt = new DateTime( (string) $hl['door_time'] );
+				$fmt = (string) get_option( 'time_format', 'g:i A' );
+				/* translators: %s: godzina otwarcia drzwi */
+				$items[] = array( 'plus', sprintf( __( 'Doors at %s', 'pnb-toolkit' ), $dt->format( $fmt ) ) );
+			} catch ( Exception $e ) {
+				// niepoprawny format door_time → pomijamy (nie psujemy sekcji)
+			}
+		}
+		// czas trwania (minuty → h/min)
+		if ( ! empty( $hl['duration_min'] ) ) {
+			$m = (int) $hl['duration_min'];
+			$t = $m >= 60
+				/* translators: 1: godziny, 2: minuty */
+				? trim( sprintf( __( '%1$dh %2$dmin', 'pnb-toolkit' ), intdiv( $m, 60 ), $m % 60 ) )
+				/* translators: %d: minuty */
+				: sprintf( __( '%d min', 'pnb-toolkit' ), $m );
+			$items[] = array( 'plus', sprintf( '%s: %s', __( 'Duration', 'pnb-toolkit' ), $t ) );
+		}
+	}
+
+	// polityka zwrotów (osobna „karta" obok highlightów)
+	$refund_txt = '';
+	if ( $refund ) {
+		$mapa_r = array(
+			'no_refunds'   => __( 'No refunds', 'pnb-toolkit' ),
+			'refund_30'    => __( 'Refunds up to 30 days before the event', 'pnb-toolkit' ),
+			'refund_7'     => __( 'Refunds up to 7 days before the event', 'pnb-toolkit' ),
+			'refund_1'     => __( 'Refunds up to 1 day before the event', 'pnb-toolkit' ),
+		);
+		$refund_txt = isset( $mapa_r[ $refund ] ) ? $mapa_r[ $refund ] : '';
+	}
+
+	if ( ! $items && ! $refund_txt ) {
+		return '';
+	}
+
+	$out = '<section class="pnb-evs-gtk"><h3 class="pnb-evs-gtk-title">' . esc_html__( 'Good to know', 'pnb-toolkit' ) . '</h3>';
+	$out .= '<div class="pnb-evs-gtk-grid">';
+	if ( $items ) {
+		$out .= '<div class="pnb-evs-gtk-card"><h4>' . esc_html__( 'Highlights', 'pnb-toolkit' ) . '</h4><ul>';
+		foreach ( $items as $it ) {
+			$out .= '<li>' . pnb_kalendarz_ikona( $it[0] ) . ' <span>' . esc_html( $it[1] ) . '</span></li>';
+		}
+		$out .= '</ul></div>';
+	}
+	if ( $refund_txt ) {
+		$out .= '<div class="pnb-evs-gtk-card"><h4>' . esc_html__( 'Refund policy', 'pnb-toolkit' ) . '</h4><p>' . esc_html( $refund_txt ) . '</p></div>';
+	}
+	$out .= '</div></section>';
+	return $out;
 }
 function pnb_event_miejsce( $id, $miejsce_en ) {
 	return $miejsce_en;
@@ -355,6 +713,13 @@ add_action( 'save_post_pnb_wydarzenie', function ( $post_id ) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 	if ( ! isset( $_POST['pnb_wydarzenie_nonce'] ) || ! wp_verify_nonce( sanitize_key( $_POST['pnb_wydarzenie_nonce'] ), 'pnb_wydarzenie_dane' ) ) return;
 	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
+	// UNLOCK ma priorytet: gdy admin zaznaczył „sync again", oddaje wydarzenie pod scraper (nie lockujemy).
+	$chce_unlock = ( isset( $_POST['pnb_event_unlock'] ) && '1' === $_POST['pnb_event_unlock'] );
+	// Admin RĘCZNIE zapisał importowane wydarzenie (ma source_id) → oznacz „przejęte": scraper NIE
+	// nadpisze jego treści (tytuł/opis) przy sync (fakty i tak aktualizuje). Chyba że chce unlock.
+	if ( ! $chce_unlock && get_post_meta( $post_id, '_pnb_source_id', true ) ) {
+		update_post_meta( $post_id, '_pnb_locked', 1 );
+	}
 	$kat = isset( $_POST['pnb_event_cat'] ) ? sanitize_key( wp_unslash( $_POST['pnb_event_cat'] ) ) : '';
 	if ( ! array_key_exists( $kat, pnb_kalendarz_kategorie() ) ) {
 		$kat = 'other'; // whitelist — meta nigdy nie trzyma wartości spoza słownika
@@ -366,7 +731,37 @@ add_action( 'save_post_pnb_wydarzenie', function ( $post_id ) {
 		'_pnb_event_place' => isset( $_POST['pnb_event_place'] ) ? sanitize_text_field( wp_unslash( $_POST['pnb_event_place'] ) ) : '',
 		'_pnb_event_limit' => isset( $_POST['pnb_event_limit'] ) ? absint( $_POST['pnb_event_limit'] ) : 0,
 		'_pnb_event_cat'   => $kat,
+		// Dodatkowe pola (te same co na stronie) — teraz edytowalne dla WŁASNYCH wydarzeń klienta.
+		'_pnb_event_price'   => isset( $_POST['pnb_event_price'] ) ? sanitize_text_field( wp_unslash( $_POST['pnb_event_price'] ) ) : '',
+		'_pnb_event_address' => isset( $_POST['pnb_event_address'] ) ? sanitize_text_field( wp_unslash( $_POST['pnb_event_address'] ) ) : '',
 	);
+	// Refund: whitelist (meta nigdy nie trzyma wartości spoza słownika — inaczej strona jej nie wyświetli).
+	$refund_ok = array( '', 'no_refunds', 'refund_30', 'refund_7', 'refund_1' );
+	$refund    = isset( $_POST['pnb_event_refund'] ) ? sanitize_key( wp_unslash( $_POST['pnb_event_refund'] ) ) : '';
+	$pola['_pnb_event_refund'] = in_array( $refund, $refund_ok, true ) ? $refund : '';
+	// Highlights: tablica z whitelistą kluczy/wartości (dokładnie jak wypełnia furtka/scraper).
+	$age_ok  = array( '', 'all_ages', 'under_16_with_guardian', 'under_18_with_guardian', 'over_18', 'over_21' );
+	$park_ok = array( '', 'free', 'paid', 'no' );
+	$loc_ok  = array( '', 'in_person', 'online' );
+	$age     = isset( $_POST['pnb_event_hl_age'] ) ? sanitize_key( wp_unslash( $_POST['pnb_event_hl_age'] ) ) : '';
+	$park    = isset( $_POST['pnb_event_hl_parking'] ) ? sanitize_key( wp_unslash( $_POST['pnb_event_hl_parking'] ) ) : '';
+	$loc     = isset( $_POST['pnb_event_hl_location'] ) ? sanitize_key( wp_unslash( $_POST['pnb_event_hl_location'] ) ) : '';
+	$dur     = isset( $_POST['pnb_event_hl_duration'] ) ? absint( $_POST['pnb_event_hl_duration'] ) : 0;
+	$hl      = array();
+	if ( in_array( $age, $age_ok, true ) && $age )   $hl['age']           = $age;
+	if ( in_array( $park, $park_ok, true ) && $park ) $hl['parking']       = $park;
+	if ( in_array( $loc, $loc_ok, true ) && $loc )   $hl['location_type'] = $loc;
+	if ( $dur )                                       $hl['duration_min']  = $dur;
+	// door_time z importu (ISO) — jeśli było i klient nie ruszał, zachowaj.
+	$hl_stare = get_post_meta( $post_id, '_pnb_event_highlights', true );
+	if ( is_array( $hl_stare ) && ! empty( $hl_stare['door_time'] ) ) {
+		$hl['door_time'] = $hl_stare['door_time'];
+	}
+	if ( $hl ) {
+		update_post_meta( $post_id, '_pnb_event_highlights', $hl );
+	} else {
+		delete_post_meta( $post_id, '_pnb_event_highlights' );
+	}
 	foreach ( $pola as $klucz => $wartosc ) {
 		update_post_meta( $post_id, $klucz, $wartosc );
 	}
@@ -375,9 +770,18 @@ add_action( 'save_post_pnb_wydarzenie', function ( $post_id ) {
 		$foto_id = absint( $_POST['pnb_event_foto_id'] );
 		if ( $foto_id ) {
 			set_post_thumbnail( $post_id, $foto_id );
+			delete_post_meta( $post_id, '_pnb_img_removed' ); // admin dał zdjęcie → cofnij „usunięte"
 		} else {
 			delete_post_thumbnail( $post_id );
+			// Na wydarzeniu importowanym: admin ŚWIADOMIE usunął zdjęcie → scraper go nie przywraca.
+			if ( get_post_meta( $post_id, '_pnb_source_id', true ) ) {
+				update_post_meta( $post_id, '_pnb_img_removed', 1 );
+			}
 		}
+	}
+	// UNLOCK: checkbox „Sync with source again" → admin oddaje wydarzenie z powrotem pod scraper.
+	if ( isset( $_POST['pnb_event_unlock'] ) && '1' === $_POST['pnb_event_unlock'] ) {
+		delete_post_meta( $post_id, '_pnb_locked' );
 	}
 } );
 
@@ -417,8 +821,25 @@ add_action( 'before_delete_post', function ( $post_id ) {
 	if ( 'pnb_wydarzenie' !== get_post_type( $post_id ) ) {
 		return;
 	}
+	// Zapisy gości → kasujemy z wydarzeniem (RODO: dane gości nie wiszą bez UI).
 	foreach ( pnb_kalendarz_zapisy_wydarzenia( $post_id ) as $z ) {
 		wp_delete_post( $z->ID, true );
+	}
+	// GARBAGE COLLECTION: zaimportowane zdjęcie (z Eventbrite) też kasujemy — inaczej Media Library
+	// puchnie osieroconymi zdjęciami po latach. TYLKO importowane (ma _pnb_original_img_url) i TYLKO
+	// gdy żadne inne wydarzenie go nie używa (dedup mógł je współdzielić). Zdjęć klienta NIE ruszamy.
+	$thumb_id = get_post_thumbnail_id( $post_id );
+	if ( $thumb_id && get_post_meta( $thumb_id, '_pnb_original_img_url', true ) ) {
+		$uzywa_inny = get_posts( array(
+			'post_type'      => 'pnb_wydarzenie',
+			'post__not_in'   => array( $post_id ),
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_query'     => array( array( 'key' => '_thumbnail_id', 'value' => $thumb_id ) ), // phpcs:ignore
+		) );
+		if ( empty( $uzywa_inny ) ) {
+			wp_delete_attachment( $thumb_id, true );
+		}
 	}
 } );
 
@@ -707,6 +1128,7 @@ function pnb_kalendarz_ikona( $nazwa ) {
 		'lapka'   => '<circle cx="6.8" cy="9.4" r="1.6"/><circle cx="12" cy="7.6" r="1.6"/><circle cx="17.2" cy="9.4" r="1.6"/><path d="M12 11.6c-2.7 0-5 2.1-5 4.3 0 1.5 1.3 2.7 2.6 2.3.9-.3 1.5-.5 2.4-.5s1.5.2 2.4.5c1.3.4 2.6-.8 2.6-2.3 0-2.2-2.3-4.3-5-4.3z"/>',
 		'pinezka' => '<path d="M12 21c-3.2-3.3-6.5-7-6.5-10.7a6.5 6.5 0 0 1 13 0C18.5 14 15.2 17.7 12 21z"/><circle cx="12" cy="10" r="2.3"/>',
 		'plus'    => '<path d="M12 5.5v13"/><path d="M5.5 12h13"/>',
+		'lupa'    => '<circle cx="10.5" cy="10.5" r="6"/><path d="M20 20l-4.7-4.7"/>',
 	);
 	if ( ! isset( $paths[ $nazwa ] ) ) {
 		return '';
@@ -733,9 +1155,45 @@ function pnb_kalendarz_zaladuj_assety() {
 	wp_enqueue_script( 'pnb-kalendarz-front', PNB_TOOLKIT_URL . 'assets/js/kalendarz-front.js', $gsap_dep, PNB_TOOLKIT_VERSION, true );
 }
 
+/* Preload fontu tytułów (Varela Round) — priorytetowe ładowanie PRZED renderem, żeby wszystkie
+ * tytuły dostały ten sam font (bez migotania fallbackiem przy scroll-reveal). Oba zakresy (latin+ext).
+ * MUSI być na wp_head (przed <body>), NIE wewnątrz renderu bloku (ten leci w the_content = za późno). */
+add_action( 'wp_head', 'pnb_kalendarz_preload_fontow', 1 );
+function pnb_kalendarz_preload_fontow() {
+	// Tylko tam gdzie kalendarz się renderuje (strona z blokiem wydarzeń albo single wydarzenia) —
+	// nie ładujemy fontu priorytetowo na każdej podstronie sklepu klienta.
+	$strona_ev = (int) get_option( 'pnb_events_page_id', 0 );
+	$na_wydarzeniach = is_singular( 'pnb_wydarzenie' )
+		|| ( $strona_ev && is_page( $strona_ev ) )
+		|| ( is_a( get_post(), 'WP_Post' ) && has_block( 'pnb/wydarzenia', get_post() ) );
+	// Fallback gdy nie umiemy wykryć: włącz i tak (preload jednego fontu jest tani).
+	if ( ! $na_wydarzeniach && ! is_page() && ! is_singular( 'pnb_wydarzenie' ) ) {
+		return;
+	}
+	$base = PNB_TOOLKIT_URL . 'assets/fonts/';
+	foreach ( array( 'varela-round-latin.woff2', 'varela-round-latin-ext.woff2' ) as $f ) {
+		printf(
+			'<link rel="preload" href="%s" as="font" type="font/woff2" crossorigin>' . "\n",
+			esc_url( $base . $f )
+		);
+	}
+}
+
 /* Formularz zapisu — JEDEN render dla listy i singla (pola/nonce/honeypot 1:1, mechanika handlera nietknięta). */
 function pnb_kalendarz_formularz_html( $event_id ) {
 	$event_id = (int) $event_id;
+
+	// Wydarzenie ZAIMPORTOWANE (z zewnętrznego źródła) — to nie NASZE wydarzenie, więc zamiast
+	// formularza zapisu (który wysłałby mail właścicielowi o cudzym evencie) pokazujemy przycisk
+	// kierujący do oryginału (tam gość kupi bilet / zapisze się u organizatora).
+	$source_url = get_post_meta( $event_id, '_pnb_source_url', true );
+	if ( $source_url ) {
+		return '<div class="pnb-ev-extlink"><a class="pnb-ev-extbtn" href="' . esc_url( $source_url )
+			. '" target="_blank" rel="noopener nofollow">'
+			. esc_html__( 'View event & tickets', 'pnb-toolkit' )
+			. ' <span aria-hidden="true">↗</span></a></div>';
+	}
+
 	$out  = '<form class="pnb-ev-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 	$out .= '<input type="hidden" name="action" value="pnb_zapis">';
 	$out .= '<input type="hidden" name="pnb_event" value="' . $event_id . '">';
@@ -815,6 +1273,7 @@ function pnb_kalendarz_render() {
 		}
 		$items[] = array(
 			'id'      => (int) $p->ID,
+			'tytul'   => (string) get_the_title( $p->ID ),
 			'data'    => (string) get_post_meta( $p->ID, '_pnb_event_date', true ),
 			'godzina' => (string) get_post_meta( $p->ID, '_pnb_event_time', true ),
 			'koniec'  => (string) get_post_meta( $p->ID, '_pnb_event_time_end', true ),
@@ -844,14 +1303,19 @@ function pnb_kalendarz_render() {
 
 	// hero: obraz w tle. KOLEJNOŚĆ (naprawa 2026-07-05 — usunięto hardkod ID 82 = dane demo klienta):
 	//   1) stała/filtr jeśli klient/dev jawnie ustawił (PNB_EVENTS_HERO_ID / filtr pnb_kalendarz_hero_id),
-	//   2) featured 1. (najbliższego) wydarzenia — naturalny wybór z TREŚCI klienta,
-	//   3) brak → sam welon marki (bez zdjęcia). Żadnego zaszytego ID demo.
+	//   2) OPCJA z panelu (Events → Settings → „Events page header image") — klient wybiera STAŁE tło,
+	//      żeby hero nie zmieniał się od (scrapowanych) wydarzeń,
+	//   3) featured 1. (najbliższego) wydarzenia — naturalny fallback z TREŚCI klienta,
+	//   4) brak → sam welon marki (bez zdjęcia). Żadnego zaszytego ID demo.
 	// Trzymamy ID (nie URL) → renderujemy przez wp_get_attachment_image() = srcset+sizes automatycznie
 	// (WYDAJNOŚĆ: bez tego hero ciągnął 'full' = oryginał klienta, kilka MB, priorytetowo — zabójstwo LCP).
 	$hero_id = defined( 'PNB_EVENTS_HERO_ID' ) ? (int) PNB_EVENTS_HERO_ID : 0;
 	$hero_id = (int) apply_filters( 'pnb_kalendarz_hero_id', $hero_id );
+	if ( ! $hero_id ) {
+		$hero_id = (int) get_option( 'pnb_events_hero_id', 0 ); // stałe tło z panelu (wybór klienta)
+	}
 	if ( ! $hero_id && $items ) {
-		$hero_id = (int) get_post_thumbnail_id( $items[0]['id'] ); // featured 1. wydarzenia
+		$hero_id = (int) get_post_thumbnail_id( $items[0]['id'] ); // fallback: featured 1. wydarzenia
 	}
 	// brak featured → sam welon marki (bez zdjęcia). Relikt lookupu „kot-7" USUNIĘTY
 	// (audyt 2026-07-05: przeczył komentarzowi „żadnego zaszytego ID demo").
@@ -912,6 +1376,9 @@ function pnb_kalendarz_render() {
 				$out .= $chip( 'cat-' . $klucz, $nazwa, $n_kat[ $klucz ], false, $klucz, pnb_kalendarz_ikona( $ikony[ $klucz ] ) );
 			}
 		}
+		// Wyszukiwarka na KOŃCU paska (po prawej, za filtrami) — w lepkim pasku, jedzie z chipami.
+		$out .= '<div class="pnb-ev-search"><span class="pnb-ev-search-ico" aria-hidden="true">' . pnb_kalendarz_ikona( 'lupa' ) . '</span>'
+			. '<input type="search" class="pnb-ev-search-input" placeholder="' . esc_attr__( 'Search…', 'pnb-toolkit' ) . '" aria-label="' . esc_attr__( 'Search events', 'pnb-toolkit' ) . '"></div>';
 		$out .= '</div></nav>';
 	}
 
@@ -939,7 +1406,9 @@ function pnb_kalendarz_render() {
 
 			// wrapper = kanał pod-scrubu głębi (reveal ma transform KARTY, scrub ma transform WRAPPERA — bez konfliktu)
 			$out .= '<div class="pnb-ev-cardwrap">';
-			$out .= '<article class="pnb-ev-card" id="event-' . (int) $id . '" data-when="' . esc_attr( $it['data'] ) . '" data-cat="' . esc_attr( $it['kat'] ) . '">';
+			// data-search = tytuł + miejsce + skrót opisu (do wyszukiwarki po tytule/opisie na żywo).
+			$szukaj_tekst = trim( ( $it['tytul'] ?? get_the_title( $id ) ) . ' ' . ( $it['miejsce'] ?? '' ) . ' ' . wp_strip_all_tags( (string) get_post_field( 'post_content', $id ) ) );
+			$out .= '<article class="pnb-ev-card" id="event-' . (int) $id . '" data-when="' . esc_attr( $it['data'] ) . '" data-cat="' . esc_attr( $it['kat'] ) . '" data-search="' . esc_attr( mb_substr( $szukaj_tekst, 0, 300 ) ) . '">';
 			$out .= '<div class="pnb-ev-main">';
 			// godzina od–do
 			if ( $it['godzina'] ) {
@@ -956,10 +1425,18 @@ function pnb_kalendarz_render() {
 				$out .= '<div class="pnb-ev-place">' . pnb_kalendarz_ikona( 'pinezka' ) . esc_html( $miejsce_disp ) . '</div>';
 			}
 			$out .= '<span class="pnb-ev-tag" data-c="' . esc_attr( $it['kat'] ) . '"><span class="pnb-ev-dot" data-c="' . esc_attr( $it['kat'] ) . '" aria-hidden="true"></span>' . esc_html( $kategorie[ $it['kat'] ] ) . '</span>';
-			// PEŁNY OPIS WIDOCZNY (uwaga klienta — nie chowamy w details); PL gdy wpisany
+			// OPIS NA LIŚCIE = SKRÓT (importowane wydarzenia mają długie opisy które rozpychały kartę;
+			// pełny opis + linki są na stronie pojedynczego wydarzenia po kliknięciu). Krótkie opisy
+			// (demo, ręczne) mieszczą się w całości — skrót ich nie tnie.
 			$tresc = pnb_event_opis( $id );
 			if ( trim( $tresc ) ) {
-				$out .= '<div class="pnb-ev-desc">' . wp_kses_post( wpautop( $tresc ) ) . '</div>';
+				$plain = trim( wp_strip_all_tags( $tresc ) );
+				$skrot = mb_substr( $plain, 0, 180 );
+				if ( mb_strlen( $plain ) > 180 ) {
+					// utnij na ostatniej spacji żeby nie ciąć w połowie słowa
+					$skrot = mb_substr( $skrot, 0, (int) mb_strrpos( $skrot, ' ' ) ) . '…';
+				}
+				$out .= '<div class="pnb-ev-desc"><p>' . esc_html( $skrot ) . '</p></div>';
 			}
 			// badge stanu + social proof: „X going" tylko gdy ≥2 i NIE przy pełnym; pełne → „Sold out" (uczciwy stan, brak listy oczekujących)
 			$stan  = '';
@@ -1035,7 +1512,12 @@ function pnb_kalendarz_render() {
 			// Pełne wydarzenie: zamiast guzika — nota „Sold out" (jak na karcie/singlu). Logika NIETKNIĘTA.
 			$form_id = 'pnb-signup-' . (int) $id;
 			$out .= '<div class="pnb-ev-signup">';
-			if ( $pelne ) {
+			// Wydarzenie ZAIMPORTOWANE (cudze) — na liście też link do oryginału, NIE formularz zapisu.
+			$src_url = get_post_meta( (int) $id, '_pnb_source_url', true );
+			if ( $src_url ) {
+				$out .= '<a class="pnb-ev-extbtn pnb-ev-signbtn" href="' . esc_url( $src_url ) . '" target="_blank" rel="noopener nofollow">'
+					. '<span>' . esc_html__( 'View event & tickets', 'pnb-toolkit' ) . '</span><span class="pnb-ev-arrow" aria-hidden="true">↗</span></a>';
+			} elseif ( $pelne ) {
 				$out .= '<p class="pnb-ev-signup-full"><span class="pnb-ev-badge pnb-ev-badge--full">' . esc_html__( 'Fully booked', 'pnb-toolkit' ) . '</span> <span class="pnb-ev-going pnb-ev-mono">' . esc_html__( 'Sold out', 'pnb-toolkit' ) . '</span></p>';
 			} else {
 				$out .= '<button type="button" class="pnb-ev-toggle pnb-ev-signbtn" aria-expanded="' . ( $otworz ? 'true' : 'false' ) . '" aria-controls="' . esc_attr( $form_id ) . '">'
@@ -1237,6 +1719,8 @@ function pnb_kalendarz_render_single() {
 	}
 	$out .= $cell( __( 'Category', 'pnb-toolkit' ),
 		'<span class="pnb-ev-tag" data-c="' . esc_attr( $kat ) . '"><span class="pnb-ev-dot" data-c="' . esc_attr( $kat ) . '" aria-hidden="true"></span>' . esc_html( $kategorie[ $kat ] ) . '</span>' );
+	// Cena — NIE w panelu; pokazujemy ją przy przycisku „kup bilet" (sekcja Interested?),
+	// bo cena + akcja kupna to jedna decyzja (wzór Eventbrite).
 	if ( $limit > 0 ) {
 		$wolne = $pelne
 			? '<span class="pnb-evs-full">' . esc_html__( 'Fully booked', 'pnb-toolkit' ) . '</span>'
@@ -1249,12 +1733,19 @@ function pnb_kalendarz_render_single() {
 	if ( $gcal ) {
 		$out .= '<a class="pnb-ev-gcal" href="' . esc_url( $gcal ) . '" target="_blank" rel="noopener noreferrer">' . pnb_kalendarz_ikona( 'plus' ) . ' ' . esc_html__( 'Add to Google Calendar', 'pnb-toolkit' ) . '</a>';
 	}
-	if ( $miejsce ) {
-		$dojazd = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $miejsce );
+	// „Get directions" — używa PEŁNEGO adresu jeśli jest (dokładny pin), inaczej nazwy miejsca.
+	$adres_pelny = get_post_meta( $id, '_pnb_event_address', true );
+	$cel_map     = $adres_pelny ? $adres_pelny : $miejsce;
+	if ( $cel_map ) {
+		$dojazd = 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $cel_map );
 		$out   .= '<a class="pnb-ev-gcal pnb-evs-getdirs" href="' . esc_url( $dojazd ) . '" target="_blank" rel="noopener noreferrer">' . pnb_kalendarz_ikona( 'pinezka' ) . ' ' . esc_html__( 'Get directions', 'pnb-toolkit' ) . '</a>';
 	}
 	$out .= '</div>'; // .pnb-evs-actions
 	$out .= '</div>'; // .pnb-evs-panel
+
+	// „Co warto wiedzieć" (Good to know) — praktyczne info dla gościa. Działa dla importu
+	// (dane z Eventbrite) I dla wydarzeń własnych klienta (gdy wpisze highlights).
+	$out .= pnb_kalendarz_good_to_know_html( $id );
 
 	// pełny opis (PL gdy wpisany)
 	$tresc = pnb_event_opis( $id );
@@ -1264,11 +1755,26 @@ function pnb_kalendarz_render_single() {
 
 	// zapis: kotwica #event-{id} = cel redirectu handlera; komunikaty NAD formularzem
 	$out .= '<section class="pnb-evs-signup" id="event-' . (int) $id . '">';
-	$out .= '<h2>' . esc_html__( 'Sign up', 'pnb-toolkit' ) . '</h2>';
-	$out .= pnb_kalendarz_komunikaty_html( (int) $id );
-	if ( $pelne ) {
+	// Wydarzenie zaimportowane (source_url) — nagłówek „Interested?" + link do oryginału (nie „Sign up",
+	// bo u nas nie ma zapisu na cudze wydarzenie). Własne — normalny nagłówek „Sign up" + formularz.
+	$jest_importowane = (bool) get_post_meta( (int) $id, '_pnb_source_url', true );
+	if ( $jest_importowane ) {
+		$out .= '<h2>' . esc_html__( 'Interested?', 'pnb-toolkit' ) . '</h2>';
+		$out .= '<p class="pnb-evs-extnote">' . esc_html__( 'This event is hosted externally — see full details and get tickets at the organiser.', 'pnb-toolkit' ) . '</p>';
+		// Cena TU (przy przycisku kupna) — cena + akcja razem, jak Eventbrite.
+		$cena_raw = get_post_meta( (int) $id, '_pnb_event_price', true );
+		if ( $cena_raw ) {
+			$cena_disp = ( 'free' === $cena_raw ) ? __( 'Free', 'pnb-toolkit' ) : $cena_raw;
+			$out      .= '<p class="pnb-evs-price"><span class="pnb-evs-price-label">' . esc_html__( 'From', 'pnb-toolkit' ) . '</span> <span class="pnb-evs-price-val">' . esc_html( $cena_disp ) . '</span></p>';
+		}
+		$out .= pnb_kalendarz_formularz_html( $id ); // zwróci przycisk „View event & tickets"
+	} elseif ( $pelne ) {
+		$out .= '<h2>' . esc_html__( 'Sign up', 'pnb-toolkit' ) . '</h2>';
+		$out .= pnb_kalendarz_komunikaty_html( (int) $id );
 		$out .= '<p class="pnb-evs-fullnote"><span class="pnb-ev-badge pnb-ev-badge--full">' . esc_html__( 'Fully booked', 'pnb-toolkit' ) . '</span> <span class="pnb-ev-going pnb-ev-mono">' . esc_html__( 'Sold out', 'pnb-toolkit' ) . '</span></p>';
 	} else {
+		$out .= '<h2>' . esc_html__( 'Sign up', 'pnb-toolkit' ) . '</h2>';
+		$out .= pnb_kalendarz_komunikaty_html( (int) $id );
 		$out .= pnb_kalendarz_formularz_html( $id );
 	}
 	$out .= '</section>';
