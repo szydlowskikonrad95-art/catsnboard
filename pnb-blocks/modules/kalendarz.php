@@ -1249,7 +1249,12 @@ function pnb_kalendarz_render() {
 	$dzis = current_time( 'Y-m-d' );
 	$q    = new WP_Query( array(
 		'post_type'              => 'pnb_wydarzenie',
-		'posts_per_page'         => 20,
+		// Pokazujemy WSZYSTKIE nadchodzące (nie sztywne 20 — klient nie wiedział ile ich będzie ze
+		// źródła). Porządek trzymają: filtry (All/tydzień/miesiąc/kategoria), grupowanie po dacie
+		// i wyszukiwarka — więc lista nie jest „scroll w nieskończoność". Minione i tak odpadają
+		// (meta_query >= dziś). Górny bezpiecznik 200 chroni przed patologią (źródło z setkami wydarzeń
+		// = setki zdjęć na raz zabiłyby LCP); realny pensjonat ma kilka-kilkadziesiąt.
+		'posts_per_page'         => 200,
 		'meta_key'               => '_pnb_event_date',
 		'orderby'                => 'meta_value',
 		'order'                  => 'ASC',
