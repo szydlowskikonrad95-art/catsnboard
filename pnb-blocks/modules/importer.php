@@ -19,7 +19,8 @@ defined( 'ABSPATH' ) || exit;
 const PNB_IMP_API_EVENTS = 'https://www.eventbrite.com/api/v3/destination/events/';
 const PNB_IMP_EXPAND     = 'image,primary_venue,primary_organizer,ticket_availability';
 const PNB_IMP_BATCH       = 20;   // ile ID na jedno zapytanie do API
-const PNB_IMP_MAX_NEW     = 5;    // ile NOWYCH dodać w jednym cyklu (nie zalewać)
+const PNB_IMP_MAX_NEW     = 5;    // ile NOWYCH dodać w jednym cyklu (bieżące — nie zalewać)
+const PNB_IMP_MAX_FIRST   = 20;   // PIERWSZE napełnienie (świeża instalacja): komplet aktywnych naraz
 const PNB_IMP_UA          = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 
 /* ============================ WP-CRON: harmonogram ============================ */
@@ -110,7 +111,21 @@ function pnb_importer_jeden_cykl() {
 	$martwe = get_option( 'pnb_importer_dead', array() );
 	if ( ! is_array( $martwe ) ) { $martwe = array(); }
 
-	// 2+3. Dedup + zapis. Limit = ile NOWYCH na cykl (nie zalewać).
+	// PIERWSZE NAPEŁNIENIE: gdy strona nie ma JESZCZE żadnego zaimportowanego wydarzenia (świeża
+	// instalacja klienta), bierzemy KOMPLET aktywnych (PNB_IMP_MAX_FIRST) w jednym cyklu — klient od
+	// razu widzi pełną stronę, nie czeka aż dojdą po 5 co 10 min. Kolejne cykle wracają do 5/cykl
+	// (PNB_IMP_MAX_NEW) — grzeczność dla źródła na bieżącym dodawaniu. Pauzy między pobraniami (w
+	// pnb_importer_wzbogac) chronią przed banem nawet przy komplecie.
+	$juz_zaimportowane = get_posts( array(
+		'post_type'      => 'pnb_wydarzenie',
+		'post_status'    => 'any',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'meta_key'       => '_pnb_source_id', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+	) );
+	$limit_nowych = empty( $juz_zaimportowane ) ? PNB_IMP_MAX_FIRST : PNB_IMP_MAX_NEW;
+
+	// 2+3. Dedup + zapis. Limit = ile NOWYCH na cykl (pierwsze napełnienie = komplet, potem 5).
 	foreach ( $wydarzenia as $w ) {
 		$sid = $w['source_id'];
 		// Dead Letter: to wydarzenie padło za dużo razy → nie próbujemy więcej (do resetu w panelu).
@@ -122,7 +137,7 @@ function pnb_importer_jeden_cykl() {
 		if ( 'znane' === $status ) {
 			continue; // już jest, bez zmian
 		}
-		if ( 'nowe' === $status && $stat['nowe'] >= PNB_IMP_MAX_NEW ) {
+		if ( 'nowe' === $status && $stat['nowe'] >= $limit_nowych ) {
 			break; // limit nowych — resztę weźmiemy w następnym cyklu
 		}
 
@@ -645,8 +660,9 @@ function pnb_importer_zapisz_pola( $post_id, $w, $tylko_fakty = false ) {
 	if ( ! $tylko_fakty
 		&& ! get_post_meta( $post_id, '_pnb_img_removed', true )
 		&& ! empty( $w['image_url'] )
-		&& ! has_post_thumbnail( $post_id ) ) {
-		$att = pnb_importer_pobierz_obrazek( $w['image_url'], $post_id );
+		&& ! has_post_thumbnail( $post_id )
+		&& function_exists( 'pnb_rest_pobierz_obrazek' ) ) {
+		$att = pnb_rest_pobierz_obrazek( $w['image_url'], $post_id );
 		if ( $att ) {
 			set_post_thumbnail( $post_id, $att );
 		}
@@ -690,103 +706,4 @@ function pnb_importer_log( $msg ) {
 	$log[] = $linia;
 	if ( count( $log ) > 200 ) { $log = array_slice( $log, -200 ); }
 	update_option( 'pnb_importer_log', $log, false );
-}
-
-/* ============================ ZDJĘCIA ============================ */
-
-/**
- * Pobiera obrazek z zewnętrznego URL do Media Library i zwraca ID załącznika.
- * Przeniesione z rest-furtka.php (furtka usunięta — importer wsadza dane bezpośrednio).
- *
- * Bezpieczeństwo: URL pochodzi ze scrapowanej (obcej) strony, więc nie ufamy mu.
- * - esc_url_raw + wymóg http(s),
- * - download_url używa wp_safe_remote_get → blokuje adresy lokalne (anty-SSRF),
- * - dedup po URL (_pnb_original_img_url): ten sam obrazek nie pobiera się dwa razy,
- * - błąd/martwy link → zwraca 0, wydarzenie zostaje bez zdjęcia (nie wywala importu).
- *
- * @param string $url     URL obrazka ze źródła.
- * @param int    $post_id Post do którego dowiązać załącznik.
- * @return int ID załącznika lub 0 gdy się nie udało.
- */
-function pnb_importer_pobierz_obrazek( $url, $post_id ) {
-	$url = esc_url_raw( trim( $url ) );
-	if ( '' === $url || ! preg_match( '#^https?://#i', $url ) ) {
-		return 0;
-	}
-	// NIE wymagamy rozszerzenia w URL — nowoczesne CDN (Eventbrite img.evbuc.com)
-	// serwują obrazek bez rozszerzenia (auto-format). Realną ochronę przejmuje
-	// wp_check_filetype_and_ext() wewnątrz media_handle_sideload (sprawdza treść
-	// pliku PO pobraniu, po magic-bytes) + wp_attachment_is_image() niżej.
-	// wp_safe_remote_get w download_url blokuje adresy lokalne/prywatne (anty-SSRF).
-
-	// Dedup: czy ten URL już pobrany jako załącznik?
-	$juz = get_posts(
-		array(
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'fields'         => 'ids',
-			'posts_per_page' => 1,
-			'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-				array(
-					'key'   => '_pnb_original_img_url',
-					'value' => $url,
-				),
-			),
-		)
-	);
-	if ( ! empty( $juz ) ) {
-		return (int) $juz[0];
-	}
-
-	// Funkcje media dostępne tylko po załadowaniu plików admina.
-	require_once ABSPATH . 'wp-admin/includes/media.php';
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-	require_once ABSPATH . 'wp-admin/includes/image.php';
-
-	// NIE używamy media_sideload_image — ono wnioskuje nazwę pliku z URL, a CDN typu
-	// Eventbrite (img.evbuc.com/https%3A%2F%2F...) daje URL z zagnieżdżonym adresem bez
-	// czystego rozszerzenia → WP odrzuca ("Invalid image URL") mimo że plik to poprawny JPEG.
-	// Zamiast tego: pobieramy sami (download_url) i nadajemy WŁASNĄ nazwę z .jpg,
-	// potem media_handle_sideload z jawną nazwą.
-
-	// Krótszy timeout niż domyślne 300s — import synchroniczny, nie może wisieć.
-	$skroc = function ( $r ) {
-		$r['timeout'] = 20;
-		return $r;
-	};
-	add_filter( 'http_request_args', $skroc );
-	$tmp = download_url( $url, 20 );
-	remove_filter( 'http_request_args', $skroc );
-
-	if ( is_wp_error( $tmp ) ) {
-		return 0;
-	}
-
-	// Sprawdź realny typ pobranego pliku (magic-bytes) — bezpieczeństwo, nie ufamy URL.
-	$typ = wp_check_filetype_and_ext( $tmp, 'obraz.jpg' );
-	$mime = (string) ( $typ['type'] ?? '' );
-	if ( 0 !== strpos( $mime, 'image/' ) ) {
-		wp_delete_file( $tmp );
-		return 0;
-	}
-	// Nadaj czystą nazwę z rozszerzeniem pasującym do realnego typu.
-	$ext  = (string) ( $typ['ext'] ?: 'jpg' );
-	$file = array(
-		'name'     => 'eventbrite-' . wp_generate_password( 8, false ) . '.' . $ext,
-		'tmp_name' => $tmp,
-	);
-	$att = media_handle_sideload( $file, $post_id );
-	if ( is_wp_error( $att ) ) {
-		wp_delete_file( $tmp );
-		return 0;
-	}
-
-	// Defense-in-depth: upewnij się że to obraz (a nie inny dozwolony typ).
-	if ( ! wp_attachment_is_image( (int) $att ) ) {
-		wp_delete_attachment( (int) $att, true );
-		return 0;
-	}
-
-	update_post_meta( (int) $att, '_pnb_original_img_url', $url );
-	return (int) $att;
 }
