@@ -36,7 +36,6 @@ require_once PNB_TOOLKIT_DIR . 'modules/blok-galeria.php';
 /* KALENDARZ: silnik (CPT wydarzenie, render, zapisy, maile, metaboxy) + blok Gutenberg. */
 require_once PNB_TOOLKIT_DIR . 'modules/kalendarz.php';
 require_once PNB_TOOLKIT_DIR . 'modules/blok-wydarzenia.php';
-require_once PNB_TOOLKIT_DIR . 'modules/rest-furtka.php';
 require_once PNB_TOOLKIT_DIR . 'modules/importer.php'; // automat wydarzeń W PLUGINIE (WP-Cron, bez Pythona)
 
 /* Aktywacja: rejestracja CPT wydarzeń + flush rewrite (żeby /events/, single wydarzeń działały od razu). */
