@@ -71,6 +71,42 @@ etykieta przy pinezce*. Dopóki ich nie wypełnisz, adres się nie pokazuje (nic
 
 ---
 
+## 3b. Automatyczny import wydarzeń (opcjonalne)
+
+Wtyczka umie **sama pobierać wydarzenia** z zewnętrznego serwisu (Eventbrite) i dodawać je
+na stronę — bez ręcznego wpisywania. Jeśli tego nie potrzebujesz, po prostu tego nie włączaj
+(dodawaj wydarzenia ręcznie jak w punkcie 3).
+
+**Jak włączyć:**
+1. Wejdź w **Events → Ustawienia** *(Settings)*
+2. W polu **„🤖 Event source (Eventbrite URL)"** wklej adres listy wydarzeń z Eventbrite
+   (np. adres kategorii albo Twojego profilu organizatora)
+3. Zapisz. Od teraz wtyczka **co jakiś czas sama sprawdza** to źródło i dodaje nowe wydarzenia.
+4. Chcesz sprawdzić od razu? Kliknij **„Sync now"** — pobierze bez czekania.
+
+**Co robi automat (sam, bez Ciebie):**
+- **Dodaje** nowe wydarzenia ze źródła
+- **Aktualizuje**, gdy organizator zmieni datę/godzinę/miejsce
+- **Zdejmuje do kosza** wydarzenia, które zniknęły ze źródła (nie zostają na wieki)
+- **Nie nadpisuje Twoich ręcznych poprawek** — jeśli sam zmienisz zaimportowane wydarzenie,
+  Twoja wersja zostaje (wtyczka oznacza je jako „Twoje")
+- Ekran **Events → Ustawienia** pokazuje kiedy był ostatni import i czy wszystko działa
+
+**⏱️ Jak często sprawdza?** Wtyczka używa harmonogramu WordPressa (WP-Cron), który odpala się
+**gdy ktoś wchodzi na stronę**. Na stronie z ruchem działa sam. Jeśli Twoja strona jest cicha
+(mało odwiedzin), import może się spóźniać. Żeby chodził jak w zegarku (co 10 min), poproś swój
+hosting o dodanie **prawdziwego crona** pukającego w adres `TwojaStrona.pl/wp-cron.php` co 10 minut,
+albo użyj darmowej usługi typu **cron-job.org** (wkleja się tam ten adres, bez kodu). Panel
+**Events → Ustawienia** ma to opisane pod polem źródła.
+
+> ⚠️ **WAŻNE — regulamin źródła:** upewnij się, że masz **prawo** pobierać dane z serwisu, który
+> podajesz jako źródło. Wiele serwisów (w tym Eventbrite) w swoim regulaminie zabrania
+> automatycznego pobierania danych. Jeśli jesteś **organizatorem** swoich wydarzeń, najbezpieczniej
+> jest korzystać z oficjalnego API/eksportu danego serwisu. Odpowiedzialność za zgodność z
+> regulaminem źródła leży po stronie właściciela strony.
+
+---
+
 ## 4. Polska wersja — jak działa
 
 **Dobra wiadomość:** domyślne teksty strony są **już przetłumaczone** (słownik jedzie
