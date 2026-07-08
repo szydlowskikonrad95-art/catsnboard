@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       PNB Gallery & Events
  * Description:       Premium gallery (film strip + "Moments" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site.
- * Version:           1.9.3
+ * Version:           1.9.4
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Stałe — nazwy PNB_TOOLKIT_* zachowane (moduły galerii/kalendarza ich używają; brak przepisywania). */
-define( 'PNB_TOOLKIT_VERSION', '1.9.3' );
+define( 'PNB_TOOLKIT_VERSION', '1.9.4' );
 define( 'PNB_TOOLKIT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PNB_TOOLKIT_URL', plugin_dir_url( __FILE__ ) );
 
