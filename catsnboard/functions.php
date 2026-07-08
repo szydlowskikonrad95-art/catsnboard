@@ -312,6 +312,25 @@ function catsnboard_register_blocks() {
 add_action( 'init', 'catsnboard_register_blocks' );
 
 /**
+ * Passes the theme's image base URL to the `catsnboard/gallery` block editor
+ * script, so empty mosaic slots can preview the theme's default cat photos
+ * (same ones render.php falls back to on the front) instead of a plain grey
+ * placeholder. Handle is WP core's auto-generated one for a block.json
+ * "editorScript" field: `{namespace}-{block}-editor-script`
+ * (see generate_block_asset_handle() in wp-includes/blocks.php).
+ */
+function catsnboard_gallery_editor_assets() {
+	wp_localize_script(
+		'catsnboard-gallery-editor-script',
+		'catsnboardGallery',
+		array(
+			'imgBase' => get_template_directory_uri() . '/assets/img/',
+		)
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'catsnboard_gallery_editor_assets' );
+
+/**
  * Renders the training bar section (shared by front-page + page-services).
  */
 function catsnboard_training_bar() {

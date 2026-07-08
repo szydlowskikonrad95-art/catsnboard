@@ -50,6 +50,15 @@
 	object-fit: cover;
 	border-radius: 8px;
 }
+
+/* Theme's default photo shown in an empty slot (client hasn't uploaded their
+   own image yet) — dashed outline + slight fade so it reads as a preview,
+   not a real client photo. */
+.cnb-gallery-editor .cnb-gslot img.cnb-default-img {
+	opacity: 0.85;
+	outline: 2px dashed rgba(0, 0, 0, 0.15);
+	outline-offset: -2px;
+}
 .cnb-gallery-editor .cnb-gbtn {
 	margin-top: 4px;
 }
