@@ -76,25 +76,14 @@ add_action( 'enqueue_block_editor_assets', function () {
 			setup_postdata( $post );
 		}
 	}
-	// domyślne zdjęcie hero dla podglądu w edytorze. KOLEJNOŚĆ (2026-07-05, usunięto hardkod ID 82 = demo):
-	// stała/filtr jeśli ustawione → featured najbliższego wydarzenia (treść klienta) → brak (sam welon).
+	// domyślne zdjęcie hero dla podglądu w edytorze. KOLEJNOŚĆ (2026-07-09):
+	// stała/filtr → stałe tło z panelu (wybór klienta) → brak (sam welon marki).
+	// ⚠️ NIE bierzemy featured wydarzenia (plakaty scrapowane mają własny tekst → nachodzi na hero).
 	$hero_default = '';
 	$hero_id = defined( 'PNB_EVENTS_HERO_ID' ) ? (int) PNB_EVENTS_HERO_ID : 0;
 	$hero_id = (int) apply_filters( 'pnb_kalendarz_hero_id', $hero_id );
 	if ( ! $hero_id ) {
-		// weź featured 1. nadchodzącego wydarzenia — naturalny kadr z treści klienta
-		$ev = get_posts( array(
-			'post_type'   => 'pnb_wydarzenie',
-			'post_status' => 'publish',
-			'numberposts' => 1,
-			'meta_key'    => '_pnb_event_date',
-			'orderby'     => 'meta_value',
-			'order'       => 'ASC',
-			'fields'      => 'ids',
-		) );
-		if ( $ev && has_post_thumbnail( $ev[0] ) ) {
-			$hero_id = (int) get_post_thumbnail_id( $ev[0] );
-		}
+		$hero_id = (int) get_option( 'pnb_events_hero_id', 0 ); // stałe tło z panelu
 	}
 	if ( $hero_id ) {
 		$hero_default = wp_get_attachment_image_url( $hero_id, 'large' );

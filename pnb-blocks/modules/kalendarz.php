@@ -1314,11 +1314,10 @@ function pnb_kalendarz_render() {
 	if ( ! $hero_id ) {
 		$hero_id = (int) get_option( 'pnb_events_hero_id', 0 ); // stałe tło z panelu (wybór klienta)
 	}
-	if ( ! $hero_id && $items ) {
-		$hero_id = (int) get_post_thumbnail_id( $items[0]['id'] ); // fallback: featured 1. wydarzenia
-	}
-	// brak featured → sam welon marki (bez zdjęcia). Relikt lookupu „kot-7" USUNIĘTY
-	// (audyt 2026-07-05: przeczył komentarzowi „żadnego zaszytego ID demo").
+	// ⚠️ NIE bierzemy featured 1. wydarzenia jako fallback (naprawa 2026-07-09): plakaty scrapowanych
+	// wydarzeń (Eventbrite) mają WŁASNY tekst (np. „YOGA CATS") który nachodzi na napis hero „Save the
+	// date" → nieczytelne. Brak ustawionego tła → sam welon marki (zawsze ładny, napis czytelny).
+	// Klient który CHCE zdjęcie w hero ustawia je świadomie (edytor bloku / Events→Settings).
 
 	/* ── HERO: full-bleed zdjęcie + ciepły welon + „Save the date." splitwords (CSS-only) ── */
 	$out  = '<section class="pnb-events" id="pnbEvents">';
