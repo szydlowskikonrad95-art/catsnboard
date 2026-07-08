@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       PNB Gallery & Events
  * Description:       Premium gallery (film strip + "Moments" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site.
- * Version:           1.9.2
+ * Version:           1.9.3
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Stałe — nazwy PNB_TOOLKIT_* zachowane (moduły galerii/kalendarza ich używają; brak przepisywania). */
-define( 'PNB_TOOLKIT_VERSION', '1.9.2' );
+define( 'PNB_TOOLKIT_VERSION', '1.9.3' );
 define( 'PNB_TOOLKIT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PNB_TOOLKIT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -36,6 +36,7 @@ require_once PNB_TOOLKIT_DIR . 'modules/blok-galeria.php';
 /* KALENDARZ: silnik (CPT wydarzenie, render, zapisy, maile, metaboxy) + blok Gutenberg. */
 require_once PNB_TOOLKIT_DIR . 'modules/kalendarz.php';
 require_once PNB_TOOLKIT_DIR . 'modules/blok-wydarzenia.php';
+require_once PNB_TOOLKIT_DIR . 'modules/rest-furtka.php';
 require_once PNB_TOOLKIT_DIR . 'modules/importer.php'; // automat wydarzeń W PLUGINIE (WP-Cron, bez Pythona)
 
 /* Aktywacja: rejestracja CPT wydarzeń + flush rewrite (żeby /events/, single wydarzeń działały od razu). */
@@ -86,6 +87,15 @@ function pnb_blocks_aktywacja() {
 	) );
 	if ( ! $sa_wydarzenia ) {
 		pnb_blocks_zasiej_demo_wydarzenia();
+	}
+	// Tło hero podstrony Events: świeża instalacja dostaje demo-zdjęcie od razu (jak galeria/wydarzenia),
+	// żeby hero nie był pusty zanim klient wgra własne. Tylko gdy NIEustawione (nie nadpisujemy wyboru
+	// klienta przy reaktywacji). Kot-7 = spokojny kadr poziomy, dobry pod napis „Save the date".
+	if ( ! (int) get_option( 'pnb_events_hero_id', 0 ) ) {
+		$hero = pnb_blocks_demo_zalacznik( 'kot-7.jpg' );
+		if ( $hero ) {
+			update_option( 'pnb_events_hero_id', (int) $hero );
+		}
 	}
 	// Zaplanuj automat importu (WP-Cron co 10 min) — startuje gdy klient ustawi źródło w panelu.
 	if ( function_exists( 'pnb_importer_zaplanuj' ) ) {
