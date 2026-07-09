@@ -276,3 +276,8 @@ footer{background:#2C6E7F;color:rgba(255,255,255,.92);padding:clamp(60px,8vw,90p
 /* w menu wysuwanym: większy, wyśrodkowany, odsunięty od linków */
 .menu .pnb-langsw-li,.menu-lang{margin-top:14px;padding-top:14px;border-top:1px solid rgba(85,90,95,.15);}
 .menu .pnb-langsw{font-size:1rem;}
+
+/* Skip-link (a11y 2026-07-09) — ukryty, pojawia się TYLKO przy focusie z klawiatury (Tab). */
+.pnb-skip-link{position:absolute;left:-9999px;top:0;z-index:9999;padding:12px 20px;background:#de654f;
+  color:#fff;font-family:'Poppins',sans-serif;font-weight:600;border-radius:0 0 8px 0;text-decoration:none;}
+.pnb-skip-link:focus{left:0;}
