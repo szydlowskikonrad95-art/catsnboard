@@ -11,6 +11,7 @@
 	var karty = Array.prototype.slice.call(root.querySelectorAll('.pnb-ev-card'));
 	var grupy = Array.prototype.slice.call(root.querySelectorAll('.pnb-ev-group'));
 	var brak = root.querySelector('.pnb-ev-none');
+	var cardwraps = Array.prototype.slice.call(root.querySelectorAll('.pnb-ev-cardwrap')); // dla paginacji (płasko, przez wszystkie grupy)
 
 	/* ── FILTRY CHIPS (vanilla — MUSZĄ działać też bez animacji / przy reduced-motion) ── */
 	function ymd(d) {
@@ -58,12 +59,127 @@
 			(wrap || k).classList.toggle('is-hidden', !pokaz);
 			if (pokaz) { widoczne++; dokoncz(k); }
 		});
-		grupy.forEach(function (g) { // nagłówek grupy bez widocznych kart też znika
+		grupy.forEach(function (g) { // nagłówek grupy bez widocznych kart też znika (paginacja doprecyzuje niżej)
 			g.classList.toggle('is-hidden', !g.querySelector('.pnb-ev-cardwrap:not(.is-hidden)'));
 		});
 		if (brak) brak.classList.toggle('is-hidden', widoczne > 0);
-		if (maGsap && !rm) ScrollTrigger.refresh(); // układ się zmienił — przelicz triggery
+		pgPrzelicz(); // liczba WIDOCZNYCH kart się zmieniła → przelicz strony paginacji i wróć na 1 (robi refresh sam)
 	}
+
+	/* ── PAGINACJA (vanilla, warstwa NA WIERZCHU filtra) — 10 kart/stronę, numerki DYNAMICZNE liczone
+	   z WIDOCZNYCH (po filtrze) cardwrapów, płasko przez wszystkie grupy dat. Osobna klasa .pg-hidden
+	   (NIE .is-hidden filtra — inaczej dwie warstwy by się nadpisywały nawzajem); karta realnie
+	   widoczna = ani is-hidden (filtr) ani pg-hidden (paginacja). ── */
+	var PG_ROZMIAR = 10;
+	var pgStrona = 1;
+	var pager = root.querySelector('.pnb-ev-pager');
+
+	function pgWidoczne() { // cardwrapy które PRZESZŁY filtr (płasko, przez wszystkie grupy)
+		return cardwraps.filter(function (w) { return !w.classList.contains('is-hidden'); });
+	}
+
+	function pgRenderNumerki(strony) {
+		if (!pager) return;
+		if (strony <= 1) { // ≤10 widocznych → paginacja zbędna, chowamy całą belkę
+			pager.classList.remove('is-on');
+			pager.innerHTML = '';
+			return;
+		}
+		var lbPrev = pager.getAttribute('data-prev') || 'Previous page';
+		var lbNext = pager.getAttribute('data-next') || 'Next page';
+		pager.classList.add('is-on');
+		var html = '<button type="button" class="pnb-ev-pg pnb-ev-pg-arrow" data-pg="prev"'
+			+ (pgStrona <= 1 ? ' disabled' : '') + ' aria-label="' + lbPrev + '">‹</button>';
+		for (var i = 1; i <= strony; i++) {
+			html += '<button type="button" class="pnb-ev-pg' + (i === pgStrona ? ' is-active' : '') + '" data-pg="' + i + '"'
+				+ (i === pgStrona ? ' aria-current="page"' : '') + '>' + i + '</button>';
+		}
+		html += '<button type="button" class="pnb-ev-pg pnb-ev-pg-arrow" data-pg="next"'
+			+ (pgStrona >= strony ? ' disabled' : '') + ' aria-label="' + lbNext + '">›</button>';
+		pager.innerHTML = html;
+	}
+
+	function pgPokazStrone(str) {
+		if (!pager) { // brak elementu paginacji w markupie (np. stary cache) → nie ucinaj listy, pokaż wszystko
+			cardwraps.forEach(function (w) { w.classList.remove('pg-hidden'); });
+			return;
+		}
+		var wraps = pgWidoczne();
+		var strony = Math.max(1, Math.ceil(wraps.length / PG_ROZMIAR));
+		if (str < 1) str = 1;
+		if (str > strony) str = strony;
+		pgStrona = str;
+		var od = (str - 1) * PG_ROZMIAR;
+		var doW = od + PG_ROZMIAR;
+		var pgAnimuj = []; // karty które wchodzą na tę stronę → animujemy je PO renderze (rAF niżej)
+		wraps.forEach(function (w, i) {
+			var poza = ( i < od || i >= doW );
+			w.classList.toggle('pg-hidden', poza );
+			// Karta wchodząca na widok (np. strona 2) NIE może czekać na scroll-trigger — startowała
+			// jako display:none (pg-hidden), więc ScrollTrigger.batch mógł "wejść" w nią w PRÓŻNI
+			// (element 0×0/bez layoutu) i już oznaczyć is-rev bez realnego pokazania. dokoncz() wtedy
+			// widzi is-rev i NIC nie robi → karta zostaje na opacity:0/translateY(32px) na zawsze
+			// (BUG: karty strony 2+ niewidoczne). NAPRAWA: paginacja wymusza widoczny stan końcowy
+			// BEZWARUNKOWO, niezależnie od is-rev — gsap.set (natychmiast), nie gsap.to/dokoncz().
+			if ( !poza ) {
+				var k = w.querySelector('.pnb-ev-card');
+				if ( k ) {
+					k.classList.add('is-rev'); // niech dalsze dokoncz() (np. z filtruj()) już jej nie rusza
+					if (maGsap && !rm) {
+						// Karta widoczna OD RAZU (gsap.set — pewne). Płynność daje CSS-owy fade na wrapperze
+						// niżej (klasa .pg-wejscie), NIE gsap.to — bo karta startuje display:none i gsap.to
+						// animował „w próżnię”, zostawiając opacity:0 (5 prób animacji GSAP = karta ukryta).
+						gsap.set(k, { y: 0, opacity: 1, clearProps: 'transform' });
+						gsap.set(k.querySelectorAll('.pnb-ev-main > *'), { y: 0, opacity: 1, clearProps: 'transform' });
+						pgAnimuj.push(k); // KARTA (nie wrapper — wrapper ma pod-scrub GSAP) → CSS fade opacity
+					}
+				}
+			}
+		});
+		// PŁYNNE, MIĘKKIE wejście przez CSS (nie GSAP — ten walczył z display:none i gubił opacity).
+		// Wrapper dostaje klasę .pg-wejscie która robi krótki fade+unos przez CSS transition. Restart
+		// animacji: zdejmij klasę, wymuś reflow, dodaj — inaczej przeglądarka nie odpali transition drugi raz.
+		if (pgAnimuj.length) {
+			pgAnimuj.forEach(function (w) { w.classList.remove('pg-wejscie'); });
+			void root.offsetWidth; // reflow — reset transition
+			requestAnimationFrame(function () {
+				pgAnimuj.forEach(function (w) { w.classList.add('pg-wejscie'); });
+			});
+		}
+		// grupy dat: nagłówek+sekcja widoczne tylko gdy mają ≥1 kartę na TEJ stronie (filtr + paginacja razem)
+		grupy.forEach(function (g) {
+			g.classList.toggle('is-hidden', !g.querySelector('.pnb-ev-cardwrap:not(.is-hidden):not(.pg-hidden)'));
+		});
+		pgRenderNumerki(strony);
+		if (maGsap && !rm) ScrollTrigger.refresh(); // strona się zmieniła — przelicz triggery (animacje głębi)
+	}
+
+	function pgPrzelicz() { // wywoływane po KAŻDYM filtrze/szukaniu — liczba stron mogła się zmienić
+		pgPokazStrone(1); // nowy zestaw wyników → zawsze wracamy na stronę 1
+	}
+
+	if (pager) {
+		pager.addEventListener('click', function (e) {
+			var btn = e.target.closest ? e.target.closest('[data-pg]') : null;
+			if (!btn || btn.disabled) return;
+			var cel = btn.getAttribute('data-pg');
+			var nowa = cel === 'prev' ? pgStrona - 1 : (cel === 'next' ? pgStrona + 1 : parseInt(cel, 10));
+			// KOLEJNOŚĆ dla PŁYNNEGO przejścia (nie „chamskie cięcie”): najpierw SKOK scrolla na górę listy
+			// (natychmiast, zanim oko zobaczy nowe karty — .pnb-ev-tl-in ma stałą pozycję pod paskiem chipów),
+			// POTEM pgPokazStrone odsłania karty animacją fade+unos. Efekt: „jestem na górze, wydarzenia
+			// się wysuwają” zamiast przewijania przez środek. Scroll w rAF (layout starej strony jeszcze
+			// stoi = .pnb-ev-tl-in w dobrej pozycji); karty animuje pgPokazStrone tuż po.
+			var lista = root.querySelector('.pnb-ev-tl-in') || root.querySelector('.pnb-ev-tl') || root;
+			var chips = root.querySelector('.pnb-ev-chips');
+			var offset = (chips ? chips.getBoundingClientRect().height : 0)
+				+ (document.body.classList.contains('admin-bar') ? 32 : 0) + 16;
+			var y = lista.getBoundingClientRect().top + window.pageYOffset - offset;
+			window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+			pgPokazStrone(nowa); // odsłania nowe karty z animacją (gsap.to fade+unos, stagger)
+		});
+		pgPrzelicz(); // stan początkowy (przed dotknięciem filtra) — policz strony, pokaż 1., zbuduj numerki
+	}
+
 	var chips = Array.prototype.slice.call(root.querySelectorAll('.pnb-ev-chip'));
 	chips.forEach(function (ch) {
 		ch.addEventListener('click', function () {
