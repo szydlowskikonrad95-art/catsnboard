@@ -1,5 +1,16 @@
 # Historia zmian
 
+## v2.2.1 — 10 lipca 2026
+
+Poprawka po debug-przeglądzie całego produktu (każda warstwa sprawdzona narzędziami):
+
+- **Tytuł karty przeglądarki po polsku** — w trybie PL zakładka pokazuje teraz „Galeria",
+  „Wydarzenia", „Joga z kotami" itd. (wcześniej zostawała angielska, mimo polskiej strony).
+- **Tytuł przy udostępnianiu linku** (Facebook/Google) też po polsku — spójny z polskim opisem.
+- Polska wersja strony odświeża się sama po aktualizacji wtyczki (stary wygląd nie zalega w pamięci).
+
+Wersje: pnb-blocks **1.10.35** · pnb-auto-pl **0.3.10** · motyw **1.1.12**.
+
 ## v2.2.0 — 9 lipca 2026
 
 Duże dopieszczenie: pełne tłumaczenie, szybsza strona, wygodniejszy kalendarz.
