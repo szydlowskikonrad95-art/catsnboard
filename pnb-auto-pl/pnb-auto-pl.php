@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PNB_AUTO_PL_VERSION', '0.3.7' );
+define( 'PNB_AUTO_PL_VERSION', '0.3.9' );
 define( 'PNB_AUTO_PL_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once PNB_AUTO_PL_DIR . 'inc/slownik.php';      // tabela słownika + pary do podmiany (cache)
