@@ -1566,7 +1566,16 @@ function pnb_kalendarz_render() {
 			/* translators: %s = tytuł wydarzenia */
 			$foto_a = '<a class="pnb-ev-plink pnb-ev-golink" href="' . esc_url( get_permalink( $id ) ) . '" aria-label="' . esc_attr( sprintf( __( 'Event details: %s', 'pnb-toolkit' ), pnb_event_tytul( $id ) ) ) . '">';
 			if ( has_post_thumbnail( $id ) ) {
-				$out .= '<div class="pnb-ev-photo">' . $foto_a . '<span class="pnb-ev-zoom">' . get_the_post_thumbnail( $id, 'large' ) . '</span></a></div>';
+				// WYDAJNOŚĆ + SEO/dostępność (2026-07-09): loading=lazy (zdjęcie ładuje się dopiero gdy
+				// wchodzi w widok — nie hurtem), decoding=async (nie blokuje renderu), oraz ALT = tytuł
+				// wydarzenia (był pusty na 35/35 zdjęć — zły SEO). Alt = tytuł PL w trybie ?lang=pl.
+				$foto_alt = pnb_event_tytul( $id );
+				$foto_html = get_the_post_thumbnail( $id, 'large', array(
+					'loading'  => 'lazy',
+					'decoding' => 'async',
+					'alt'      => $foto_alt,
+				) );
+				$out .= '<div class="pnb-ev-photo">' . $foto_a . '<span class="pnb-ev-zoom">' . $foto_html . '</span></a></div>';
 			} else {
 				$out .= '<div class="pnb-ev-photo">' . $foto_a . '<span class="pnb-ev-zoom pnb-ev-photo-brak" aria-hidden="true">🐾</span></a></div>';
 			}
