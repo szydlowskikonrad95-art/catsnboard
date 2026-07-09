@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       PNB Gallery & Events
  * Description:       Premium gallery (film strip + "Moments" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site.
- * Version:           1.10.31
+ * Version:           1.10.32
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            dzidek
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Stałe — nazwy PNB_TOOLKIT_* zachowane (moduły galerii/kalendarza ich używają; brak przepisywania). */
-define( 'PNB_TOOLKIT_VERSION', '1.10.31' );
+define( 'PNB_TOOLKIT_VERSION', '1.10.32' );
 define( 'PNB_TOOLKIT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PNB_TOOLKIT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -246,6 +246,14 @@ function pnb_blocks_zasiej_demo_wydarzenia() {
 		$foto = pnb_blocks_demo_zalacznik( $w['foto'] );
 		if ( $foto ) {
 			set_post_thumbnail( $id, $foto );
+		}
+		// AUTO-TŁUMACZENIE demo (2026-07-09): demo szło INNĄ drogą niż scrapowane (importer woła
+		// pnb_pl_auto_po_zapisie → pełny opis PL), przez co PEŁNY opis demo na singlu zostawał EN
+		// (skrót na karcie łapał gotowiec, ale pełny opis akapitami — nie). Teraz demo woła to samo
+		// co scrapowane. GUARD: tylko gdy klucz API wpięty — inaczej pomija (bez klucza aktywacja nie
+		// wisi, opis dotłumaczy się gdy klient wpisze klucz i kliknie „Przetłumacz witrynę”).
+		if ( function_exists( 'pnb_pl_auto_po_zapisie' ) && '' !== trim( (string) get_option( 'pnb_auto_pl_klucz', '' ) ) ) {
+			pnb_pl_auto_po_zapisie( get_post( $id ) );
 		}
 	}
 }
