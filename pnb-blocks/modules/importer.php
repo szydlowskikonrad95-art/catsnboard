@@ -59,6 +59,33 @@ function pnb_importer_jeden_cykl() {
 		return; // klient nie ustawił źródła — nic nie robimy (nie błąd)
 	}
 
+	// LOCK ANTY-DUPLIKAT: tylko JEDEN cykl importu naraz. Bez tego dwa cykle nakładające się w czasie
+	// (np. WP-Cron + wizyta gościa w tej samej sekundzie) oba czytały "czy wydarzenie istnieje?" ZANIM
+	// którykolwiek zapisał → oba widziały "nie ma" → oba dodawały → DUPLIKATY (ten sam source_id 2×).
+	// add_option zwraca false gdy opcja już istnieje = atomowa blokada (bezpieczniejsza niż get+set).
+	// TTL 5 min: zawieszony cykl sam zwalnia lock (nie blokuje importu na zawsze). 2026-07-09.
+	$lock = 'pnb_importer_lock';
+	$teraz = time();
+	$zajety = (int) get_option( $lock, 0 );
+	if ( $zajety > $teraz ) {
+		return; // inny cykl trwa (lock jeszcze ważny) → pomiń, żeby nie dublować
+	}
+	// ustaw lock na 5 min (autoload=false — nie ładuj przy każdym żądaniu)
+	if ( false === get_option( $lock, false ) ) {
+		add_option( $lock, $teraz + 300, '', false );
+	} else {
+		update_option( $lock, $teraz + 300, false );
+	}
+	// ZWOLNIENIE LOCKA gwarantowane — register_shutdown_function odpali się niezależnie jak funkcja
+	// wyjdzie (return w breakerze/błędzie/końcu, wyjątek, nawet fatal). Bez tego którykolwiek wczesny
+	// return zostawiłby lock i blokował import do wygaśnięcia TTL (5 min). Tak lock trwa dokładnie tyle
+	// ile cykl. delete_option = zwolnij; guard na wypadek gdyby WP już był w shutdown.
+	register_shutdown_function( function () use ( $lock ) {
+		if ( function_exists( 'delete_option' ) ) {
+			delete_option( $lock );
+		}
+	} );
+
 	// CIRCUIT BREAKER: jeśli źródło padało pod rząd (np. Eventbrite wywala 500/ban), przestajemy walić
 	// co 10 min — odczekujemy dłużej z każdą porażką. Chroni przed łomotaniem martwego/blokującego źródła.
 	$breaker_do = (int) get_option( 'pnb_importer_breaker_do', 0 );
