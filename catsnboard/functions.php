@@ -399,7 +399,9 @@ function catsnboard_meta_seo() {
 
 	echo "\n<!-- SEO meta (catsnboard) -->\n";
 	echo '<meta name="description" content="' . esc_attr( $opis ) . '">' . "\n";
-	echo '<meta property="og:type" content="' . ( is_singular() && ! is_front_page() ? 'article' : 'website' ) . '">' . "\n";
+	// article tylko dla wpisów/wydarzeń (singular post/pnb_wydarzenie), NIE dla stron (page) — te są website.
+	$og_type = ( is_singular( array( 'post', 'pnb_wydarzenie' ) ) && ! is_front_page() ) ? 'article' : 'website';
+	echo '<meta property="og:type" content="' . esc_attr( $og_type ) . '">' . "\n";
 	echo '<meta property="og:title" content="' . esc_attr( $tytul ) . '">' . "\n";
 	echo '<meta property="og:description" content="' . esc_attr( $opis ) . '">' . "\n";
 	echo '<meta property="og:url" content="' . esc_url( ( is_singular() || is_page() ) ? get_permalink() : home_url( add_query_arg( array(), $GLOBALS['wp']->request ) ) ) . '">' . "\n";

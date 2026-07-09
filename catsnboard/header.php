@@ -15,6 +15,8 @@
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
+<?php /* skip-link (a11y 2026-07-09): klawiatura/czytnik przeskakuje menu wprost do treści. */ ?>
+<a class="pnb-skip-link" href="#glowna-tresc"><?php echo esc_html( catsnboard_txt( 'a11y.skip', 'Skip to content' ) ); ?></a>
 <div class="cur" id="cur" aria-hidden="true"></div>
 
 <!-- ═══ NAV ═══ -->
@@ -57,6 +59,7 @@
   </div>
 </nav>
 
+<span id="glowna-tresc" tabindex="-1"></span><?php // cel skip-linka (a11y) — treść zaczyna się tu ?>
 <div class="menu-scrim" id="menuScrim"></div>
 <?php
 /*
