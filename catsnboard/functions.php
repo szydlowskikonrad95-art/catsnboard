@@ -368,8 +368,11 @@ function catsnboard_meta_seo() {
 	$marka = get_bloginfo( 'name' );
 
 	// Opis zależny od strony (front, wydarzenia, galeria, kontakt, reszta).
+	$pl = isset( $_GET['lang'] ) && 'pl' === $_GET['lang']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	if ( is_front_page() ) {
-		$opis = catsnboard_txt( 'seo.home', 'Cats\'N\'Board — a warm, calm second home for your cat in Żoliborz, Warsaw. Boarding, daycare and gentle care by people who love cats.' );
+		$opis = $pl
+			? 'Cats\'N\'Board — ciepły, spokojny drugi dom dla Twojego kota na Żoliborzu w Warszawie. Pensjonat, opieka dzienna i troskliwa opieka ludzi, którzy kochają koty.'
+			: catsnboard_txt( 'seo.home', 'Cats\'N\'Board — a warm, calm second home for your cat in Żoliborz, Warsaw. Boarding, daycare and gentle care by people who love cats.' );
 	} elseif ( is_singular( 'pnb_wydarzenie' ) ) {
 		// Opis wydarzenia do meta/OG. W trybie ?lang=pl bierzemy PRZETŁUMACZONY opis (pnb_event_opis_pl,
 		// składany z akapitów ze słownika) — inaczej meta description/og zostawały EN mimo PL strony
@@ -389,6 +392,17 @@ function catsnboard_meta_seo() {
 			'services' => 'Boarding, daycare and gentle cat care at Cats\'N\'Board in Żoliborz, Warsaw.',
 			'pricing'  => 'Transparent pricing for cat boarding and daycare at Cats\'N\'Board.',
 		);
+		// Meta description stron to teksty w KODZIE motywu (nie treść) — słownik pnb-auto-pl ich nie tłumaczy.
+		// W trybie ?lang=pl podajemy polskie odpowiedniki, żeby udostępnienie stron na FB/Google było PL. 2026-07-09.
+		if ( isset( $_GET['lang'] ) && 'pl' === $_GET['lang'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$mapa = array(
+				'gallery'  => 'Zobacz nasze koty podczas zabawy, drzemki i przytulania — galeria pensjonatu Cats\'N\'Board w Warszawie.',
+				'events'   => 'Dni adopcyjne, zajęcia dla kotów i dni otwarte — nadchodzące wydarzenia w Cats\'N\'Board.',
+				'contact'  => 'Skontaktuj się z Cats\'N\'Board — zadzwoń lub napisz, aby zarezerwować pensjonat, opiekę dzienną lub wizytę.',
+				'services' => 'Pensjonat, opieka dzienna i troskliwa opieka nad kotami w Cats\'N\'Board na Żoliborzu w Warszawie.',
+				'pricing'  => 'Przejrzysty cennik pensjonatu i opieki dziennej dla kotów w Cats\'N\'Board.',
+			);
+		}
 		$opis = isset( $mapa[ $slug ] ) ? $mapa[ $slug ] : catsnboard_txt( 'seo.home', $marka . ' — a warm second home for your cat in Warsaw.' );
 	} else {
 		$opis = catsnboard_txt( 'seo.home', $marka . ' — a warm second home for your cat in Warsaw.' );
