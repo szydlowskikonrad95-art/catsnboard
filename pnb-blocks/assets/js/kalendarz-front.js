@@ -259,18 +259,9 @@
 	   zakresy PODBITE (werdykt P2): ruch ma być widoczny między klatkami, nie homeopatyczny */
 	var tl = root.querySelector('.pnb-ev-tl');
 	if (tl) {
-		var wm = tl.querySelector('.pnb-ev-wm');
-		if (wm) { // watermark: kontr-tempo w pionie ±90px + dryf w bok (xPercent -50 = centrowanie z CSS)
-			gsap.fromTo(wm, { xPercent: -50, y: 90 }, { xPercent: -70, y: -90, ease: 'none',
-				scrollTrigger: { trigger: tl, start: 'top bottom', end: 'bottom top', scrub: 1.4 } });
-		}
-		[['.pnb-ev-blob-a', 130, 46], ['.pnb-ev-blob-b', -150, -40]].forEach(function (b) {
-			var el = tl.querySelector(b[0]);
-			if (el) { // plamy dryfują najwolniej, każda w swoją stronę (pion + lekki skos)
-				gsap.to(el, { y: b[1], x: b[2], ease: 'none',
-					scrollTrigger: { trigger: tl, start: 'top bottom', end: 'bottom top', scrub: 1.8 } });
-			}
-		});
+		// (watermark parallax usunięty 2026-07-09 — scrub tła = koszt co klatkę; watermark statyczny)
+		// ⛔ USUNIĘTO parallax plam (blob) — 2026-07-09 WYDAJNOŚĆ. Blob-y mają blur, a scrub przeliczał
+		// rozmycie co klatkę scrolla = lekki lag kalendarza (galeria miała to samo). Plamy statyczne.
 		var linia = tl.querySelector('.pnb-ev-line');
 		if (linia) { // linia osi rośnie ze scrollem — origin TOP, tani efektowny detal
 			gsap.fromTo(linia, { scaleY: 0 }, { scaleY: 1, transformOrigin: 'top center', ease: 'none',
