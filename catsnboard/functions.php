@@ -357,3 +357,58 @@ function catsnboard_training_bar() {
 	</section>
 	<?php
 }
+
+/**
+ * META DESCRIPTION + OPEN GRAPH (SEO/social) — dodane 2026-07-09 (audyt: brak na wszystkich stronach).
+ * Motyw sam generuje (bez pluginu SEO). Opis per typ strony; OG dla ładnego udostępniania na FB/social.
+ * Priorytet 5 na wp_head — po title-tag, przed resztą.
+ */
+function catsnboard_meta_seo() {
+	$sep  = ' — ';
+	$marka = get_bloginfo( 'name' );
+
+	// Opis zależny od strony (front, wydarzenia, galeria, kontakt, reszta).
+	if ( is_front_page() ) {
+		$opis = catsnboard_txt( 'seo.home', 'Cats\'N\'Board — a warm, calm second home for your cat in Żoliborz, Warsaw. Boarding, daycare and gentle care by people who love cats.' );
+	} elseif ( is_singular( 'pnb_wydarzenie' ) ) {
+		$op = wp_strip_all_tags( (string) get_post_field( 'post_content', get_the_ID() ) );
+		$opis = $op ? mb_substr( trim( $op ), 0, 155 ) : catsnboard_txt( 'seo.events', 'Adoption days, cat classes and open days at Cats\'N\'Board.' );
+	} elseif ( is_page() ) {
+		$slug = get_post_field( 'post_name', get_the_ID() );
+		$mapa = array(
+			'gallery'  => 'See our cats at play, nap and cuddle time — the gallery of Cats\'N\'Board pension in Warsaw.',
+			'events'   => 'Adoption days, cat classes and open days — upcoming events at Cats\'N\'Board.',
+			'contact'  => 'Get in touch with Cats\'N\'Board — call or write to book boarding, daycare or a visit.',
+			'services' => 'Boarding, daycare and gentle cat care at Cats\'N\'Board in Żoliborz, Warsaw.',
+			'pricing'  => 'Transparent pricing for cat boarding and daycare at Cats\'N\'Board.',
+		);
+		$opis = isset( $mapa[ $slug ] ) ? $mapa[ $slug ] : catsnboard_txt( 'seo.home', $marka . ' — a warm second home for your cat in Warsaw.' );
+	} else {
+		$opis = catsnboard_txt( 'seo.home', $marka . ' — a warm second home for your cat in Warsaw.' );
+	}
+	$opis = trim( preg_replace( '/\s+/u', ' ', $opis ) );
+
+	// Obrazek OG: featured jeśli jest, inaczej Site Icon / logo.
+	$og_img = '';
+	if ( is_singular() && has_post_thumbnail() ) {
+		$og_img = get_the_post_thumbnail_url( get_the_ID(), 'large' );
+	} elseif ( function_exists( 'get_site_icon_url' ) && get_site_icon_url() ) {
+		$og_img = get_site_icon_url( 512 );
+	}
+	$tytul = wp_get_document_title();
+
+	echo "\n<!-- SEO meta (catsnboard) -->\n";
+	echo '<meta name="description" content="' . esc_attr( $opis ) . '">' . "\n";
+	echo '<meta property="og:type" content="' . ( is_singular() && ! is_front_page() ? 'article' : 'website' ) . '">' . "\n";
+	echo '<meta property="og:title" content="' . esc_attr( $tytul ) . '">' . "\n";
+	echo '<meta property="og:description" content="' . esc_attr( $opis ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_url( ( is_singular() || is_page() ) ? get_permalink() : home_url( add_query_arg( array(), $GLOBALS['wp']->request ) ) ) . '">' . "\n";
+	echo '<meta property="og:site_name" content="' . esc_attr( $marka ) . '">' . "\n";
+	if ( $og_img ) {
+		echo '<meta property="og:image" content="' . esc_url( $og_img ) . '">' . "\n";
+		echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+	} else {
+		echo '<meta name="twitter:card" content="summary">' . "\n";
+	}
+}
+add_action( 'wp_head', 'catsnboard_meta_seo', 5 );

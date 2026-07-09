@@ -1395,7 +1395,9 @@ function pnb_kalendarz_render() {
 	// Nagłówek budowany z JEDNEGO tłumaczonego stringu (nie 3 osobne słowa — inaczej PL to bełkot słowo-w-słowo).
 	// Ostatnie słowo = akcent koralowy + kropka; wzór jak w galerii. „Save the date." / „Zarezerwuj termin."
 	// Tekst edytowalny w panelu Teksty (zakładka Wydarzenia); pnb_kalendarz_hero_slowa robi akcent na ostatnim słowie.
-	$out .= '<h1 class="pnb-ev-h1">' . pnb_kalendarz_hero_slowa( pnb_txt( 'events.hero.title', 'Save the date.' ) ) . '</h1>';
+	// TAG h2 (nie h1) — 2026-07-09 SEO: strona listy wydarzeń ma już h1 z motywu („Events"), a jeden h1
+	// na stronę to standard. Klasa pnb-ev-h1 zostaje (wygląd bez zmian), zmienia się tylko poziom nagłówka.
+	$out .= '<h2 class="pnb-ev-h1 pnb-ev-hero-h">' . pnb_kalendarz_hero_slowa( pnb_txt( 'events.hero.title', 'Save the date.' ) ) . '</h2>';
 	$out .= '<p class="pnb-ev-lead">' . esc_html( pnb_txt( 'events.hero.lead1', 'Adoption days, cat classes and open doors at the pension.' ) ) . '<br>'
 		. esc_html( pnb_txt( 'events.hero.lead2', 'Sign up below — spots are limited.' ) ) . '</p>';
 	$out .= '</div>';
