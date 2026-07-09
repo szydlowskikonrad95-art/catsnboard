@@ -165,7 +165,11 @@
 		// srcset+sizes: kadr rzeki ma stałą szer. ~clamp(200..300px) → przeglądarka weźmie mały wariant
 		// zamiast 'large'. sizes = realna szerokość kadru (WYDAJNOŚĆ — mniejszy transfer na wszystkich ekranach).
 		var srcsetAttr = k.srcset ? ' srcset="' + esc(k.srcset) + '" sizes="(max-width:768px) 200px, 300px"' : '';
-		return '<img src="' + esc(k.src) + '"' + srcsetAttr + ' data-full="' + esc(k.full || k.src) + '" data-cap="' + esc(cap) + '" alt="' + esc(cap || 'Cats’N’Board') + '" loading="lazy">';
+		// decoding="async" (WYDAJNOŚĆ 2026-07-09): rzeki to ~48 obrazów budowanych innerHTML. Bez tego
+		// przeglądarka dekodowała je SYNCHRONICZNIE na głównym wątku przy wejściu → scroll zacinał
+		// pierwsze ~1.5s (zmierzone: img.decode() na kilkunastu obrazach zawieszał renderer 45s+).
+		// async = dekodowanie na wątku bocznym, główny wątek wolny dla scrolla.
+		return '<img src="' + esc(k.src) + '"' + srcsetAttr + ' data-full="' + esc(k.full || k.src) + '" data-cap="' + esc(cap) + '" alt="' + esc(cap || 'Cats’N’Board') + '" loading="lazy" decoding="async">';
 	}
 	function zbudujRzeke(id, kadry) {
 		var el = document.getElementById(id);

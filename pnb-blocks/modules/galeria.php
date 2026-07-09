@@ -258,7 +258,7 @@ function pnb_galeria_render() {
 	}
 	$out  = $demo_hint . '<section class="pnb-ghero' . ( $ghero_img ? ' has-img' : '' ) . '">';
 	if ( $ghero_img ) {
-		$out .= '<div class="pnb-ghero-img" aria-hidden="true"><img src="' . esc_url( $ghero_img ) . '" alt="" loading="eager"></div>';
+		$out .= '<div class="pnb-ghero-img" aria-hidden="true"><img src="' . esc_url( $ghero_img ) . '" alt="" loading="eager" decoding="async"></div>';
 		$out .= '<div class="pnb-ghero-veil" aria-hidden="true"></div>';
 		$out .= '<div class="pnb-ghero-grain" aria-hidden="true"></div>'; // ziarno jak w hero kalendarza
 	}
