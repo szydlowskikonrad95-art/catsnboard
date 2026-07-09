@@ -1271,15 +1271,31 @@ function pnb_kalendarz_render() {
 	// jeden przebieg po danych (bez the_post — czytamy po ID), z niego chips-liczniki i grupy dat
 	$kategorie = pnb_kalendarz_kategorie();
 	$items     = array();
+	// DEDUPLIKACJA (naprawa 2026-07-09): scraper czasem importuje TO SAMO wydarzenie 2× z różnym
+	// source_id (np. re-scrape tego samego ogłoszenia) → dwa osobne posty WP o identycznym tytule
+	// ORAZ identycznej dacie. Klucz = tytuł (lowercase, trim) + data — dedup działa TYLKO gdy tytuł
+	// I data są identyczne. ⚠️ Sam tytuł to za mało: dwa różne "Yoga with Cats" różnych organizatorów
+	// o RÓŻNYCH datach (ID86 2026-07-09, ID88 2026-07-19) to PRAWDZIWE różne wydarzenia i OBA zostają —
+	// mają różne klucze (…|2026-07-09 vs …|2026-07-19). Prawdziwe różne wydarzenia praktycznie nigdy
+	// nie mają identycznego tytułu I daty, więc dedup po parze jest bezpieczny.
+	// Pierwsze trafienie (kolejność ASC po dacie z zapytania) zostaje, kolejne pomijamy.
+	$pnb_dedup_widziane = array();
 	foreach ( $q->posts as $p ) {
 		$kat = get_post_meta( $p->ID, '_pnb_event_cat', true );
 		if ( ! isset( $kategorie[ $kat ] ) ) {
 			$kat = 'other';
 		}
+		$tytul_p = (string) get_the_title( $p->ID );
+		$data_p  = (string) get_post_meta( $p->ID, '_pnb_event_date', true );
+		$klucz_dedup = mb_strtolower( trim( $tytul_p ) ) . '|' . $data_p;
+		if ( isset( $pnb_dedup_widziane[ $klucz_dedup ] ) ) {
+			continue; // duplikat (podwójny import) — pomijamy, pierwsze wystąpienie już w $items
+		}
+		$pnb_dedup_widziane[ $klucz_dedup ] = true;
 		$items[] = array(
 			'id'      => (int) $p->ID,
-			'tytul'   => (string) get_the_title( $p->ID ),
-			'data'    => (string) get_post_meta( $p->ID, '_pnb_event_date', true ),
+			'tytul'   => $tytul_p,
+			'data'    => $data_p,
 			'godzina' => (string) get_post_meta( $p->ID, '_pnb_event_time', true ),
 			'koniec'  => (string) get_post_meta( $p->ID, '_pnb_event_time_end', true ),
 			'miejsce' => (string) get_post_meta( $p->ID, '_pnb_event_place', true ),
@@ -1538,6 +1554,11 @@ function pnb_kalendarz_render() {
 	}
 	if ( $items ) {
 		$out .= '<p class="pnb-ev-none is-hidden pnb-ev-mono">' . esc_html__( 'Nothing in this range — try “All”.', 'pnb-toolkit' ) . '</p>';
+		// Paginacja listy — kontener PUSTY, JS (kalendarz-front.js) liczy WIDOCZNE (po filtrze) karty i
+		// wypełnia numerki (10/stronę). data-prev/data-next = etykiety ARIA strzałek, tłumaczalne z PHP.
+		$out .= '<nav class="pnb-ev-pager" aria-label="' . esc_attr__( 'Events pagination', 'pnb-toolkit' )
+			. '" data-prev="' . esc_attr__( 'Previous page', 'pnb-toolkit' )
+			. '" data-next="' . esc_attr__( 'Next page', 'pnb-toolkit' ) . '"></nav>';
 	}
 	$out .= '</div></div>'; // .pnb-ev-tl-in, .pnb-ev-tl
 

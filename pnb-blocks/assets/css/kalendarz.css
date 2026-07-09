@@ -17,6 +17,15 @@
 .pnb-ev-mono{font-family:ui-monospace,'JetBrains Mono',Consolas,monospace;font-size:.72rem;
   letter-spacing:.14em;text-transform:uppercase;color:var(--teal-mono);line-height:1.7;}
 .pnb-events .is-hidden{display:none !important;}
+/* .pg-hidden = ucięte PAGINACJĄ (osobna warstwa od .is-hidden filtra — patrz kalendarz-front.js) */
+.pnb-events .pg-hidden{display:none !important;}
+/* Miękkie wejście KARTY przy zmianie strony paginacji. Klasa na .pnb-ev-card (NIE wrapper — wrapper
+   ma pod-scrub GSAP na transform, walczyłby z animacją). Animujemy TYLKO opacity (transform karty
+   trzyma GSAP-reveal — nie ruszamy). Klasa dodawana z JS po odsłonięciu; respektuje reduced-motion. */
+@media (prefers-reduced-motion: no-preference){
+  .pnb-events .pnb-ev-card.pg-wejscie{animation:pnbPgIn .5s cubic-bezier(.16,1,.3,1) both;}
+}
+@keyframes pnbPgIn{from{opacity:0;}to{opacity:1;}}
 
 /* ═══ HERO ~72vh: zdjęcie kota (paralaksa JS) + lżejszy welon + ziarno + typografia×foto ═══
    overflow:VISIBLE — „date." nachodzi na dolną krawędź welonu (sygnaturowy zderzak);
@@ -186,9 +195,9 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
   box-shadow:var(--pnb-shadow);transition:box-shadow .5s var(--ease);}
 .pnb-ev-card:hover{box-shadow:var(--pnb-shadow-h);}
 /* „Edytuj wydarzenie" (tylko admin) — w PRAWYM GÓRNYM ROGU karty (decyzja klienta), nie w rzędzie akcji.
-   absolute względem karty (position:relative wyżej). Dyskretny, nie zabiera miejsca guzikom klienta. */
-.pnb-ev-card .pnb-ev-edit{position:absolute;top:clamp(.9rem,2vw,1.4rem);right:clamp(.9rem,2vw,1.4rem);
-  z-index:3;margin:0;}
+   W RZĘDZIE przycisków (obok „Add to Calendar"/„Event details") — stały, widoczny, nie znika przy
+   hover (decyzja klienta 2026-07-09: było absolute na zdjęciu i chowało się). */
+.pnb-ev-card .pnb-ev-edit{margin:0;}
 .pnb-ev-time{color:var(--coral-d);margin-bottom:.5rem;}
 /* Font tytułu WYMUSZONY na obu (H2 + link w środku) z !important + smoothing — żeby żaden inny
    arkusz/stan ładowania nie podmienił go na fallback. Wszystkie tytuły renderują się identycznie Varelą. */
@@ -324,6 +333,30 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
 .pnb-ev-photo-brak{height:clamp(190px,24vw,250px);display:flex;align-items:center;justify-content:center;
   font-size:3rem;background:linear-gradient(150deg,var(--teal),var(--peach));}
 .pnb-ev-none{text-align:center;padding:2.2rem 0 .5rem;}
+
+/* ═══ PAGINACJA listy (‹ 1 2 3 ›) — JS liczy WIDOCZNE (po filtrze) karty i wypełnia numerki,
+   patrz kalendarz-front.js. Belka ukryta domyślnie (display:none), JS dodaje .is-on gdy >1 strona. ═══ */
+/* BUG naprawiony (2026-07-09): motyw ma GOŁY selektor `nav{position:absolute;top:0;left:0;right:0;
+   z-index:90;background:...}` (motyw-catsnboard/style.css, pasek nawigacji strony). Nasz pager to
+   TEŻ <nav> — bez własnego position: theme'owa reguła wygrywała (nic jej nie nadpisywało), więc pager
+   odrywał się z przepływu i lądował position:absolute;top:0 względem .pnb-ev-tl-in = wizualnie NAD
+   wydarzeniami zamiast pod nimi. Jawnie nadpisujemy WSZYSTKIE właściwości które theme'owy `nav{}` ustawia. */
+.pnb-ev-pager{position:static;top:auto;left:auto;right:auto;z-index:auto;background:none;box-shadow:none;
+  display:none;justify-content:center;align-items:center;flex-wrap:wrap;
+  gap:.35rem;padding:1.6rem 0 .4rem;}
+.pnb-ev-pager.is-on{display:flex;}
+.pnb-ev-pg{flex:none;display:inline-flex;align-items:center;justify-content:center;
+  min-width:2.5rem;height:2.5rem;padding:0 .55rem;border:none;cursor:pointer;
+  font-family:'Varela Round',sans-serif;font-size:.92rem;color:var(--ink);line-height:1;
+  background:rgba(255,255,255,.74);border-radius:999px;
+  transition:background .3s,color .3s,box-shadow .35s var(--ease);}
+.pnb-ev-pg:hover{background:rgba(251,210,200,.5);}
+.pnb-ev-pg.is-active{background:var(--coral);color:#fff;box-shadow:0 8px 20px rgba(222,101,79,.35);cursor:default;}
+.pnb-ev-pg[disabled]{opacity:.35;pointer-events:none;cursor:default;}
+.pnb-ev-pg-arrow{font-size:1.05rem;}
+@media(max-width:480px){
+  .pnb-ev-pg{min-width:2.15rem;height:2.15rem;padding:0 .4rem;font-size:.85rem;}
+}
 
 /* ŁĄCZNIK oś→mapa: kreskowana trasa (jak route na mapie) zamiast pustego pasa (P4, -40% spacingu).
    Końcówka path-a wychodzi POZA viewBox (overflow:visible) i dotyka karty mapy przy pinezce (P3) —
