@@ -160,6 +160,20 @@ function pnb_pl_pary_do_podmiany() {
 			$pary[ '>' . $w->original . '<' ] = '>' . $w->translated . '<';
 		}
 	}
+	// WARIANTY MYŚLNIKA: WordPress przez wptexturize zamienia w renderze zwykły „ - ” na en-dash „–”
+	// (&#8211;) i „--” na em-dash „—”. Słownik trzyma ORYGINAŁ (z „-”), więc strtr nie łapał opisów
+	// wydarzeń zawierających myślnik → zostawały EN (bug 2026-07-09: tytuły PL, ale opisy z Eventbrite EN).
+	// Dla KAŻDEJ pary której klucz zawiera „ - ” dokładamy bliźniaczą parę z en-dashem — strtr złapie
+	// obie formy. Wąsko (tylko myślnik w spacjach), nie ruszamy reszty (lekcja: kotwice, nie gołe stringi).
+	$warianty = array();
+	foreach ( $pary as $klucz => $wartosc ) {
+		if ( false !== strpos( $klucz, ' - ' ) ) {
+			$warianty[ str_replace( ' - ', ' – ', $klucz ) ] = str_replace( ' - ', ' – ', $wartosc ); // en-dash
+		}
+	}
+	if ( $warianty ) {
+		$pary = $pary + $warianty; // + zachowuje istniejące klucze, dokłada nowe
+	}
 	uksort( $pary, function ( $a, $b ) {
 		return strlen( $b ) - strlen( $a );
 	} );
