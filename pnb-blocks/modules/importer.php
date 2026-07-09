@@ -663,6 +663,11 @@ function pnb_importer_zapisz_pola( $post_id, $w, $tylko_fakty = false ) {
 		$att = pnb_importer_pobierz_obrazek( $w['image_url'], $post_id );
 		if ( $att ) {
 			set_post_thumbnail( $post_id, $att );
+			// ALT = tytuł wydarzenia (SEO/dostępność) — WP nie ustawia go przy sideload.
+			$tytul_alt = get_the_title( $post_id );
+			if ( '' !== $tytul_alt && '' === (string) get_post_meta( (int) $att, '_wp_attachment_image_alt', true ) ) {
+				update_post_meta( (int) $att, '_wp_attachment_image_alt', sanitize_text_field( $tytul_alt ) );
+			}
 		}
 	}
 }

@@ -278,24 +278,11 @@
 		}
 	}
 
-	/* ── pod-scrub kart: WRAPPER faluje ±10px naprzemiennie (osobny kanał — reveal trzyma transform karty) ── */
-	gsap.utils.toArray('.pnb-ev-cardwrap').forEach(function (w, i) {
-		var kier = (i % 2 === 0) ? 1 : -1;
-		gsap.fromTo(w, { y: 10 * kier }, { y: -10 * kier, ease: 'none',
-			scrollTrigger: { trigger: w, start: 'top bottom', end: 'bottom top', scrub: 1.2 } });
-	});
-
-	/* ── pod-scrub ZDJĘĆ kart podbity do ~15% zakresu (werdykt P3: było homeopatyczne ~7%).
-	   Kanał na .pnb-ev-photo (blok, nie IMG — IMG należy do hover-zoom). Tylko desktop:
-	   na mobile zdjęcie stoi NAD tytułem w stacku i scrub by nachodził na tekst. ── */
-	gsap.matchMedia().add('(min-width: 881px)', function () {
-		gsap.utils.toArray('.pnb-ev-photo').forEach(function (f) {
-			// r5: amplituda podbita 7.5→12% — plan zdjęć ma jechać ~1.12× względem strony PRZEZ CAŁY przejazd
-			// (sędzia zmierzył plany 1:1; ten kanał daje różnicę temp = głębia kinetyczna, nie malowana)
-			gsap.fromTo(f, { yPercent: 12 }, { yPercent: -12, ease: 'none',
-				scrollTrigger: { trigger: f, start: 'top bottom', end: 'bottom top', scrub: 1.1 } });
-		});
-	});
+	/* ⛔ USUNIĘTO pod-scrub kart (falowanie ±10px) i parallax zdjęć (2026-07-09 — WYDAJNOŚĆ).
+	   Każda karta miała 2 scroll-triggery scrub → przy 23 kartach ~46 z 69 instancji ScrollTrigger
+	   → strona przy scrollu ZAWIESZAŁA SIĘ (zmierzone: FPS=0, user zgłaszał lag). scrub liczy
+	   transform na KAŻDEJ klatce scrolla × dziesiątki kart = zabójstwo. Efekt głębi był subtelny;
+	   płynność ważniejsza. Zostaje reveal (pojawianie kart) + linia osi — tanie (once/pojedyncze). */
 
 	/* nagłówki grup dat: fade-slide */
 	gsap.utils.toArray('.pnb-ev-ghead').forEach(function (h) {
