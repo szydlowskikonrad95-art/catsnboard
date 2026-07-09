@@ -31,12 +31,16 @@
   if (scrim) { scrim.addEventListener('click', function () { document.body.classList.remove('menu-open'); }); }
 
   // ═══ CUSTOM CURSOR (coral dot, grows over interactive) ═══
-  /* ⛔ USUNIĘTO custom cursor (2026-07-09 WYDAJNOŚĆ). Miał NIESKOŃCZONĄ pętlę requestAnimationFrame
-     (cl() chodziła NON-STOP, nawet gdy mysz stała) + mousemove na WSZYSTKICH a/button. To lagowało
-     TYLKO na PC (mobile bez hover = ukryty, był płynny; user zauważył różnicę mobile vs desktop).
-     Najgorszy z efektów myszy bo działał stale. Element #cur chowamy. */
   var cur = document.getElementById('cur');
-  if (cur) { cur.style.display = 'none'; }
+  if (cur && matchMedia('(hover:hover)').matches) {
+    var mx = innerWidth / 2, my = innerHeight / 2, cx = mx, cy = my;
+    addEventListener('mousemove', function (e) { mx = e.clientX; my = e.clientY; cur.classList.add('seen'); });
+    (function cl() { cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2; cur.style.transform = 'translate(' + cx + 'px,' + cy + 'px) translate(-50%,-50%)'; requestAnimationFrame(cl); })();
+    document.querySelectorAll('a,button,[data-c]').forEach(function (el) {
+      el.addEventListener('mouseenter', function () { cur.classList.add('big'); });
+      el.addEventListener('mouseleave', function () { cur.classList.remove('big'); });
+    });
+  } else if (cur) { cur.style.display = 'none'; }
 
   // ═══ LIGHTBOX (gallery) ═══
   var figs = [].slice.call(document.querySelectorAll('[data-g] img'));
