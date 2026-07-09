@@ -159,6 +159,10 @@
 	}
 
 	function pgPrzelicz() { // wywoływane po KAŻDYM filtrze/szukaniu — liczba stron mogła się zmienić
+		// filtr/szukanie = NOWY zestaw wyników → strona 1 + wyczyść #ev z URL (pamięć strony nieaktualna).
+		if (window.history && window.history.replaceState && /^#ev\d+$/.test(location.hash)) {
+			window.history.replaceState(null, '', location.pathname + location.search);
+		}
 		pgPokazStrone(1); // nowy zestaw wyników → zawsze wracamy na stronę 1
 	}
 
@@ -191,13 +195,28 @@
 				window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
 			}
 			pgPokazStrone(nowa, true);                  // przebuduj listę (karty się wymieniają)
+			// PAMIĘĆ STRONY: zapisz numer w hash URL (#ev3). Po F5 init go czyta i wraca na tę stronę
+			// (user: „odświeżam na stronie 3 → chcę zostać na 3”). Hash, NIE ?query — query zmieniłby klucz
+			// cache strony PL (osobny cache per numer). Hash nie idzie do serwera → cache nietknięty.
+			// Strona 1 = czysty URL (bez #ev1), replaceState = bez zaśmiecania historii Wstecz.
+			if (window.history && window.history.replaceState) {
+				var bazaUrl = location.pathname + location.search;
+				window.history.replaceState(null, '', nowa > 1 ? bazaUrl + '#ev' + nowa : bazaUrl);
+			}
 			if (maGsap && !rm) ScrollTrigger.refresh(); // przelicz triggery pod nowy layout
 			// Utrwal scroll PO refresh (refresh może go ruszyć) — jeszcze raz do tej samej stałej kotwicy.
 			if (lista && window.lenis && typeof window.lenis.scrollTo === 'function') {
 				window.lenis.scrollTo(lista, { offset: offset, immediate: true, force: true });
 			}
 		});
-		pgPrzelicz(); // stan początkowy (przed dotknięciem filtra) — policz strony, pokaż 1., zbuduj numerki
+		// STAN POCZĄTKOWY: policz strony, zbuduj numerki. Jeśli URL ma #ev<N> (F5 na stronie N) → wróć
+		// na tę stronę. Inaczej strona 1. (pgPrzelicz zawsze daje 1 — tu czytamy hash z pamięci strony.)
+		// BEZ auto-scrolla po F5 (decyzja 2026-07-09): user zostaje u góry, pager pokazuje 3, sam zjedzie.
+		// Auto-scroll przestrzeliwał do stopki (walka z Lenis timing) — pewność > wygoda.
+		var startowa = 1;
+		var mHash = location.hash.match(/^#ev(\d+)$/);
+		if (mHash) { startowa = parseInt(mHash[1], 10) || 1; }
+		pgPokazStrone(startowa);
 	}
 
 	var chips = Array.prototype.slice.call(root.querySelectorAll('.pnb-ev-chip'));
