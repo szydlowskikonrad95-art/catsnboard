@@ -127,7 +127,7 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
 @media(max-width:600px){body.admin-bar .pnb-ev-chips{top:calc(10px - 1.1rem);}} /* ≤600px adminbar jest absolute (odjeżdża) */
 .pnb-ev-chips-in{pointer-events:auto;display:flex;align-items:center;gap:.3rem;max-width:100%;
   overflow-x:auto;scrollbar-width:none;padding:.45rem;border-radius:999px;
-  background:rgba(255,255,255,.74);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  background:rgba(255,255,255,.92);
   border:1px solid rgba(255,255,255,.65);
   /* cień ciasny przy pigułce (P4: 34px rozmycia malowało mętny pół-pas mgiełki na treści pod spodem) */
   box-shadow:0 4px 14px rgba(69,163,184,.16), 0 1px 4px rgba(69,163,184,.10);}
