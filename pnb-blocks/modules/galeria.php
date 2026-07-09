@@ -132,11 +132,15 @@ function pnb_galeria_zbuduj_pule( $ids, $dzien ) {
 		// srcset: WYDAJNOŚĆ — bez tego przeglądarka ciągnie 'large' (~1024px) nawet na telefonie i w rzekach
 		// (kadr ~200-300px). Z srcset wybierze najmniejszy pasujący wariant. sizes dobiera render/JS per sekcja.
 		$srcset = wp_get_attachment_image_srcset( $id, 'large' );
+		// width/height (2026-07-09 CLS) — przeglądarka rezerwuje miejsce z góry, layout nie skacze.
+		$rozm = wp_get_attachment_image_src( $id, 'large' );
 		$pula[] = array(
 			'src'    => $img,
 			'full'   => $full ? $full : $img,
 			'cap'    => $cap ? $cap : $dzien[ $i % $licznik_dzien ],
 			'srcset' => $srcset ? $srcset : '',
+			'w'      => $rozm && isset( $rozm[1] ) ? (int) $rozm[1] : 0,
+			'h'      => $rozm && isset( $rozm[2] ) ? (int) $rozm[2] : 0,
 		);
 	}
 	return $pula;
@@ -158,11 +162,14 @@ function pnb_galeria_pula_demo( $dzien ) {
 		if ( ! file_exists( $katalog . $plik ) ) {
 			continue;
 		}
+		$wh = @getimagesize( $katalog . $plik ); // wymiary z pliku (CLS) — @ bo plik może być egzotyczny
 		$pula[] = array(
 			'src'    => $baza . $plik,
 			'full'   => $baza . $plik,
 			'cap'    => $dzien[ $i % $licznik ],
 			'srcset' => '',
+			'w'      => $wh && isset( $wh[0] ) ? (int) $wh[0] : 0,
+			'h'      => $wh && isset( $wh[1] ) ? (int) $wh[1] : 0,
 		);
 	}
 	return $pula;
@@ -284,8 +291,10 @@ function pnb_galeria_render() {
 		// fetchpriority=low: ładujemy od razu, ale bez rywalizacji z hero. (Rzeki niżej zostają lazy.)
 		// srcset+sizes: kadr taśmy ma wys. ~clamp(300..560px), szer. auto → na desktop ~40vw, mobile ~60vw.
 		$srcset_attr = $el['srcset'] ? ' srcset="' . esc_attr( $el['srcset'] ) . '" sizes="(max-width:768px) 70vw, 40vw"' : '';
+		// width/height (CLS 2026-07-09) — rezerwuje proporcje, layout nie skacze przy ładowaniu.
+		$wh_attr = ( ! empty( $el['w'] ) && ! empty( $el['h'] ) ) ? ' width="' . (int) $el['w'] . '" height="' . (int) $el['h'] . '"' : '';
 		$out .= '<figure class="pnb-shot' . $tall . '" data-cap="' . esc_attr( $cap ) . '" data-full="' . esc_url( $el['full'] ) . '">'
-			. '<img src="' . esc_url( $el['src'] ) . '"' . $srcset_attr . ' alt="' . esc_attr( $el['cap'] ) . '" loading="eager" fetchpriority="low" decoding="async">'
+			. '<img src="' . esc_url( $el['src'] ) . '"' . $srcset_attr . $wh_attr . ' alt="' . esc_attr( $el['cap'] ) . '" loading="eager" fetchpriority="low" decoding="async">'
 			. '<figcaption class="pnb-mono">' . esc_html( $cap ) . '</figcaption></figure>';
 	}
 	$out .= '</div><div class="pnb-strip-hint pnb-mono">' . esc_html( pnb_txt( 'gallery.hint.keep', '— keep scrolling —' ) ) . '</div></div></section>';
