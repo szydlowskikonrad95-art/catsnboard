@@ -49,10 +49,86 @@ add_filter( 'locale', function ( $locale ) {
 	return pnb_pl_podmieniac() ? 'pl_PL' : $locale;
 } );
 
+/* ============================ CACHE STRONY PL ============================
+ * strtr na całym HTML kosztuje ~0.4-1s per żądanie. Zamiast liczyć za KAŻDYM razem, zapamiętujemy
+ * gotowy przetłumaczony HTML (transient) i serwujemy go z pamięci → 0.4s spada do ~0.05s.
+ *
+ * ⚠️ PROBLEM NONCE: strony (np. Events) mają formularze z nonce (token bezp., ważny ~24h, zależny od
+ * usera/czasu). Zamrożenie nonce w cache = po czasie „nonce expired” przy wysyłce formularza. ROZWIĄZANIE
+ * (wzorzec pluginów cache): przed zapisem WYCINAMY nonce → placeholder z akcją; przy SERWOWANIU z cache
+ * wstawiamy ŚWIEŻY nonce per żądanie. Formularze działają, reszta HTML z cache.
+ *
+ * Cache TYLKO dla: gość (nie zalogowany — admin widzi pasek/edycje), GET, brak query poza lang, komentarze
+ * wyłączone. Każdy inny przypadek → normalny bufor (bez cache). Klucz = ścieżka+lang+wersja słownika.
+ */
+function pnb_pl_cache_wolno() {
+	// nie cache'uj: zalogowany (admin-bar, edycje), POST, preview, wyszukiwarka, strony z paginacją komentarzy
+	if ( is_user_logged_in() ) { return false; }
+	if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD'] ) { return false; }
+	if ( is_search() || is_preview() || is_404() ) { return false; }
+	// query args: dopuszczamy tylko 'lang' (nasz przełącznik). Cokolwiek innego (utm, ?p=, filtry) → bez cache.
+	$dozwolone = array( 'lang' );
+	foreach ( array_keys( $_GET ) as $k ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! in_array( $k, $dozwolone, true ) ) { return false; }
+	}
+	return true;
+}
+/** Klucz cache = ścieżka URL + wersja słownika (zmiana tłumaczeń unieważnia cache automatycznie). */
+function pnb_pl_cache_klucz() {
+	$sciezka = isset( $_SERVER['REQUEST_URI'] ) ? (string) $_SERVER['REQUEST_URI'] : '/';
+	$wersja  = (string) get_option( 'pnb_pl_cache_wersja', '1' );
+	return 'pnb_plc_' . md5( $sciezka . '|' . $wersja );
+}
+/** Wersja cache — bump przy każdym zapisie do słownika (unieważnia stary cache). */
+function pnb_pl_cache_bump() {
+	update_option( 'pnb_pl_cache_wersja', (string) time(), false );
+}
+/**
+ * Nonce → placeholder (przed zapisem do cache). Łapiemy pnb_nonce (zapis gościa, akcja pnb_zapis_<event_id>).
+ * event_id jest w tym samym <form> jako <input name="pnb_event" value="ID">. Placeholder niesie akcję,
+ * żeby przy serwowaniu odtworzyć nonce dla właściwej akcji.
+ */
+function pnb_pl_nonce_na_placeholdery( $html ) {
+	// Każdy <form> zapisu ma: name="pnb_event" value="ID" ... name="pnb_nonce" value="TOKEN".
+	// Podmieniamy value tokenu na {{PNB_NONCE:pnb_zapis_<ID>}} — ID bierzemy z pnb_event w tym samym formularzu.
+	return preg_replace_callback(
+		'#<form\b[^>]*class="pnb-ev-form"[^>]*>.*?</form>#is',
+		function ( $m ) {
+			$form = $m[0];
+			if ( ! preg_match( '#name="pnb_event"\s+value="(\d+)"#', $form, $ev ) ) { return $form; }
+			$eid = $ev[1];
+			// podmień value nonce (pnb_nonce) na placeholder z akcją
+			$form = preg_replace(
+				'#(name="pnb_nonce"\s+value=")[a-f0-9]+(")#',
+				'${1}{{PNB_NONCE:pnb_zapis_' . $eid . '}}${2}',
+				$form
+			);
+			return $form;
+		},
+		$html
+	);
+}
+/** Placeholdery → świeże nonce (przy serwowaniu z cache). Odwrotność powyższego, token per żądanie. */
+function pnb_pl_placeholdery_na_nonce( $html ) {
+	return preg_replace_callback(
+		'#\{\{PNB_NONCE:([a-z0-9_]+)\}\}#i',
+		function ( $m ) { return wp_create_nonce( $m[1] ); },
+		$html
+	);
+}
+
 /* Start bufora na template_redirect (odpala się tylko dla frontowych szablonów). */
 add_action( 'template_redirect', function () {
 	if ( ! pnb_pl_podmieniac() || headers_sent() ) {
 		return;
+	}
+	// CACHE: jeśli mamy gotowy przetłumaczony HTML dla tej strony → serwuj z pamięci (ze świeżym nonce).
+	if ( pnb_pl_cache_wolno() ) {
+		$zapisany = get_transient( pnb_pl_cache_klucz() );
+		if ( is_string( $zapisany ) && '' !== $zapisany ) {
+			echo pnb_pl_placeholdery_na_nonce( $zapisany ); // phpcs:ignore WordPress.Security.EscapeOutput
+			exit; // pełny HTML wysłany — kończymy żądanie (0.05s zamiast liczyć strtr)
+		}
 	}
 	ob_start( 'pnb_pl_podmien_bufor' );
 }, 1 );
@@ -111,6 +187,17 @@ function pnb_pl_podmien_bufor( $html ) {
 			$wynik,
 			1
 		) ?: $wynik; // preg_replace null (błąd) → zostaw
+
+		// ZAPIS DO CACHE: gotowy przetłumaczony HTML → transient (kolejne wejścia serwowane z pamięci).
+		// Nonce → placeholder PRZED zapisem (przy serwowaniu wstawimy świeży). Cache tylko gdy wolno
+		// (gość, GET, czysty URL). 6h TTL. Odtworzenie nonce dla TEGO żądania, żeby bieżący gość dostał
+		// działający formularz od razu (nie placeholder).
+		if ( function_exists( 'pnb_pl_cache_wolno' ) && pnb_pl_cache_wolno() ) {
+			$do_cache = pnb_pl_nonce_na_placeholdery( $wynik );
+			set_transient( pnb_pl_cache_klucz(), $do_cache, 6 * HOUR_IN_SECONDS );
+			// bieżący gość: zwróć wersję ze świeżym nonce (nie placeholdery)
+			$wynik = pnb_pl_placeholdery_na_nonce( $do_cache );
+		}
 
 		return $wynik;
 	} catch ( \Throwable $e ) {
