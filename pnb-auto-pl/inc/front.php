@@ -49,6 +49,39 @@ add_filter( 'locale', function ( $locale ) {
 	return pnb_pl_podmieniac() ? 'pl_PL' : $locale;
 } );
 
+/*
+ * TYTUŁ KARTY PRZEGLĄDARKI po polsku (naprawa 2026-07-10, znaleziona debug-przeglądem):
+ * bufor strtr NIE łapie <title>Gallery – Cats'N'Board</title>, bo pary mają kotwice >tekst<,
+ * a w tytule tekst jest SKLEJONY z nazwą strony. Efekt: strona po polsku, ale zakładka
+ * przeglądarki i tytuł przy udostępnianiu na FB — po angielsku. Ten filtr tłumaczy KAŻDĄ
+ * CZĘŚĆ tytułu osobno (tytuł strony/wydarzenia ≠ nazwa witryny) szukając jej w słowniku.
+ * og:title w motywie idzie z wp_get_document_title() → naprawia się tym samym filtrem.
+ */
+function pnb_pl_fraza( $tekst ) {
+	$tekst = trim( (string) $tekst );
+	if ( '' === $tekst || ! function_exists( 'pnb_pl_pary_do_podmiany' ) ) {
+		return '';
+	}
+	$pary  = pnb_pl_pary_do_podmiany();
+	$klucz = '>' . $tekst . '<';
+	if ( isset( $pary[ $klucz ] ) ) {
+		return substr( $pary[ $klucz ], 1, -1 ); // zdejmij kotwice > <
+	}
+	return '';
+}
+add_filter( 'document_title_parts', function ( $parts ) {
+	if ( ! pnb_pl_podmieniac() ) {
+		return $parts;
+	}
+	foreach ( $parts as $k => $czesc ) {
+		$pl = pnb_pl_fraza( $czesc );
+		if ( '' !== $pl ) {
+			$parts[ $k ] = $pl;
+		}
+	}
+	return $parts;
+} );
+
 /* ============================ CACHE STRONY PL ============================
  * strtr na całym HTML kosztuje ~0.4-1s per żądanie. Zamiast liczyć za KAŻDYM razem, zapamiętujemy
  * gotowy przetłumaczony HTML (transient) i serwujemy go z pamięci → 0.4s spada do ~0.05s.
@@ -83,6 +116,17 @@ function pnb_pl_cache_klucz() {
 function pnb_pl_cache_bump() {
 	update_option( 'pnb_pl_cache_wersja', (string) time(), false );
 }
+/*
+ * Po AKTUALIZACJI wtyczki unieważnij cache stron PL (2026-07-10): nowy kod może zmieniać
+ * wygenerowany HTML (np. naprawa tytułu karty) — bez bumpa klient serwowałby STARY HTML
+ * z cache aż do zmiany słownika. Porównanie wersji raz na request, bump tylko przy zmianie.
+ */
+add_action( 'init', function () {
+	if ( get_option( 'pnb_pl_cache_kod_wersja' ) !== PNB_AUTO_PL_VERSION ) {
+		update_option( 'pnb_pl_cache_kod_wersja', PNB_AUTO_PL_VERSION, false );
+		pnb_pl_cache_bump();
+	}
+} );
 /**
  * Nonce → placeholder (przed zapisem do cache). Łapiemy pnb_nonce (zapis gościa, akcja pnb_zapis_<event_id>).
  * event_id jest w tym samym <form> jako <input name="pnb_event" value="ID">. Placeholder niesie akcję,
