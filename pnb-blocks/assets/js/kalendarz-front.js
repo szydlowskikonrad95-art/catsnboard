@@ -99,7 +99,7 @@
 		pager.innerHTML = html;
 	}
 
-	function pgPokazStrone(str) {
+	function pgPokazStrone(str, pomijRefresh) {
 		if (!pager) { // brak elementu paginacji w markupie (np. stary cache) → nie ucinaj listy, pokaż wszystko
 			cardwraps.forEach(function (w) { w.classList.remove('pg-hidden'); });
 			return;
@@ -152,7 +152,10 @@
 			g.classList.toggle('is-hidden', !g.querySelector('.pnb-ev-cardwrap:not(.is-hidden):not(.pg-hidden)'));
 		});
 		pgRenderNumerki(strony);
-		if (maGsap && !rm) ScrollTrigger.refresh(); // strona się zmieniła — przelicz triggery (animacje głębi)
+		// refresh triggerów GSAP — POMIJAMY gdy woła nas paginacja (ona sama zrobi refresh PO ustawieniu
+		// scrolla na górę, żeby refresh zapamiętał GÓRĘ a nie pozycję sprzed zmiany strony — inaczej GSAP
+		// przywraca stary scroll i widać przeskok dół→góra). Filtr/szukanie: refresh normalnie (bez skoku).
+		if (maGsap && !rm && !pomijRefresh) ScrollTrigger.refresh();
 	}
 
 	function pgPrzelicz() { // wywoływane po KAŻDYM filtrze/szukaniu — liczba stron mogła się zmienić
@@ -165,17 +168,24 @@
 			if (!btn || btn.disabled) return;
 			var cel = btn.getAttribute('data-pg');
 			var nowa = cel === 'prev' ? pgStrona - 1 : (cel === 'next' ? pgStrona + 1 : parseInt(cel, 10));
-			// 1. PRZEBUDUJ stronę (pgPokazStrone zmienia które grupy/karty są widoczne → zmienia WYSOKOŚĆ
-			//    listy). 2. DOPIERO POTEM scrolluj. ⛔ BUG (zgłoszony 2026-07-09: klik 2→3 wyrzucał w STOPKĘ):
-			//    stary kod mierzył pozycję .pnb-ev-tl-in PRZED pgPokazStrone — a przebudowa zmienia layout,
-			//    więc zmierzone y było nieaktualne (raz trafiało, raz lądowało w stopce). Naprawa: mierz PO
-			//    przebudowie. KOTWICA = pasek chipów (.pnb-ev-chips) — jego pozycja w dokumencie jest STAŁA
-			//    (nad listą, nie zależy od liczby kart), więc scroll zawsze ląduje tuż nad listą pod paskiem.
-			pgPokazStrone(nowa);
-			var kotwica = root.querySelector('.pnb-ev-chips') || root.querySelector('.pnb-ev-tl') || root;
-			var adminBar = document.body.classList.contains('admin-bar') ? 32 : 0;
-			var y = kotwica.getBoundingClientRect().top + window.pageYOffset - adminBar - 8;
-			window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+			// KOLEJNOŚĆ BEZ WALKI Z GSAP (naprawa 2026-07-09 — wcześniej scroll walczył z ScrollTrigger.refresh
+			// który przywracał starą pozycję → przeskok dół→góra przez stopkę). Rozwiązanie: ustaw scroll na
+			// górę ZANIM refresh zapamięta pozycję, więc refresh utrwala GÓRĘ, nie dół.
+			//  1. Przebuduj listę BEZ refreshu (pomijRefresh=true).
+			pgPokazStrone(nowa, true);
+			//  2. Ustaw scroll na górę listy — scrollIntoView na PIERWSZĄ REALNĄ kartę (element, nie px;
+			//     .pnb-ev-chips to sticky = bezużyteczna kotwica), potem cofnij o wysokość paska (karta pod nim).
+			var pierwszy = root.querySelector('.pnb-ev-cardwrap:not(.is-hidden):not(.pg-hidden)');
+			var grupa = pierwszy && pierwszy.closest ? pierwszy.closest('.pnb-ev-group') : null;
+			var celEl = grupa || pierwszy;
+			if (celEl) {
+				celEl.scrollIntoView({ behavior: 'auto', block: 'start' });
+				var pasek = root.querySelector('.pnb-ev-chips');
+				var pasekH = pasek ? pasek.getBoundingClientRect().height : 60;
+				window.scrollBy({ top: -(pasekH + 20), behavior: 'auto' });
+			}
+			//  3. TERAZ refresh — GSAP zapamiętuje AKTUALNĄ (górną) pozycję scrolla, nie przywraca dołu.
+			if (maGsap && !rm) ScrollTrigger.refresh();
 		});
 		pgPrzelicz(); // stan początkowy (przed dotknięciem filtra) — policz strony, pokaż 1., zbuduj numerki
 	}
