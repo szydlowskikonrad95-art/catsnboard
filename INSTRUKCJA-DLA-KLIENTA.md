@@ -1,163 +1,195 @@
-# Instrukcja — wtyczki Paws'N'Board
+# Instrukcja obsługi — strona Cats'N'Board
 
-Cześć! W paczce są **dwie wtyczki** do Twojej strony:
+Cześć! 👋 Ta instrukcja tłumaczy **prostym językiem** jak obsługiwać Twoją stronę.
+Nie musisz się znać na komputerach — każdy krok jest opisany po kolei.
 
-| Plik | Co robi |
+W paczce dostałeś **3 rzeczy do wgrania**:
+
+| Co | Do czego służy |
 |---|---|
-| plik zaczynający się od `pnb-blocks` | **Galeria i Wydarzenia** — ładna galeria zdjęć + kalendarz wydarzeń z zapisami gości |
-| plik zaczynający się od `pnb-auto-pl` | **Polska Wersja (AI)** — cała strona po polsku z przełącznikiem PL/EN |
+| **motyw** (plik `catsnboard-motyw...zip`) | Wygląd całej strony (kolory, układ, zdjęcie kota na górze) |
+| **wtyczka Galeria i Wydarzenia** (`pnb-blocks...zip`) | Galeria zdjęć + kalendarz wydarzeń z zapisami gości |
+| **wtyczka Polska Wersja** (`pnb-auto-pl...zip`) | Cała strona po polsku, z przełącznikiem PL / EN |
+
+> 💡 **Zanim zaczniesz — o co chodzi?** Twoja strona działa na **WordPressie** (najpopularniejszy
+> system do stron). Logujesz się do „panelu" (kuchni strony), a goście widzą gotową stronę.
+> Panel otwierasz wpisując w przeglądarce adres: **`twojastrona.pl/wp-admin`**
 
 ---
 
-## 1. Jak zainstalować (raz, 5 minut)
+## ✅ KROK 1 — Wgraj wszystko (raz, 10 minut)
 
-1. Zaloguj się do panelu swojej strony: `twojastrona.com/wp-admin`
-2. W menu po lewej: **Wtyczki → Dodaj nową → Wyślij wtyczkę na serwer**
-3. Wybierz plik zaczynający się od `pnb-blocks` → **Zainstaluj** → **Włącz**
-4. Powtórz to samo z plikiem zaczynającym się od `pnb-auto-pl`
+Robisz to **w tej kolejności**: najpierw motyw, potem 2 wtyczki.
 
-> ⚠️ **WAŻNE — WPML:** na Twojej stronie jest zainstalowana wtyczka **WPML** (nieużywana).
-> **Wyłącz ją** (Wtyczki → WPML → Wyłącz) zanim włączysz Polską Wersję — dwie wtyczki
-> językowe na raz mogą się gryźć. Nasza wtyczka i tak robi wszystko czego potrzebujesz.
+### 1a. Wgraj motyw (wygląd)
+1. Zaloguj się: wpisz w przeglądarce **`twojastrona.pl/wp-admin`** → podaj login i hasło
+2. W menu po lewej kliknij: **Wygląd → Motywy** *(Appearance → Themes)*
+3. Na górze kliknij **Dodaj nowy** *(Add New)* → **Wyślij motyw na serwer** *(Upload Theme)*
+4. Kliknij **Wybierz plik**, wskaż plik `catsnboard-motyw...zip` → **Zainstaluj** → **Włącz** *(Activate)*
 
-5. **Dodaj stronę Events do menu strony** — wtyczka tworzy stronę z kalendarzem, ale NIE
-   dopisuje się sama do Twojego menu (nie ruszamy Twojej nawigacji). Wejdź w
-   **Wygląd → Menu** *(Appearance → Menus)* → zaznacz po lewej stronę **Events** →
-   **Dodaj do menu** → przeciągnij gdzie chcesz → **Zapisz menu**. Bez tego goście
-   nie znajdą kalendarza z nawigacji (strona działa pod adresem `/events/`).
+✅ Gotowe — strona ma teraz nowy wygląd. Strony (Home, Gallery, Kontakt...) **utworzą się same**.
 
-> 💡 **Chcesz mieć panel WordPressa po polsku?** Wejdź w **Users → Profile → Language →
-> Polski** (język ustawiony w Twoim profilu). Wtedy przyciski wtyczek też będą po polsku.
-> ⚠️ Ale **NIE zmieniaj „Site Language"** w Settings → General — język całej WITRYNY musi
-> zostać **English** (polską wersję dla gości robi nasza wtyczka — tak jest bezpieczniej).
-> W instrukcji niżej podajemy nazwy po polsku i angielsku (zależnie od języka panelu).
+### 1b. Wgraj 2 wtyczki
+1. W menu po lewej: **Wtyczki → Dodaj nową** *(Plugins → Add New)*
+2. Na górze: **Wyślij wtyczkę na serwer** *(Upload Plugin)* → **Wybierz plik**
+3. Wskaż `pnb-blocks...zip` → **Zainstaluj** → **Włącz**
+4. **Powtórz to samo** z drugim plikiem: `pnb-auto-pl...zip`
 
----
+✅ Gotowe! Wejdź na swoją stronę (bez `/wp-admin`) — zobaczysz galerię zdjęć kotów,
+kalendarz wydarzeń i przełącznik **PL / EN** w prawym górnym rogu. **Wszystko po polsku od razu.**
 
-## 2. Galeria — jak zmieniać zdjęcia
-
-1. **Strony → Gallery → Edytuj**
-2. Kliknij w galerię — pojawią się przyciski:
-   - **„Wybierz zdjęcia"** *(Choose photos)* — zdjęcia głównej taśmy (ta przewijana na górze)
-   - **„Wybierz zdjęcia „Moments""** *(Choose "Moments" photos)* — zdjęcia dolnej sekcji (osobny zestaw!)
-3. W okienku zaznacz zdjęcia (możesz dodać nowe z komputera) → **Aktualizuj galerię**
-4. Kliknij niebieski przycisk **Zapisz/Aktualizuj** w prawym górnym rogu
-
-Nagłówki i podpisy zmieniasz klikając prosto w tekst w podglądzie.
+> 💡 **Chcesz panel po polsku?** Wejdź w **Użytkownicy → Profil → Język → Polski**
+> *(Users → Profile → Language → Polski)*. Wtedy przyciski będą po polsku.
+> ⚠️ **NIE zmieniaj** „Język witryny" w Ustawienia → Ogólne — to musi zostać **English**
+> (polską wersję dla gości robi nasza wtyczka).
 
 ---
 
-## 3. Wydarzenia — jak dodawać i sprawdzać zapisy
+## 🖼️ KROK 2 — Galeria: jak zmienić zdjęcia
 
-**Dodanie wydarzenia:**
-1. W menu po lewej: **Events → Add New** (Wydarzenia → Dodaj nowe)
-2. Wpisz tytuł i opis (po angielsku — polski zrobi się sam, patrz punkt 4)
-3. Po prawej uzupełnij: **datę, godzinę, miejsce, limit miejsc** (0 = bez limitu)
-4. **Ustaw zdjęcie wydarzenia** *(Set event photo)* — przycisk w bocznym panelu (nie wklejaj zdjęcia do opisu)
-5. **Opublikuj** *(Publish)* — wydarzenie samo pojawi się na stronie Events
+1. Menu po lewej: **Strony → Gallery → Edytuj** *(Pages → Gallery → Edit)*
+2. Kliknij w galerię — pokażą się przyciski:
+   - **Wybierz zdjęcia** — zdjęcia górnej taśmy (ta przewijana)
+   - **Wybierz zdjęcia „Moments"** — zdjęcia dolnej sekcji (osobny zestaw!)
+3. Zaznacz zdjęcia (możesz dodać własne z komputera) → **Aktualizuj galerię**
+4. Kliknij niebieski **Zapisz / Aktualizuj** w prawym górnym rogu
 
-**Kto się zapisał:**
-- Otwórz wydarzenie do edycji — lista gości jest w ramce **„Zapisani goście"** *(Signed-up guests)* z przyciskiem eksportu do Excela/CSV
-- Dodatkowo dostajesz **e-mail** przy każdym zapisie — adres ustawisz w **Events → Ustawienia** *(Settings)*
-
-> ⚠️ **E-maile:** powiadomienia mogą czasem wpadać do SPAMU — tak działają serwery, nie wtyczka.
-> Zapisy ZAWSZE są w panelu (nic nie ginie). Jak chcesz pewnych maili, poproś swój hosting
-> o skonfigurowanie SMTP albo zainstaluj darmową wtyczkę „WP Mail SMTP".
-
-**Twój adres na mapce:** na dole strony Events jest sekcja „Where to find us" z mapką.
-Wpisz tam swój **prawdziwy adres**: edytuj stronę Events → kliknij w blok → na dole podglądu
-są dwa pola: *adres* (użyje go przycisk „Get directions" — prowadzi do Google Maps) i *krótka
-etykieta przy pinezce*. Dopóki ich nie wypełnisz, adres się nie pokazuje (nic nie zmyślamy).
+Napisy i podpisy zmieniasz klikając prosto w tekst.
 
 ---
 
-## 3b. Automatyczny import wydarzeń (opcjonalne)
+## 📅 KROK 3 — Wydarzenia: jak dodać samemu
 
-Wtyczka umie **sama pobierać wydarzenia** z zewnętrznego serwisu (Eventbrite) i dodawać je
-na stronę — bez ręcznego wpisywania. Jeśli tego nie potrzebujesz, po prostu tego nie włączaj
-(dodawaj wydarzenia ręcznie jak w punkcie 3).
+1. Menu po lewej: **Events → Dodaj nowe** *(Events → Add New)*
+2. Wpisz **tytuł i opis** (po angielsku — polski zrobi się sam, patrz KROK 5)
+3. Po prawej uzupełnij: **datę, godzinę, miejsce, ile miejsc** (0 = bez limitu)
+4. **Ustaw zdjęcie wydarzenia** — przycisk w bocznym panelu (nie wklejaj zdjęcia do opisu!)
+5. **Opublikuj** — wydarzenie samo pojawi się na stronie
+
+**Kto się zapisał?** Otwórz wydarzenie do edycji — lista gości jest w ramce
+**Zapisani goście** (z przyciskiem eksportu do Excela). Dodatkowo dostajesz **e-mail** przy
+każdym zapisie (adres ustawiasz w **Events → Settings**).
+
+> ⚠️ **E-maile mogą wpadać do SPAMU** — tak działają serwery, nie wtyczka. Ale zapisy
+> **zawsze** są w panelu, nic nie ginie. Chcesz pewnych maili? Poproś hosting o „SMTP"
+> albo wgraj darmową wtyczkę **WP Mail SMTP**.
+
+---
+
+## 🤖 KROK 4 — Automat: strona sama pobiera wydarzenia (opcjonalne)
+
+Wtyczka umie **sama pobierać wydarzenia** z internetu (z serwisu Eventbrite) i dodawać je na
+Twoją stronę — bez ręcznego wpisywania. Jak nie chcesz, po prostu tego nie włączaj.
 
 **Jak włączyć:**
-1. Wejdź w **Events → Ustawienia** *(Settings)*
-2. W polu **„🤖 Event source (Eventbrite URL)"** wklej adres listy wydarzeń z Eventbrite
-   (np. adres kategorii albo Twojego profilu organizatora)
-3. Zapisz. Od teraz wtyczka **co jakiś czas sama sprawdza** to źródło i dodaje nowe wydarzenia.
-4. Chcesz sprawdzić od razu? Kliknij **„Sync now"** — pobierze bez czekania.
+1. Menu: **Events → Settings** *(Ustawienia)*
+2. W polu **„Event source (Eventbrite URL)"** wklej adres listy wydarzeń z Eventbrite
+3. **Zapisz**. Od teraz wtyczka **co jakiś czas sama sprawdza** i dodaje nowe wydarzenia
+4. Chcesz sprawdzić od razu? Kliknij **„Sync now"** — pobierze bez czekania
 
-**Co robi automat (sam, bez Ciebie):**
-- **Dodaje** nowe wydarzenia ze źródła
-- **Aktualizuje**, gdy organizator zmieni datę/godzinę/miejsce
-- **Zdejmuje do kosza** wydarzenia, które zniknęły ze źródła (nie zostają na wieki)
-- **Nie nadpisuje Twoich ręcznych poprawek** — jeśli sam zmienisz zaimportowane wydarzenie,
-  Twoja wersja zostaje (wtyczka oznacza je jako „Twoje")
-- Ekran **Events → Ustawienia** pokazuje kiedy był ostatni import i czy wszystko działa
+**Co automat robi sam (bez Ciebie):**
+- ✅ **Dodaje** nowe wydarzenia + pobiera im zdjęcia
+- ✅ **Tłumaczy** je na polski (jeśli masz wpięty klucz — patrz KROK 5)
+- ✅ **Zdejmuje do kosza** wydarzenia które zniknęły ze źródła
+- ✅ **Szanuje Twoje decyzje** — jak sam usuniesz wydarzenie do kosza, automat go NIE przywróci
+- ✅ **Nie nadpisuje Twoich poprawek** — zmienisz zaimportowane wydarzenie → Twoja wersja zostaje
 
-**⏱️ Jak często sprawdza?** Wtyczka używa harmonogramu WordPressa (WP-Cron), który odpala się
-**gdy ktoś wchodzi na stronę**. Na stronie z ruchem działa sam. Jeśli Twoja strona jest cicha
-(mało odwiedzin), import może się spóźniać. Żeby chodził jak w zegarku (co 10 min), poproś swój
-hosting o dodanie **prawdziwego crona** pukającego w adres `TwojaStrona.pl/wp-cron.php` co 10 minut,
-albo użyj darmowej usługi typu **cron-job.org** (wkleja się tam ten adres, bez kodu). Panel
-**Events → Ustawienia** ma to opisane pod polem źródła.
+> ⏱️ **Jak często sprawdza?** Automat budzi się **gdy ktoś wchodzi na stronę**. Jak strona ma
+> ruch — działa sam. Jak jest cicha, poproś hosting o **„cron"** pukający w
+> `twojastrona.pl/wp-cron.php` co 10 minut, albo użyj darmowej **cron-job.org** (wklejasz tam
+> ten adres, bez żadnego kodu).
 
-> ⚠️ **WAŻNE — regulamin źródła:** upewnij się, że masz **prawo** pobierać dane z serwisu, który
-> podajesz jako źródło. Wiele serwisów (w tym Eventbrite) w swoim regulaminie zabrania
-> automatycznego pobierania danych. Jeśli jesteś **organizatorem** swoich wydarzeń, najbezpieczniej
-> jest korzystać z oficjalnego API/eksportu danego serwisu. Odpowiedzialność za zgodność z
-> regulaminem źródła leży po stronie właściciela strony.
+> ⚠️ **WAŻNE — prawo:** upewnij się że masz **prawo** pobierać dane z serwisu który podajesz.
+> Wiele serwisów (w tym Eventbrite) zabrania tego w regulaminie. Jak jesteś **organizatorem**
+> swoich wydarzeń — najbezpieczniej użyć oficjalnego API serwisu. Odpowiedzialność jest po
+> stronie właściciela strony.
 
 ---
 
-## 4. Polska wersja — jak działa
+## 🇵🇱 KROK 5 — Polska wersja i klucz do tłumaczenia
 
-**Dobra wiadomość:** domyślne teksty strony są **już przetłumaczone** (słownik jedzie
-w paczce) — przełącznik **PL | EN** działa od pierwszego dnia, bez żadnej konfiguracji.
+**Dobra wiadomość:** teksty strony są **już po polsku** (słownik jest w paczce) — przełącznik
+**PL / EN** działa od pierwszego dnia, bez niczego.
 
-> 💡 Jeśli po przełączeniu na PL **jakiś napis został po angielsku** (np. pozycja Twojego
-> menu albo tekst, który sam dopisałeś) — to normalne: słownik z paczki zna domyślne
-> teksty strony, a Twoje własne dotłumaczy przycisk. Podepnij klucz (kroki niżej)
-> i kliknij **„Przetłumacz witrynę"** — wyłapie całą resztę.
+**Klucz API** potrzebujesz TYLKO po to, żeby **NOWE treści** (nowe wydarzenia, Twoje zmiany)
+tłumaczyły się same. To „silnik" tłumaczenia — Claude AI. Płacisz tylko za to co tłumaczysz (grosze).
 
-**Klucz API** potrzebujesz po to, żeby **Twoje zmiany i nowe treści** tłumaczyły się same
-(to „silnik" tłumaczenia — Claude AI; płacisz tylko za faktyczne tłumaczenie, ~grosze):
+**Jak zdobyć klucz (krok po kroku, jak dla laika):**
+1. Wejdź na **`console.anthropic.com`** → załóż konto (jak zakładanie maila)
+2. Doładuj konto małą kwotą (np. 5 dolarów — starczy na długo) w zakładce **Billing**
+3. Wejdź w **API Keys** *(Klucze API)* → **Create Key** *(Utwórz klucz)* → **skopiuj** długi kod
+   (zaczyna się od `sk-ant-...`) — ⚠️ pokaże się **tylko raz**, zapisz go sobie
 
-1. Wejdź na **console.anthropic.com** → załóż konto → w menu **API Keys → Create Key** → skopiuj klucz
-2. W panelu strony: **Ustawienia → PNB Auto PL**
-3. Wklej klucz → **Zapisz ustawienia** → kliknij **Testuj połączenie** (ma być ✅)
-4. Od teraz każda zapisana zmiana tłumaczy się sama; przycisk **„Przetłumacz witrynę
-   na polski"** dotłumacza wszystko naraz (pasek pokaże postęp, 1-2 minuty)
+**Jak wpiąć klucz do strony:**
+1. W panelu: **Ustawienia → PNB Auto PL** *(Settings → PNB Auto PL)*
+2. **Wklej klucz** w pole → **Zapisz**
+3. Kliknij **Testuj połączenie** — ma pokazać ✅
+4. Kliknij **„Przetłumacz witrynę"** — dotłumaczy wszystko naraz (pasek pokaże postęp, 1-2 min)
 
-**Od teraz działa samo:** gdy zmienisz albo dopiszesz tekst na stronie i klikniesz **Zapisz**,
-polska wersja **zaktualizuje się automatycznie** (zapis potrwa 2-3 sekundy dłużej — to tłumaczenie).
-Żeby zobaczyć efekt na stronie — odśwież ją (F5).
+**Od teraz działa samo:** zmienisz albo dopiszesz tekst → zapisz → polska wersja
+zaktualizuje się sama (zapis potrwa 2-3 sekundy dłużej). Odśwież stronę (F5) żeby zobaczyć.
 
-**Bezpiecznik kosztów:** wtyczka ma dzienny limit znaków (ustawiony z zapasem). Nawet gdyby coś
-poszło nie tak, nie wydasz więcej niż kilka złotych dziennie. Licznik zużycia widzisz w ustawieniach.
+> 💰 **Bezpiecznik kosztów:** wtyczka ma dzienny limit — nawet gdyby coś poszło nie tak,
+> nie wydasz więcej niż kilka złotych dziennie. Licznik zużycia widzisz w ustawieniach.
 
 ---
 
-## 5. Twoje dane kontaktowe na stronie
+## 📞 KROK 6 — Twoje dane kontaktowe (telefon, adres)
 
-Telefon, e-mail i adres w **nagłówku, stopce i na stronach Contact / Our Location** ustawiasz
-w jednym miejscu: **Wygląd → Dostosuj → „Dane kontaktowe"** *(Appearance → Customize)*.
-Są tam 4 pola: telefon, e-mail, adres i krótka etykieta przy mapce (strona Our Location).
+Telefon, e-mail i adres w **nagłówku, stopce i na stronach Kontakt / Lokalizacja** ustawiasz
+w JEDNYM miejscu: **Wygląd → Dostosuj → „Dane kontaktowe"** *(Appearance → Customize)*.
 Wpisz swoje prawdziwe dane → **Opublikuj**.
 
-> Dopóki pole jest puste, ta informacja **w ogóle nie pokazuje się** na stronie (nic nie zmyślamy).
-> Strony Contact i Our Location zrobione na blokach mają też własne pola w edytorze — wtedy
-> na tej konkretnej stronie liczy się to, co wpiszesz w bloku.
+> Dopóki pole jest puste, ta informacja **w ogóle się nie pokazuje** (nic nie zmyślamy).
 
 ---
 
-## 6. Dobre rady i znane sprawy
+## 🗄️ KROK 7 — Twoja baza danych (nic nie musisz robić)
 
-- **Cache (LiteSpeed):** masz na hostingu wtyczkę przyspieszającą. Po dużym tłumaczeniu warto
-  kliknąć w niej „Purge All" (wyczyść cache), żeby goście od razu widzieli świeżą wersję.
-- **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to znana przypadłość samego
-  WordPressa, nie wtyczek. Jak coś pójdzie nie tak: nie zapisuj, tylko odśwież stronę edytora.
-- **Zdjęcia:** najlepiej wgrywać zdjęcia do ~2500px szerokości (wtyczka sama robi miniatury).
-- Wtyczek **nie trzeba aktualizować** — nie pobierają nic z internetu (poza tłumaczeniem u Claude).
+**Baza danych** to magazyn gdzie Twoja strona trzyma WSZYSTKO: wydarzenia, zdjęcia, ustawienia,
+tłumaczenia. **Masz ją już** — WordPress stworzył ją gdy powstała Twoja strona. **Nie budujesz
+żadnej nowej.**
 
-## Coś nie działa?
+> ✅ **Nasze wtyczki NIE mieszają w Twojej bazie.** Dokładają tylko SWOJE rzeczy (oznaczone
+> `pnb_`) — jak nowa szuflada obok Twoich. **Nie kasują i nie nadpisują** niczego Twojego:
+> Twoje strony, wpisy i ustawienia zostają nietknięte. Jeśli masz już stronę „Events" albo
+> „Gallery" — wtyczka jej **nie ruszy** (tworzy tylko te których nie masz).
 
-Napisz do nas — opisz co klikasz i co się dzieje (najlepiej ze zrzutem ekranu). Zapisy gości
-i tłumaczenia są bezpieczne w bazie — nawet jak coś wygląda dziwnie, nic nie ginie.
+**Zaglądać do bazy zwykle nie musisz.** Ale jak chcesz zobaczyć co w środku (albo hosting poprosi):
+
+**Sposób 1 — przez hosting (najczęstszy):**
+1. Zaloguj się do panelu swojego **hostingu** (tam gdzie kupiłeś stronę — np. cyber_Folks, home.pl, OVH)
+2. Znajdź ikonę **„phpMyAdmin"** albo **„Bazy danych"**
+3. Klikasz → widzisz listę „tabel" (magazynów). Możesz je przeglądać i eksportować (robić kopię)
+
+**Sposób 2 — wtyczka w WordPressie:**
+Wgraj darmową wtyczkę **„WP Data Access"** — podejrzysz bazę prosto z panelu, bez hostingu.
+
+**Co gdzie siedzi** (gdybyś szukał):
+| Tabela | Co trzyma |
+|---|---|
+| `wp_posts` | wydarzenia i strony |
+| `wp_pnb_slownik_en_pl` | polskie tłumaczenia |
+| `wp_options` | ustawienia (w tym Twój klucz API) |
+
+> 🔒 **Ważne o kluczu API:** Twój klucz jest w bazie (tabela `wp_options`, pozycja
+> `pnb_auto_pl_klucz`). Baza jest **Twoja i tylko Twoja** — nikt z zewnątrz jej nie widzi.
+> Ale **nie pokazuj nikomu** tego klucza (to jak hasło do Twoich pieniędzy za tłumaczenie).
+
+---
+
+## 💡 Dobre rady i znane sprawy
+
+- **Cache (przyspieszacz):** jak hosting ma wtyczkę przyspieszającą (np. LiteSpeed), po dużym
+  tłumaczeniu kliknij w niej **„Purge All"** (wyczyść), żeby goście od razu widzieli świeżą wersję.
+- **Zdjęcia:** wgrywaj do ~2500px szerokości — wtyczka sama zrobi miniatury.
+- **Wtyczek nie trzeba aktualizować** — nie pobierają nic z internetu (poza tłumaczeniem u Claude).
+- **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to przypadłość WordPressa, nie wtyczek.
+  Jak coś pójdzie nie tak: nie zapisuj, tylko odśwież stronę edytora.
+
+---
+
+## ❓ Coś nie działa?
+
+Napisz do nas — opisz **co klikasz i co się dzieje** (najlepiej ze zrzutem ekranu).
+Zapisy gości i tłumaczenia są bezpieczne w bazie — nawet jak coś wygląda dziwnie, **nic nie ginie**.
