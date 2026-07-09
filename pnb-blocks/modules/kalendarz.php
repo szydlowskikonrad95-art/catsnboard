@@ -577,6 +577,39 @@ function pnb_event_opis( $id ) {
 }
 
 /**
+ * Opis wydarzenia PRZETŁUMACZONY na PL (gdy tryb ?lang=pl i auto-pl wpięte), inaczej oryginał.
+ * WAŻNE (bug 2026-07-09): auto-tłumaczenie tnie opis na AKAPITY (wpautop) i tłumaczy każdy osobno →
+ * słownik trzyma akapity, NIE cały opis. Więc składamy PL AKAPIT PO AKAPICIE ze słownika (brak akapitu
+ * w słowniku → zostaje EN, treść nie ginie). Zwraca tekst z zachowanymi podwójnymi newline'ami (dla
+ * wpautop na singlu). Wspólne dla KARTY (skrót) i SINGLA (pełny) — jedno źródło, brak rozjazdu.
+ */
+function pnb_event_opis_pl( $id ) {
+	$tresc = (string) get_post_field( 'post_content', $id );
+	$plain = trim( wp_strip_all_tags( $tresc ) );
+	if ( '' === $plain ) {
+		return $tresc;
+	}
+	$is_pl = isset( $_GET['lang'] ) && 'pl' === $_GET['lang']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( ! $is_pl || ! function_exists( 'pnb_pl_hash' ) || ! function_exists( 'pnb_pl_pobierz_wiele' ) ) {
+		return $tresc; // nie PL albo brak auto-pl → oryginał
+	}
+	$akapity = preg_split( '/\n\s*\n/', $plain );
+	if ( ! is_array( $akapity ) || ! $akapity ) {
+		return $tresc;
+	}
+	$akapity = array_values( array_filter( array_map( 'trim', $akapity ), 'strlen' ) );
+	$mapa    = pnb_pl_pobierz_wiele( $akapity );
+	$zlozone = array();
+	foreach ( $akapity as $ak ) {
+		$pl_ak = $mapa[ pnb_pl_hash( $ak ) ] ?? '';
+		$zlozone[] = '' !== $pl_ak
+			? trim( wp_strip_all_tags( html_entity_decode( $pl_ak, ENT_QUOTES, 'UTF-8' ) ) )
+			: $ak; // brak tłumaczenia akapitu → zostaje EN
+	}
+	return implode( "\n\n", $zlozone ); // podwójny newline = akapity dla wpautop
+}
+
+/**
  * „Co warto wiedzieć" (Good to know) — praktyczne info: parking, wiek, godzina drzwi,
  * czas trwania, forma (na miejscu/online), polityka zwrotów. Renderowane tylko gdy są dane.
  * Wartości surowe (z importu) mapowane na czytelne etykiety; własne wydarzenia klienta też
@@ -1448,31 +1481,10 @@ function pnb_kalendarz_render() {
 			// OPIS NA LIŚCIE = SKRÓT (importowane wydarzenia mają długie opisy które rozpychały kartę;
 			// pełny opis + linki są na stronie pojedynczego wydarzenia po kliknięciu). Krótkie opisy
 			// (demo, ręczne) mieszczą się w całości — skrót ich nie tnie.
-			$tresc = pnb_event_opis( $id );
+			$tresc = pnb_event_opis_pl( $id ); // opis PL (składany z akapitów ze słownika) w trybie ?lang=pl
 			if ( trim( $tresc ) ) {
 				$plain = trim( wp_strip_all_tags( $tresc ) );
-				// PL na karcie: składamy opis z PRZETŁUMACZONYCH AKAPITÓW ZANIM utniemy. WAŻNE (bug
-				// 2026-07-09): auto-tłumaczenie (pnb_pl_auto_po_zapisie) tnie opis na akapity przez
-				// wpautop i tłumaczy KAŻDY OSOBNO → słownik trzyma AKAPITY, nie cały opis. Szukanie
-				// całości nie działało dla długich opisów (10 PL / 13 EN). Naprawa: podziel opis na
-				// akapity tak jak auto-tłumacz, pobierz PL każdego ze słownika, złóż. Brak akapitu w
-				// słowniku → zostaje EN dla tego akapitu (fallback). Guard: tryb PL + auto-pl wpięte.
-				if ( isset( $_GET['lang'] ) && 'pl' === $_GET['lang'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-					&& function_exists( 'pnb_pl_hash' ) && function_exists( 'pnb_pl_pobierz_wiele' ) ) {
-					$akapity = preg_split( '/\n\s*\n/', $plain );
-					if ( is_array( $akapity ) && $akapity ) {
-						$akapity = array_values( array_filter( array_map( 'trim', $akapity ), 'strlen' ) );
-						$mapa    = pnb_pl_pobierz_wiele( $akapity );
-						$zlozone = array();
-						foreach ( $akapity as $ak ) {
-							$pl_ak = $mapa[ pnb_pl_hash( $ak ) ] ?? '';
-							$zlozone[] = '' !== $pl_ak
-								? trim( wp_strip_all_tags( html_entity_decode( $pl_ak, ENT_QUOTES, 'UTF-8' ) ) )
-								: $ak; // brak tłumaczenia akapitu → zostaje EN (nie gubimy treści)
-						}
-						$plain = implode( ' ', $zlozone );
-					}
-				}
+				$plain = preg_replace( '/\s+/u', ' ', $plain ); // skrót na karcie = jedna linia (bez newline)
 				$skrot = mb_substr( $plain, 0, 180 );
 				if ( mb_strlen( $plain ) > 180 ) {
 					// utnij na ostatniej spacji żeby nie ciąć w połowie słowa
@@ -1795,7 +1807,7 @@ function pnb_kalendarz_render_single() {
 	$out .= pnb_kalendarz_good_to_know_html( $id );
 
 	// pełny opis (PL gdy wpisany)
-	$tresc = pnb_event_opis( $id );
+	$tresc = pnb_event_opis_pl( $id ); // pełny opis PL (składany z akapitów) w trybie ?lang=pl, inaczej EN
 	if ( trim( $tresc ) ) {
 		$out .= '<div class="pnb-evs-desc">' . wp_kses_post( wpautop( $tresc ) ) . '</div>';
 	}
