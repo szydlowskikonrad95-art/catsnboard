@@ -168,24 +168,34 @@
 			if (!btn || btn.disabled) return;
 			var cel = btn.getAttribute('data-pg');
 			var nowa = cel === 'prev' ? pgStrona - 1 : (cel === 'next' ? pgStrona + 1 : parseInt(cel, 10));
-			// KOLEJNOŚĆ BEZ WALKI Z GSAP (naprawa 2026-07-09 — wcześniej scroll walczył z ScrollTrigger.refresh
-			// który przywracał starą pozycję → przeskok dół→góra przez stopkę). Rozwiązanie: ustaw scroll na
-			// górę ZANIM refresh zapamięta pozycję, więc refresh utrwala GÓRĘ, nie dół.
-			//  1. Przebuduj listę BEZ refreshu (pomijRefresh=true).
-			pgPokazStrone(nowa, true);
-			//  2. Ustaw scroll na górę listy — scrollIntoView na PIERWSZĄ REALNĄ kartę (element, nie px;
-			//     .pnb-ev-chips to sticky = bezużyteczna kotwica), potem cofnij o wysokość paska (karta pod nim).
-			var pierwszy = root.querySelector('.pnb-ev-cardwrap:not(.is-hidden):not(.pg-hidden)');
-			var grupa = pierwszy && pierwszy.closest ? pierwszy.closest('.pnb-ev-group') : null;
-			var celEl = grupa || pierwszy;
-			if (celEl) {
-				celEl.scrollIntoView({ behavior: 'auto', block: 'start' });
-				var pasek = root.querySelector('.pnb-ev-chips');
-				var pasekH = pasek ? pasek.getBoundingClientRect().height : 60;
-				window.scrollBy({ top: -(pasekH + 20), behavior: 'auto' });
+
+			// KOTWICA = KONTENER LISTY .pnb-ev-tl (nie pierwsza karta!). Klucz (nauka 2026-07-09): karta
+			// się PRZEBUDOWUJE przy zmianie strony (pojawia/znika) → jej pozycja jest ruchoma w trakcie →
+			// Lenis/scroll trafiał w złe miejsce („raz na 5” stopka/środek). Kontener .pnb-ev-tl ma STAŁĄ
+			// górę (leży zaraz pod sticky-paskiem chipów, nie zależy od tego która strona) → zawsze ten sam
+			// cel. Strona jedzie na LENIS (window.lenis, smooth-scroll) który nadpisuje window.scrollTo —
+			// więc scrollujemy PRZEZ Lenis, jego API (main.js:19 robi tak samo).
+			var lista = root.querySelector('.pnb-ev-tl');
+			var pasek = root.querySelector('.pnb-ev-chips');
+			var pasekH = pasek ? pasek.getBoundingClientRect().height : 60;
+			var adminBar = document.body.classList.contains('admin-bar') ? 32 : 0;
+			var offset = -(pasekH + adminBar + 12); // NAD górą listy (żeby 1. karta była pod sticky-paskiem)
+
+			// SCROLL NAJPIERW (immediate = bez animacji, zero nakładania przy szybkich klikach), POTEM
+			// przebuduj listę i refresh. Kolejność: scroll do stałego kontenera → user już na górze →
+			// wymiana kart w środku dzieje się „pod” nim. refresh po scrollu, żeby nie przeliczał w locie.
+			if (lista && window.lenis && typeof window.lenis.scrollTo === 'function') {
+				window.lenis.scrollTo(lista, { offset: offset, immediate: true, force: true });
+			} else if (lista) {
+				var y = lista.getBoundingClientRect().top + window.pageYOffset + offset;
+				window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
 			}
-			//  3. TERAZ refresh — GSAP zapamiętuje AKTUALNĄ (górną) pozycję scrolla, nie przywraca dołu.
-			if (maGsap && !rm) ScrollTrigger.refresh();
+			pgPokazStrone(nowa, true);                  // przebuduj listę (karty się wymieniają)
+			if (maGsap && !rm) ScrollTrigger.refresh(); // przelicz triggery pod nowy layout
+			// Utrwal scroll PO refresh (refresh może go ruszyć) — jeszcze raz do tej samej stałej kotwicy.
+			if (lista && window.lenis && typeof window.lenis.scrollTo === 'function') {
+				window.lenis.scrollTo(lista, { offset: offset, immediate: true, force: true });
+			}
 		});
 		pgPrzelicz(); // stan początkowy (przed dotknięciem filtra) — policz strony, pokaż 1., zbuduj numerki
 	}
