@@ -113,19 +113,9 @@
 		}
 	}
 
-	/* KURSOR "View" — krążek nad kadrami taśmy i rzek */
-	if (!rm && window.matchMedia('(pointer: fine)').matches && maGsap) {
-		var cur = document.createElement('div');
-		cur.className = 'pnb-cursor';
-		cur.textContent = 'View';
-		document.body.appendChild(cur);
-		var qx = gsap.quickTo(cur, 'x', { duration: 0.3, ease: 'power3' });
-		var qy = gsap.quickTo(cur, 'y', { duration: 0.3, ease: 'power3' });
-		document.addEventListener('mousemove', function (e) {
-			qx(e.clientX); qy(e.clientY);
-			cur.classList.toggle('is-on', !!(e.target.closest && e.target.closest('.pnb-shot, .pnb-river img')));
-		});
-	}
+	/* ⛔ USUNIĘTO custom kursor „View" (2026-07-09 WYDAJNOŚĆ). Kropka za myszą + mousemove z closest()
+	   liczona dziesiątki razy/s → lag TYLKO na PC (mobile bez myszy był płynny; user zauważył różnicę).
+	   Gadżet nie wart płynności. Tilt 3D zdjęć zostaje (odpala się tylko nad konkretnym kadrem). */
 
 	/* RZEKI „Moments that stay": OSOBNY zestaw (momentsPool). Gdy klient nie wybrał osobnych,
 	   PHP podaje w momentsPool tę samą pulę co taśma (fallback) — więc rzeki nigdy nie są puste. */

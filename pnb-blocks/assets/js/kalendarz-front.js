@@ -305,21 +305,7 @@
 		});
 	}
 
-	/* kursor „Join" — koralowy krążek nad kartami, tylko precyzyjna mysz; łapie też linki do singla
-	   (.pnb-ev-golink: tytuł/zdjęcie/„Event details" prowadzą tam gdzie zapis), omija resztę interakcji */
-	if (window.matchMedia('(pointer: fine)').matches) {
-		var cur = document.createElement('div');
-		cur.className = 'pnb-cursor';
-		cur.textContent = 'Join';
-		document.body.appendChild(cur);
-		var qx = gsap.quickTo(cur, 'x', { duration: 0.3, ease: 'power3' });
-		var qy = gsap.quickTo(cur, 'y', { duration: 0.3, ease: 'power3' });
-		document.addEventListener('mousemove', function (e) {
-			qx(e.clientX); qy(e.clientY);
-			var t = e.target;
-			var nad = !!(t.closest && t.closest('.pnb-ev-card') &&
-				!t.closest('a:not(.pnb-ev-golink), button, summary, input, textarea, .pnb-ev-form'));
-			cur.classList.toggle('is-on', nad);
-		});
-	}
+	/* ⛔ USUNIĘTO custom kursor „Join" (2026-07-09 WYDAJNOŚĆ). Kropka za myszą + handler mousemove z
+	   closest() liczyła się dziesiątki razy/s przy KAŻDYM ruchu myszy → lag TYLKO na PC (mobile nie ma
+	   myszy = był płynny; user zauважył różnicę). Gadżet nie wart utraty płynności. Zwykły kursor zostaje. */
 })();
