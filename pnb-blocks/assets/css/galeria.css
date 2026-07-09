@@ -97,7 +97,7 @@
     radial-gradient(closest-side, rgba(222,101,79,.10), transparent) 94% 10%/260px 260px no-repeat,
     linear-gradient(165deg,#EDF7F9 0%,#FDF3EF 100%);}
 /* GŁĘBIA taśmy: plan -1 plamy · plan 0 watermark · plan 1 kadry · licznik-postęp */
-.pnb-sblob{position:absolute;border-radius:50%;filter:blur(70px);z-index:0;pointer-events:none;will-change:transform;}
+.pnb-sblob{position:absolute;border-radius:50%;filter:blur(70px);z-index:0;pointer-events:none;}
 .pnb-sblob-a{width:480px;height:480px;top:-8%;left:-120px;background:rgba(163,207,216,.6);}
 .pnb-sblob-b{width:420px;height:420px;bottom:-10%;right:-100px;background:rgba(251,210,200,.7);}
 .pnb-strip-word{

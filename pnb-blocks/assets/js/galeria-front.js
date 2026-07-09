@@ -81,14 +81,10 @@
 			gsap.fromTo(word, { xPercent: 6 }, { xPercent: -14, ease: 'none',
 				scrollTrigger: { trigger: strip, start: 'top top', end: 'bottom bottom', scrub: 1.4 } });
 		}
-		// plan -1: plamy dryfują najwolniej, każda w swoją stronę
-		[['.pnb-sblob-a', 70], ['.pnb-sblob-b', -90]].forEach(function (b) {
-			var el = strip.querySelector(b[0]);
-			if (el) {
-				gsap.to(el, { y: b[1], ease: 'none',
-					scrollTrigger: { trigger: strip, start: 'top bottom', end: 'bottom top', scrub: 1.8 } });
-			}
-		});
+		// ⛔ USUNIĘTO animację plam (blob) — 2026-07-09 WYDAJNOŚĆ. Blob-y mają filter:blur(70px),
+		// a scrub-animacja przeliczała to ROZMYCIE 70px NA KAŻDEJ KLATCE scrolla = zabójstwo GPU
+		// (galeria lagowała mocno, user zgłaszał). Plamy zostają STATYCZNE (ładne tło, tanie bo blur
+		// liczony raz). Ruch blobów był ledwo widoczny — płynność ważniejsza.
 		// wejście kadrów: odsłona maską z naprzemiennych kierunków (raz, przy dojściu do taśmy)
 		gsap.utils.toArray('.pnb-shot').forEach(function (fig, i) {
 			gsap.from(fig.querySelector('img'), {
@@ -97,10 +93,10 @@
 				scrollTrigger: { trigger: strip, start: 'top 78%', once: true }
 			});
 		});
-		// kadry lekko oddychają (y na IMG — figure ma rotację z CSS, osobny właściciel kanału)
-		gsap.utils.toArray('.pnb-shot img').forEach(function (el, i) {
-			gsap.to(el, { y: 7, duration: 2.5 + (i % 3) * 0.5, yoyo: true, repeat: -1, ease: 'sine.inOut' });
-		});
+		// ⛔ USUNIĘTO „oddychanie” kadrów (2026-07-09 WYDAJNOŚĆ). Było gsap.to(...repeat:-1) na KAŻDYM
+		// zdjęciu = ~12 NIESKOŃCZONYCH animacji chodzących NON-STOP (nawet bez scrolla) → galeria lagowała
+		// mocno (zmierzone: 60 aktywnych tweenów, 12 z repeat:-1). Zdjęcia są teraz statyczne — płynność
+		// ważniejsza niż subtelne pulsowanie. Zostaje reveal (odsłona przy wejściu) + tilt pod kursorem.
 		// tilt 3D pod kursorem (rotationX/Y na IMG — inny kanał niż oddychanie y; perspektywa z CSS na figure)
 		if (window.matchMedia('(pointer: fine)').matches) {
 			gsap.utils.toArray('.pnb-shot').forEach(function (fig) {
