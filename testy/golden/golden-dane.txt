@@ -1,0 +1,30 @@
+== KODY HTTP (strona → kod, EN i PL) ==
+/ 200
+/?lang=pl 200
+/events/ 200
+/events/?lang=pl 200
+/gallery/ 200
+/gallery/?lang=pl 200
+/services/ 200
+/services/?lang=pl 200
+/pricing/ 200
+/pricing/?lang=pl 200
+/contact/ 200
+/contact/?lang=pl 200
+/our-staff/ 200
+/our-staff/?lang=pl 200
+/our-location/ 200
+/our-location/?lang=pl 200
+/about-us/ 200
+/about-us/?lang=pl 200
+404-test 404
+== TYTULY KART PRZEGLADARKI (PL musi byc po polsku) ==
+PL /gallery/ <title>Galeria &#8211; Cats&#039;N&#039;Board</title>
+EN /gallery/ <title>Gallery &#8211; Cats&#039;N&#039;Board</title>
+PL /events/ <title>Wydarzenia &#8211; Cats&#039;N&#039;Board</title>
+EN /events/ <title>Events &#8211; Cats&#039;N&#039;Board</title>
+== MECHANIZMY (obecnosc w HTML) ==
+formularz-zapisu-nonce JEST
+lightbox-markup JEST
+przelacznik-jezyka JEST
+meta-description JEST
