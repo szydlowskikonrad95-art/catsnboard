@@ -294,9 +294,12 @@
 			onEnter: function (partia) {
 				partia.forEach(function (k, i) {
 					k.classList.add('is-rev');
-					gsap.timeline({ delay: i * 0.12 })
-						.to(k, { y: 0, opacity: 1, duration: 1.1, ease: 'expo.out', overwrite: 'auto' }, 0)
-						.to(czesci(k), { y: 0, opacity: 1, duration: 0.7, ease: 'expo.out', stagger: 0.07, overwrite: 'auto' }, 0.1);
+					// SZYBSZY reveal (2026-07-09): delay 0.12→0.06, duration 1.1→0.7 — przy 10 kartach
+					// ostatnia czekała do 1.2s (user: „przełączanie stron trwa długo”). Efekt „po kolei”
+					// zostaje, ale 2× żwawszy. Cap delaya: max 6 kart się kaskaduje, reszta bez opóźnienia.
+					gsap.timeline({ delay: Math.min( i, 6 ) * 0.06 })
+						.to(k, { y: 0, opacity: 1, duration: 0.7, ease: 'expo.out', overwrite: 'auto' }, 0)
+						.to(czesci(k), { y: 0, opacity: 1, duration: 0.5, ease: 'expo.out', stagger: 0.05, overwrite: 'auto' }, 0.08);
 				});
 			}
 		});
