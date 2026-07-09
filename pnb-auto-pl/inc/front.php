@@ -36,6 +36,19 @@ function pnb_pl_podmieniac() {
 	return true;
 }
 
+/*
+ * OŻYWIENIE i18n (naprawa 2026-07-09): w trybie ?lang=pl przełącz WordPress locale na pl_PL, żeby
+ * załadowały się pliki .po/.mo wtyczek → WSZYSTKIE etykiety __()/_e() interfejsu (Good to know,
+ * Highlights, In person, No refunds, Add to Google Calendar...) wychodzą PL ZA DARMO, bez AI.
+ * Wcześniej: ?lang=pl przełączał tylko strtr (słownik AI) → etykiety których AI nie złapało zostawały
+ * EN mimo że były w .po (bug „ciągle coś nie tłumaczy”). Filtr `locale` woła się przy każdym __(),
+ * więc działa na cały render (wcześniej niż bufor strtr na template_redirect). Zero kolizji ze strtr:
+ * po .po tekst jest już PL, a pary strtr mają kotwice EN (>tekst<) które nie łapią PL.
+ */
+add_filter( 'locale', function ( $locale ) {
+	return pnb_pl_podmieniac() ? 'pl_PL' : $locale;
+} );
+
 /* Start bufora na template_redirect (odpala się tylko dla frontowych szablonów). */
 add_action( 'template_redirect', function () {
 	if ( ! pnb_pl_podmieniac() || headers_sent() ) {

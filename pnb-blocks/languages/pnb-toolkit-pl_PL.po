@@ -619,3 +619,96 @@ msgstr "PNB Galeria i Wydarzenia"
 
 msgid "Premium gallery (film strip + \"Moments\" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site."
 msgstr "Galeria premium (taśma kinowa + sekcja „Moments”) i kalendarz wydarzeń z zapisami gości — dwa bloki Gutenberg (strony Gallery i Events), edytowalne w edytorze bloków. Nie ingeruje w resztę strony."
+
+# ── FRONT: etykiety wydarzeń których brakowało (audyt 2026-07-09, grupa b) ──
+# Dopełnienie po ożywieniu locale (front.php v0.3.6) — teraz .po działa na froncie.
+
+msgid "Good to know"
+msgstr "Warto wiedzieć"
+
+msgid "Highlights"
+msgstr "Najważniejsze"
+
+msgid "Refund policy"
+msgstr "Polityka zwrotów"
+
+msgid "No refunds"
+msgstr "Bez zwrotów"
+
+msgid "In person"
+msgstr "Na miejscu"
+
+msgid "Online event"
+msgstr "Wydarzenie online"
+
+msgid "All ages welcome"
+msgstr "Dla każdego wieku"
+
+msgid "18 and over"
+msgstr "Od 18 lat"
+
+msgid "21 and over"
+msgstr "Od 21 lat"
+
+msgid "Under 16 with a parent or guardian"
+msgstr "Poniżej 16 lat z rodzicem lub opiekunem"
+
+msgid "Under 18 with a parent or guardian"
+msgstr "Poniżej 18 lat z rodzicem lub opiekunem"
+
+msgid "Free parking"
+msgstr "Darmowy parking"
+
+msgid "Paid parking"
+msgstr "Parking płatny"
+
+msgid "No parking"
+msgstr "Brak parkingu"
+
+msgid "Interested?"
+msgstr "Zainteresowany?"
+
+msgid "This event is hosted externally — see full details and get tickets at the organiser."
+msgstr "To wydarzenie jest organizowane zewnętrznie — pełne informacje i bilety u organizatora."
+
+msgid "Free"
+msgstr "Za darmo"
+
+msgid "From"
+msgstr "Od"
+
+msgid "Duration"
+msgstr "Czas trwania"
+
+msgid "Doors at %s"
+msgstr "Otwarcie drzwi o %s"
+
+msgid "Duration: %s"
+msgstr "Czas trwania: %s"
+
+msgid "%d min"
+msgstr "%d min"
+
+msgid "%1$dh %2$dmin"
+msgstr "%1$dh %2$dmin"
+
+msgid "%1$d of %2$d spots left"
+msgstr "Wolne miejsca: %1$d z %2$d"
+
+msgid "Search…"
+msgstr "Szukaj…"
+
+msgid "Search events"
+msgstr "Szukaj wydarzeń"
+
+msgid "View event & tickets"
+msgstr "Zobacz wydarzenie i bilety"
+
+msgid "Events pagination"
+msgstr "Nawigacja po stronach wydarzeń"
+
+msgid "Previous page"
+msgstr "Poprzednia strona"
+
+msgid "Next page"
+msgstr "Następna strona"
