@@ -191,6 +191,10 @@ function pnb_pl_pary_do_podmiany() {
 /** Czyści cache par (po zapisie do słownika). */
 function pnb_pl_wyczysc_cache_par() {
 	delete_transient( 'pnb_pl_pary' );
+	// unieważnij też CACHE STRON PL (zmiana tłumaczeń → stary HTML w cache jest nieaktualny).
+	if ( function_exists( 'pnb_pl_cache_bump' ) ) {
+		pnb_pl_cache_bump();
+	}
 }
 
 /** Ile wpisów w słowniku (status + licznik do panelu admina). */
