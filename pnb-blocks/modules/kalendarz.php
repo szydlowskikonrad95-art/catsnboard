@@ -1461,7 +1461,19 @@ function pnb_kalendarz_render() {
 			$out .= '<div class="pnb-ev-cardwrap">';
 			// data-search = tytuł + miejsce + skrót opisu (do wyszukiwarki po tytule/opisie na żywo).
 			$szukaj_tekst = trim( ( $it['tytul'] ?? get_the_title( $id ) ) . ' ' . ( $it['miejsce'] ?? '' ) . ' ' . wp_strip_all_tags( (string) get_post_field( 'post_content', $id ) ) );
-			$out .= '<article class="pnb-ev-card" id="event-' . (int) $id . '" data-when="' . esc_attr( $it['data'] ) . '" data-cat="' . esc_attr( $it['kat'] ) . '" data-search="' . esc_attr( mb_substr( $szukaj_tekst, 0, 300 ) ) . '">';
+			// W TRYBIE PL doklej też PL (tytuł+opis ze słownika), bo user WIDZI „Joga" i wpisuje „joga” —
+			// bez tego szukał tylko po oryginale EN „yoga” (bug 2026-07-09: „joga” nic nie znajdowało).
+			// Zostawiamy TEŻ EN w data-search, więc „yoga” dalej działa. Guard: tryb PL + auto-pl wpięte.
+			if ( isset( $_GET['lang'] ) && 'pl' === $_GET['lang'] // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				&& function_exists( 'pnb_pl_hash' ) && function_exists( 'pnb_pl_pobierz_wiele' ) ) {
+				$tytul_en = (string) ( $it['tytul'] ?? get_the_title( $id ) );
+				$opis_pl  = function_exists( 'pnb_event_opis_pl' ) ? wp_strip_all_tags( pnb_event_opis_pl( $id ) ) : '';
+				$mapa_t   = pnb_pl_pobierz_wiele( array( $tytul_en ) );
+				$tytul_pl = html_entity_decode( $mapa_t[ pnb_pl_hash( $tytul_en ) ] ?? '', ENT_QUOTES, 'UTF-8' );
+				// TYTUŁ PL na POCZĄTEK (żeby nie wypadł przy ucięciu do 300 zn.), potem EN+miejsce, potem opis PL.
+				$szukaj_tekst = trim( $tytul_pl . ' ' . $szukaj_tekst . ' ' . $opis_pl );
+			}
+			$out .= '<article class="pnb-ev-card" id="event-' . (int) $id . '" data-when="' . esc_attr( $it['data'] ) . '" data-cat="' . esc_attr( $it['kat'] ) . '" data-search="' . esc_attr( mb_substr( $szukaj_tekst, 0, 500 ) ) . '">';
 			$out .= '<div class="pnb-ev-main">';
 			// godzina od–do
 			if ( $it['godzina'] ) {
