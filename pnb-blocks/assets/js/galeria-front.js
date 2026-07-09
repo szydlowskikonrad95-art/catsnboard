@@ -70,9 +70,18 @@
 		// dostają wymiary DOPIERO po załadowaniu → jeśli któryś kadr doładuje się po init, scrollWidth rośnie
 		// i taśma musi przeliczyć zakres, inaczej nie dojedzie do ostatniego kadru. Refresh po każdym
 		// doładowanym obrazie taśmy (i raz zbiorczo). Wołamy na PRZECHWYCONEJ instancji ScrollTrigger.
+		// ⚡ WYDAJNOŚĆ (2026-07-09): PRZEDTEM refresh() na load KAŻDEGO obrazu = 12-15× ciężkie
+		// przeliczenie gdy obrazy się doczytują → strona ZACINAŁA pierwsze sekundy po wejściu (user:
+		// „zjeżdżam od razu i zacina, po chwili już nie"). Teraz DEBOUNCE: refresh RAZ po 150ms od
+		// ostatniego load-a (taśma dostanie poprawny zakres bez kilkunastu refreshy).
+		var refreshTimer;
+		var refreshDebounced = function () {
+			clearTimeout(refreshTimer);
+			refreshTimer = setTimeout(function () { try { ScrollTrigger.refresh(); } catch (e) {} }, 150);
+		};
 		Array.prototype.forEach.call(track.querySelectorAll('img'), function (im) {
 			if (!im.complete) {
-				im.addEventListener('load', function () { try { ScrollTrigger.refresh(); } catch (e) {} }, { once: true });
+				im.addEventListener('load', refreshDebounced, { once: true });
 			}
 		});
 		// plan 0: watermark jedzie wolniej niż kadry (kontr-tempo = głębia)
@@ -113,9 +122,19 @@
 		}
 	}
 
-	/* ⛔ USUNIĘTO custom kursor „View" (2026-07-09 WYDAJNOŚĆ). Kropka za myszą + mousemove z closest()
-	   liczona dziesiątki razy/s → lag TYLKO na PC (mobile bez myszy był płynny; user zauważył różnicę).
-	   Gadżet nie wart płynności. Tilt 3D zdjęć zostaje (odpala się tylko nad konkretnym kadrem). */
+	/* KURSOR "View" — krążek nad kadrami taśmy i rzek */
+	if (!rm && window.matchMedia('(pointer: fine)').matches && maGsap) {
+		var cur = document.createElement('div');
+		cur.className = 'pnb-cursor';
+		cur.textContent = 'View';
+		document.body.appendChild(cur);
+		var qx = gsap.quickTo(cur, 'x', { duration: 0.3, ease: 'power3' });
+		var qy = gsap.quickTo(cur, 'y', { duration: 0.3, ease: 'power3' });
+		document.addEventListener('mousemove', function (e) {
+			qx(e.clientX); qy(e.clientY);
+			cur.classList.toggle('is-on', !!(e.target.closest && e.target.closest('.pnb-shot, .pnb-river img')));
+		});
+	}
 
 	/* RZEKI „Moments that stay": OSOBNY zestaw (momentsPool). Gdy klient nie wybrał osobnych,
 	   PHP podaje w momentsPool tę samą pulę co taśma (fallback) — więc rzeki nigdy nie są puste. */
