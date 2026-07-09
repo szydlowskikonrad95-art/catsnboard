@@ -73,9 +73,18 @@ function pnb_pl_podmien_bufor( $html ) {
 		$wynik = strtr( $html, $pary );
 		// DRUGI przebieg: linki WEWNĄTRZ przetłumaczonych bloków (np. <a> w <li> menu) — strtr nie
 		// skanuje podmienionego tekstu, więc href z tłumaczenia zostawał bez ?lang=pl (klik = powrót EN).
-		// Pary są zakotwiczone (href="..." / >tekst<), więc drugi przebieg jest bezpieczny (klucz EN
-		// nie występuje już w polskim wyniku, a href="X" nie łapie href="X?lang=pl").
-		$wynik = strtr( $wynik, $pary );
+		// ⚡ WYDAJNOŚĆ (2026-07-09): drugi strtr LECIAŁ NA WSZYSTKICH 2328 parach (544ms!) choć potrzebuje
+		// tylko ~37 par-LINKÓW (href=). Strona PL ładowała się 1.14s (24× wolniej niż EN 0.05s) — user
+		// czuł to jako „lag”. Teraz drugi przebieg tylko na parach z href= → z 544ms na kilka ms.
+		$pary_linki = array();
+		foreach ( $pary as $k => $v ) {
+			if ( false !== strpos( $k, 'href=' ) ) {
+				$pary_linki[ $k ] = $v;
+			}
+		}
+		if ( $pary_linki ) {
+			$wynik = strtr( $wynik, $pary_linki );
+		}
 		if ( ! is_string( $wynik ) || '' === $wynik ) {
 			return $html;
 		}
