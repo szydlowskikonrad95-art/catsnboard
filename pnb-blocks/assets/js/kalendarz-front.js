@@ -126,25 +126,26 @@
 				if ( k ) {
 					k.classList.add('is-rev'); // niech dalsze dokoncz() (np. z filtruj()) już jej nie rusza
 					if (maGsap && !rm) {
-						// Karta widoczna OD RAZU (gsap.set — pewne). Płynność daje CSS-owy fade na wrapperze
-						// niżej (klasa .pg-wejscie), NIE gsap.to — bo karta startuje display:none i gsap.to
-						// animował „w próżnię”, zostawiając opacity:0 (5 prób animacji GSAP = karta ukryta).
-						gsap.set(k, { y: 0, opacity: 1, clearProps: 'transform' });
-						gsap.set(k.querySelectorAll('.pnb-ev-main > *'), { y: 0, opacity: 1, clearProps: 'transform' });
-						pgAnimuj.push(k); // KARTA (nie wrapper — wrapper ma pod-scrub GSAP) → CSS fade opacity
+						// KLUCZ (naprawa fade 2026-07-09): clearProps:'all' KASUJE inline opacity/transform
+						// które GSAP-reveal zostawił — inaczej inline przebija animację CSS .pg-wejscie i fade
+						// był niewidoczny (GSAP i CSS walczyły o opacity). Po wyczyszczeniu inline CSS przejmuje
+						// (klasa .pg-wejscie niżej robi fade+unos, `both` trzyma stan końcowy = karta widoczna).
+						gsap.set(k, { clearProps: 'all' });
+						gsap.set(k.querySelectorAll('.pnb-ev-main > *'), { clearProps: 'all' });
+						pgAnimuj.push(k); // KARTA (nie wrapper — wrapper ma pod-scrub GSAP) → CSS fade+unos
 					}
 				}
 			}
 		});
-		// PŁYNNE, MIĘKKIE wejście przez CSS (nie GSAP — ten walczył z display:none i gubił opacity).
-		// Wrapper dostaje klasę .pg-wejscie która robi krótki fade+unos przez CSS transition. Restart
-		// animacji: zdejmij klasę, wymuś reflow, dodaj — inaczej przeglądarka nie odpali transition drugi raz.
+		// PŁYNNE, MIĘKKIE wejście przez CSS (fade+unos, keyframes pnbPgIn). Restart animacji: zdejmij
+		// klasę → wymuś reflow (void offsetWidth) → dodaj SYNCHRONICZNIE. ⛔ NIE w requestAnimationFrame:
+		// callback rAF ginął (ScrollTrigger.refresh niżej wyprzedzał go / anulował paint) → add('pg-wejscie')
+		// nie wykonywał się ANI RAZU mimo że pgAnimuj miało karty (potwierdzone pomiarem 2026-07-09:
+		// clearProps wołany 20×, add pg-wejscie 0×). Reflow między remove i add sam wystarcza do restartu.
 		if (pgAnimuj.length) {
-			pgAnimuj.forEach(function (w) { w.classList.remove('pg-wejscie'); });
-			void root.offsetWidth; // reflow — reset transition
-			requestAnimationFrame(function () {
-				pgAnimuj.forEach(function (w) { w.classList.add('pg-wejscie'); });
-			});
+			pgAnimuj.forEach(function (k) { k.classList.remove('pg-wejscie'); });
+			void root.offsetWidth; // reflow — reset animacji (żeby odpaliła ponownie przy kolejnej stronie)
+			pgAnimuj.forEach(function (k) { k.classList.add('pg-wejscie'); });
 		}
 		// grupy dat: nagłówek+sekcja widoczne tylko gdy mają ≥1 kartę na TEJ stronie (filtr + paginacja razem)
 		grupy.forEach(function (g) {
@@ -164,18 +165,17 @@
 			if (!btn || btn.disabled) return;
 			var cel = btn.getAttribute('data-pg');
 			var nowa = cel === 'prev' ? pgStrona - 1 : (cel === 'next' ? pgStrona + 1 : parseInt(cel, 10));
-			// KOLEJNOŚĆ dla PŁYNNEGO przejścia (nie „chamskie cięcie”): najpierw SKOK scrolla na górę listy
-			// (natychmiast, zanim oko zobaczy nowe karty — .pnb-ev-tl-in ma stałą pozycję pod paskiem chipów),
-			// POTEM pgPokazStrone odsłania karty animacją fade+unos. Efekt: „jestem na górze, wydarzenia
-			// się wysuwają” zamiast przewijania przez środek. Scroll w rAF (layout starej strony jeszcze
-			// stoi = .pnb-ev-tl-in w dobrej pozycji); karty animuje pgPokazStrone tuż po.
-			var lista = root.querySelector('.pnb-ev-tl-in') || root.querySelector('.pnb-ev-tl') || root;
-			var chips = root.querySelector('.pnb-ev-chips');
-			var offset = (chips ? chips.getBoundingClientRect().height : 0)
-				+ (document.body.classList.contains('admin-bar') ? 32 : 0) + 16;
-			var y = lista.getBoundingClientRect().top + window.pageYOffset - offset;
+			// 1. PRZEBUDUJ stronę (pgPokazStrone zmienia które grupy/karty są widoczne → zmienia WYSOKOŚĆ
+			//    listy). 2. DOPIERO POTEM scrolluj. ⛔ BUG (zgłoszony 2026-07-09: klik 2→3 wyrzucał w STOPKĘ):
+			//    stary kod mierzył pozycję .pnb-ev-tl-in PRZED pgPokazStrone — a przebudowa zmienia layout,
+			//    więc zmierzone y było nieaktualne (raz trafiało, raz lądowało w stopce). Naprawa: mierz PO
+			//    przebudowie. KOTWICA = pasek chipów (.pnb-ev-chips) — jego pozycja w dokumencie jest STAŁA
+			//    (nad listą, nie zależy od liczby kart), więc scroll zawsze ląduje tuż nad listą pod paskiem.
+			pgPokazStrone(nowa);
+			var kotwica = root.querySelector('.pnb-ev-chips') || root.querySelector('.pnb-ev-tl') || root;
+			var adminBar = document.body.classList.contains('admin-bar') ? 32 : 0;
+			var y = kotwica.getBoundingClientRect().top + window.pageYOffset - adminBar - 8;
 			window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
-			pgPokazStrone(nowa); // odsłania nowe karty z animacją (gsap.to fade+unos, stagger)
 		});
 		pgPrzelicz(); // stan początkowy (przed dotknięciem filtra) — policz strony, pokaż 1., zbuduj numerki
 	}
