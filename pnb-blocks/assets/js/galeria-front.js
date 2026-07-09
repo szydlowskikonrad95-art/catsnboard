@@ -94,11 +94,15 @@
 		// a scrub-animacja przeliczała to ROZMYCIE 70px NA KAŻDEJ KLATCE scrolla = zabójstwo GPU
 		// (galeria lagowała mocno, user zgłaszał). Plamy zostają STATYCZNE (ładne tło, tanie bo blur
 		// liczony raz). Ruch blobów był ledwo widoczny — płynność ważniejsza.
-		// wejście kadrów: odsłona maską z naprzemiennych kierunków (raz, przy dojściu do taśmy)
+		// wejście kadrów: fade + delikatny unos (raz, przy dojściu do taśmy)
+		// ⚡ WYDAJNOŚĆ (2026-07-09): PRZEDTEM odsłona maską clipPath (inset) — clipPath animowany to
+		// jeden z NAJDROŻSZYCH efektów (przeglądarka przemalowuje CAŁY obraz co klatkę, bez pomocy GPU) →
+		// galeria zacinała przy wejściu na kadry (user pokazał na zrzucie). Teraz opacity + transform Y:
+		// oba SĄ na warstwie GPU (compositor), zero re-paintu → płynne. Efekt „wjazdu” zostaje, ładnie.
 		gsap.utils.toArray('.pnb-shot').forEach(function (fig, i) {
 			gsap.from(fig.querySelector('img'), {
-				clipPath: (i % 2) ? 'inset(0 0 100% 0)' : 'inset(100% 0 0 0)',
-				duration: 1, ease: 'expo.out', delay: (i % 4) * 0.09,
+				opacity: 0, y: (i % 2) ? 40 : -40, // naprzemienny kierunek (jak było przy masce) — z dołu/góry
+				duration: 0.9, ease: 'expo.out', delay: (i % 4) * 0.08,
 				scrollTrigger: { trigger: strip, start: 'top 78%', once: true }
 			});
 		});
