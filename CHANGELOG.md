@@ -1,5 +1,30 @@
 # Historia zmian
 
+## v2.2.0 — 9 lipca 2026
+
+Duże dopieszczenie: pełne tłumaczenie, szybsza strona, wygodniejszy kalendarz.
+
+**Polska wersja — teraz kompletna:**
+- Całe menu, treści, galeria i wydarzenia po polsku (także opisy pobieranych wydarzeń).
+- Nowe i zmienione wydarzenia (również demo i te z importu) tłumaczą się same.
+- Opis strony dla Google i Facebooka (przy udostępnianiu linku) też jest po polsku.
+
+**Szybsza strona:**
+- Galeria nie zacina się już przy wchodzeniu — zdjęcia i animacje zoptymalizowane.
+- Strona z wydarzeniami po polsku ładuje się błyskawicznie (wcześniej ~1 s, teraz ~0,01 s
+  dzięki zapamiętywaniu przetłumaczonej wersji; formularze zapisu działają bez zmian).
+
+**Kalendarz wydarzeń:**
+- Przy wielu wydarzeniach są numerki stron (1, 2, 3). Po odświeżeniu strony zostajesz na tej
+  samej stronie kalendarza (wcześniej wracało na początek).
+- Importer nie tworzy już podwójnych wydarzeń, nawet gdy sprawdzanie źródła nałoży się w czasie.
+- Import szanuje Twoje decyzje: skasowane ręcznie wydarzenie nie wraca przy następnym sprawdzeniu.
+- Pobierane wydarzenia dostają zdjęcia i pełny polski opis.
+
+Wersje: pnb-blocks **1.10.35** · pnb-auto-pl **0.3.9** · motyw **1.1.12**.
+
+
+
 ## v2.1.0 — 8 lipca 2026
 
 Automatyczny import wydarzeń — nowa duża funkcja (wtyczka sama dodaje wydarzenia ze źródła):
