@@ -371,7 +371,14 @@ function catsnboard_meta_seo() {
 	if ( is_front_page() ) {
 		$opis = catsnboard_txt( 'seo.home', 'Cats\'N\'Board — a warm, calm second home for your cat in Żoliborz, Warsaw. Boarding, daycare and gentle care by people who love cats.' );
 	} elseif ( is_singular( 'pnb_wydarzenie' ) ) {
-		$op = wp_strip_all_tags( (string) get_post_field( 'post_content', get_the_ID() ) );
+		// Opis wydarzenia do meta/OG. W trybie ?lang=pl bierzemy PRZETŁUMACZONY opis (pnb_event_opis_pl,
+		// składany z akapitów ze słownika) — inaczej meta description/og zostawały EN mimo PL strony
+		// (bufor strtr nie łapie ich, bo meta ma tekst w content="…" uciętym, nie >tekst<). 2026-07-09.
+		if ( isset( $_GET['lang'] ) && 'pl' === $_GET['lang'] && function_exists( 'pnb_event_opis_pl' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$op = wp_strip_all_tags( (string) pnb_event_opis_pl( get_the_ID() ) );
+		} else {
+			$op = wp_strip_all_tags( (string) get_post_field( 'post_content', get_the_ID() ) );
+		}
 		$opis = $op ? mb_substr( trim( $op ), 0, 155 ) : catsnboard_txt( 'seo.events', 'Adoption days, cat classes and open days at Cats\'N\'Board.' );
 	} elseif ( is_page() ) {
 		$slug = get_post_field( 'post_name', get_the_ID() );
