@@ -141,12 +141,19 @@ function pnb_pl_pary_do_podmiany() {
 			$pary[ $w->original ] = $w->translated;
 		} elseif ( false === strpos( $w->original, '<' ) && false === strpos( $w->original, '"' )
 			&& false === strpos( $w->translated, '"' ) ) {
-			// CZYSTY TEKST (bez tagów/cudzysłowów) → pary we WSZYSTKICH formach kotwic.
+			// CZYSTY TEKST (bez tagów/cudzysłowów) → forma zawartości elementu ZAWSZE.
 			// (Audyt: „Your name" złapane raz jako placeholder → forma >label< nie istniała → label został EN.
 			//  Dedup po hashu daje 1 wiersz na tekst, więc formy muszą wychodzić z jednego wiersza.)
 			$pary[ '>' . $w->original . '<' ] = '>' . $w->translated . '<';
-			foreach ( array( 'alt', 'title', 'placeholder', 'aria-label', 'content', 'value' ) as $attr ) {
-				$pary[ $attr . '="' . $w->original . '"' ] = $attr . '="' . $w->translated . '"';
+			// ⚡ WYDAJNOŚĆ (2026-07-09): warianty atrybutowe (alt=, value=, placeholder=…) tylko dla
+			// KRÓTKICH tekstów (≤40 zn = etykiety typu „Search”, „Email”, które realnie bywają w atrybutach).
+			// Długie teksty (opisy/tytuły wydarzeń) NIGDY nie trafiają do atrybutu — ich 6 wariantów było
+			// MARTWE (~1200 par), a strtr płacił za każdy wzorzec (mierzone: 3408 par = 1095ms na Events PL).
+			// Po odchudzeniu strtr skanuje mniej wzorców → szybciej. Zero utraty tłumaczeń (formy nietrafiane).
+			if ( mb_strlen( $w->original ) <= 40 ) {
+				foreach ( array( 'alt', 'title', 'placeholder', 'aria-label', 'content', 'value' ) as $attr ) {
+					$pary[ $attr . '="' . $w->original . '"' ] = $attr . '="' . $w->translated . '"';
+				}
 			}
 		} elseif ( 0 === strpos( $typ, 'atrybut:' ) ) {
 			$attr = substr( $typ, 8 );
