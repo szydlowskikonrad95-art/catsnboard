@@ -1,4 +1,4 @@
-# Cats'N'Board — wtyczki i motyw 🐾
+# Cats'N'Board — wtyczki WordPress 🐾
 
 **Produkt = dwie wtyczki** do samodzielnego zarządzania stroną kociego pensjonatu:
 galeria premium, kalendarz wydarzeń z zapisami gości i **automatyczna polska wersja** strony.
