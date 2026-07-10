@@ -1,0 +1,21 @@
+:root{
+  --teal:#2E8CA3; --teal-d:#1F6879; --coral:#E08A6E; --coral-d:#C56B4E;
+  --green:#4E9E6A; --green-d:#3a7d52; --ground:#F5F7F8; --panel:#FFFFFF; --ink:#1D2A2E; --ink-soft:#52646A;
+  --line:#D9E2E5; --code-bg:#EEF4F5; --radius:14px;
+  --shadow:0 1px 2px rgba(30,60,70,.06), 0 4px 16px rgba(30,60,70,.07);
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;
+  -webkit-font-smoothing:antialiased;padding:44px 48px}
+.brand{display:flex;align-items:center;gap:.55rem;color:var(--teal);font-weight:700;
+  letter-spacing:.05em;font-size:.95rem;text-transform:uppercase}
+h1{font-size:2rem;line-height:1.12;margin:.5rem 0 .4rem;letter-spacing:-.02em}
+.sub{color:var(--ink-soft);font-size:1.02rem;max-width:74ch}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--coral-d);font-weight:600;display:flex;align-items:center;gap:.5rem;margin:0 0 .4rem}
+.eyebrow .num{background:var(--coral);color:#fff;width:1.4rem;height:1.4rem;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;font-size:.76rem}
+.mono{font-family:var(--mono)}
+code{font-family:var(--mono);background:var(--code-bg);padding:.1rem .35rem;border-radius:4px;font-size:.85em;color:var(--teal-d)}

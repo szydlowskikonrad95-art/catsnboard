@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><style>
+  body{width:1240px}
+  .eyebrow{color:var(--green-d)} .eyebrow .num{background:var(--green)}
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:30px}
+  .rc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+    border-left:3px solid var(--green);box-shadow:var(--shadow)}
+  .rc .q{font-weight:700;font-size:.96rem;margin-bottom:.4rem;display:flex;align-items:baseline;gap:.4rem}
+  .rc .q .ico{flex:none}
+  .rc .a{color:var(--ink-soft);font-size:.88rem;line-height:1.5}
+  .rc .a b{color:var(--green-d)}
+  .rc .tag{font-family:var(--mono);font-size:.68rem;color:var(--teal-d);background:var(--code-bg);
+    padding:.12rem .45rem;border-radius:4px;display:inline-block;margin-top:.5rem}
+  .note{margin-top:24px;background:#EAF6EF;border:1px solid #A9D8BF;border-left:4px solid #2c8a5a;
+    border-radius:11px;padding:15px 20px;font-size:.94rem;color:#245c3e}
+  .note b{color:#1c6b45}
+</style></head><body>
+
+  <div class="brand"><span>🐾</span> Cats'N'Board · dokumentacja</div>
+  <div class="eyebrow"><span class="num">3</span> Odporność · produkt działa 24/7</div>
+  <h1>Co się dzieje, gdy coś pójdzie nie tak</h1>
+  <p class="sub">Automat pracuje sam, bez opieki. Dlatego każda możliwa awaria ma zaplanowaną reakcję —
+     system nie umiera od jednej usterki i nigdy nie kasuje danych klienta przez pomyłkę.</p>
+
+  <div class="grid">
+    <div class="rc">
+      <div class="q"><span class="ico">🖼️</span> Zdjęcie się nie pobierze</div>
+      <div class="a">Wydarzenie wchodzi <b>bez zdjęcia</b> (placeholder) i nie wywala cyklu. Automat próbuje dobrać foto w kolejnych cyklach.</div>
+      <span class="tag">samo-naprawa zdjęć</span>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">📡</span> Źródło nie odpowiada</div>
+      <div class="a"><b>Spróbuje w następnym cyklu</b>, automat żyje dalej. Porażki są liczone.</div>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">0️⃣</span> Źródło zwróci 0 wydarzeń</div>
+      <div class="a"><b>NIE czyści strony.</b> Traktuje to jak awarię źródła, nie jak „wszystko usunięte" — dane zostają.</div>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">🔁</span> Ten sam import dwa razy</div>
+      <div class="a"><b>Zero duplikatów.</b> Automat rozpoznaje wydarzenie po jego ID u źródła i nie dodaje drugi raz.</div>
+      <span class="tag">dedup: _pnb_source_id</span>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">⛔</span> Dwa cykle naraz</div>
+      <div class="a"><b>Blokada (lock).</b> Tylko jeden import w danej chwili — drugi grzecznie kończy, nie gryzą się o te same dane.</div>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">💥</span> Źródło pada w kółko (ban/500)</div>
+      <div class="a"><b>Bezpiecznik (circuit breaker)</b> — po serii porażek czeka coraz dłużej (10→20→40, max 120 min), nie łomocze martwego źródła.</div>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">☠️</span> Jedno wydarzenie pada 5×</div>
+      <div class="a"><b>Odkłada je na bok</b> (dead letter) — przestaje próbować w kółko, resztę importuje normalnie. Widoczne w panelu.</div>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">📉</span> Źródło nagle dało 22 → 2</div>
+      <div class="a"><b>Alert + pauza wygasania.</b> Podejrzany spadek = możliwa zmiana API — nie kasujemy, tylko ostrzegamy.</div>
+    </div>
+    <div class="rc">
+      <div class="q"><span class="ico">✏️</span> Klient ręcznie poprawił wydarzenie</div>
+      <div class="a"><b>Automat już go nie nadpisuje.</b> Ręczne zmiany są chronione — źródło ich nie zamaże.</div>
+      <span class="tag">flaga: _pnb_locked</span>
+    </div>
+  </div>
+
+  <div class="note">
+    ✅ <b>Wszystko potwierdzone testami wykonaniem</b> — nie teorią. Trzy nocne testy od zera (świeży WordPress,
+     droga klienta) przeszły czysto: automat sam scrapuje, tłumaczy i dodaje zdjęcia, zero duplikatów, zero błędów.
+  </div>
+
+</body></html>

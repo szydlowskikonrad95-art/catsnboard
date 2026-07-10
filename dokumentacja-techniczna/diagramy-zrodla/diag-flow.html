@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><style>
+  body{width:1100px}
+  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0;margin-top:30px;max-width:820px}
+  .node{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px 22px;box-shadow:var(--shadow);position:relative}
+  .node h3{font-size:1.12rem;display:flex;align-items:center;gap:.55rem}
+  .node p{color:var(--ink-soft);font-size:.94rem;margin-top:.35rem}
+  .node .files{font-family:var(--mono);font-size:.76rem;color:var(--teal-d);margin-top:.6rem;display:flex;flex-wrap:wrap;gap:.4rem}
+  .node .files span{background:var(--code-bg);padding:.2rem .5rem;border-radius:5px}
+  .node.src{border-left:4px solid var(--ink-soft)}
+  .node.auto{border-left:4px solid var(--coral);background:#FDF7F4}
+  .node.wp{border-left:4px solid var(--green)}
+  .node.tl{border-left:4px solid var(--teal)}
+  .arrow{align-self:center;color:var(--teal);font-size:1.5rem;line-height:1;padding:.45rem 0;font-weight:700;text-align:center}
+  .arrow small{display:block;font-family:var(--mono);font-size:.68rem;color:var(--ink-soft);font-weight:400;margin-top:.2rem}
+  .badge-auto{font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--coral-d);letter-spacing:.06em;
+    background:#FBE9E1;padding:.2rem .55rem;border-radius:5px;display:inline-block;margin-bottom:.4rem}
+  .note{margin-top:22px;max-width:820px;background:#EAF6EF;border:1px solid #A9D8BF;border-left:4px solid #2c8a5a;
+    border-radius:11px;padding:15px 20px;font-size:.92rem;color:#245c3e}
+  .note b{color:#1c6b45}
+</style></head><body>
+
+  <div class="brand"><span>🐾</span> Cats'N'Board · dokumentacja</div>
+  <div class="eyebrow"><span class="num">1</span> Przepływ importu · wszystko w jednej wtyczce</div>
+  <h1>Jak wydarzenie ze świata trafia na stronę</h1>
+  <p class="sub">Bez osobnego programu, bez serwera, bez hasła. Automat mieszka w tej samej wtyczce
+     i sam się budzi — WordPress go odpala co 10 minut.</p>
+
+  <div class="flow">
+    <div class="node src">
+      <h3>🌍 Źródło — Eventbrite</h3>
+      <p>Publiczna lista kocich wydarzeń. To nie nasza strona — czytamy ją z szacunkiem, żeby nie dostać bana.
+         Klient wkleja adres w panelu (<b>Events → Settings</b>).</p>
+      <div class="files"><span>eventbrite.com/d/united-states/cats/</span></div>
+    </div>
+
+    <div class="arrow">↓<small>WP-Cron budzi importer · co 10 minut</small></div>
+
+    <div class="node auto">
+      <span class="badge-auto">⚙ AUTOMAT — dzieje się sam</span>
+      <h3>🤖 Importer w wtyczce (PHP)</h3>
+      <p>WordPress sam go odpala. Czyta źródło, rozpoznaje co już dodał (pamięć w bazie), pobiera pełny opis
+         i zdjęcie tylko dla nowych, tłumaczy na polski. Bez przeglądarki, bez Pythona, bez hasła.</p>
+      <div class="files"><span>modules/importer.php</span><span>WP-Cron: pnb_importer_cykl</span></div>
+    </div>
+
+    <div class="arrow">↓<small>wp_insert_post · bezpośrednio do bazy</small></div>
+
+    <div class="node wp">
+      <h3>🐱 Strona klienta — kalendarz</h3>
+      <p>Wydarzenie pojawia się na <b>/events/</b> z opisem, zdjęciem, po polsku i angielsku. Gość może się
+         zapisać (własne wydarzenia) albo przejść do biletów (zescrapowane).</p>
+      <div class="files"><span>CPT: pnb_wydarzenie</span></div>
+    </div>
+
+    <div class="arrow">↓<small>gdy gość wybiera polski</small></div>
+
+    <div class="node tl">
+      <h3>🇵🇱 Polska wersja dla gościa</h3>
+      <p>Druga wtyczka podmienia treść na polską ze słownika (pamięć tłumaczeń). Raz przetłumaczone zdanie
+         jest zapisane — kolejni goście dostają je za darmo, <b>zero wywołań AI na wizytę</b>.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Dlaczego wszystko w jednej wtyczce, a nie osobny program?</b> Klient ma zwykły, tani hosting — nie
+     serwer VPS, na którym mógłby chodzić osobny automat. Eventbrite udostępnia dane jako zwykłe API, więc
+     sam WordPress wystarcza. Klient wgrywa <b>jeden zip</b> i ma cały automat.
+  </div>
+
+</body></html>
