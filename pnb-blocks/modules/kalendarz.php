@@ -1877,17 +1877,46 @@ add_filter( 'the_content', function ( $tresc ) {
 	return pnb_kalendarz_render_single();
 } );
 
-/* Siatka bezpieczeństwa pod filtr the_content: motyw BEZ single.php (fallback index.php woła
-   the_excerpt, nigdy the_content — layout by nie powstał) dostaje minimalny szablon pluginu.
-   Motyw z własnym single*.php zostaje uszanowany — wtedy działa sam filtr. */
+/* Szablon singla na CUDZYM motywie (rozszerzenie 2026-07-10, znalazł Dzidek na teście
+   „same wtyczki bez motywu": singiel = SKLEJKA — surowy tytuł+zdjęcie+pusty „Written by"
+   motywu NAD naszym pełnym layoutem → to samo zdjęcie 2×, H1 2×).
+   - Motyw KLASYCZNY (np. BeTheme u klienta): nasz wrapper (get_header/footer) → nagłówek
+     i menu motywu ZOSTAJĄ, w środku TYLKO nasz layout. Zero dubli.
+   - Motyw BLOKOWY: wrapper by zgubił nagłówek (brak header.php) → zostaje filtr the_content,
+     a zdublowane elementy motywu chowa celowany CSS (niżej).
+   - index.php-fallback (motyw bez single*.php): jak dotąd — wrapper.
+   - NASZ motyw catsnboard: nic nie ruszamy (ma własny szablon singla). */
 add_filter( 'template_include', function ( $template ) {
-	if ( is_singular( 'pnb_wydarzenie' ) && 'index.php' === basename( (string) $template ) ) {
+	if ( ! is_singular( 'pnb_wydarzenie' ) ) {
+		return $template;
+	}
+	$blokowy = function_exists( 'wp_is_block_theme' ) && wp_is_block_theme();
+	$obcy    = 'catsnboard' !== get_template();
+	if ( 'index.php' === basename( (string) $template ) || ( $obcy && ! $blokowy ) ) {
 		$wlasny = PNB_TOOLKIT_DIR . 'templates/single-pnb-wydarzenie.php';
 		if ( file_exists( $wlasny ) ) {
 			return $wlasny;
 		}
 	}
 	return $template;
+}, 20 );
+
+/* CUDZY motyw BLOKOWY — schowaj zdublowane elementy motywu wokół naszego layoutu singla:
+   główne zdjęcie (było 2×), główny H1 (był 2×) i grupę podpisu autora („Written by " + pusta
+   nazwa — wydarzenia celowo mają autora 0). Sekcje „więcej wpisów" (wewnątrz
+   .wp-block-post-template) zostają nietknięte dzięki :not(). */
+add_action( 'wp_enqueue_scripts', function () {
+	if ( ! is_singular( 'pnb_wydarzenie' ) || 'catsnboard' === get_template()
+		|| ! function_exists( 'wp_is_block_theme' ) || ! wp_is_block_theme() ) {
+		return;
+	}
+	$css = 'body.single-pnb_wydarzenie h1.wp-block-post-title,'
+		. 'body.single-pnb_wydarzenie .wp-block-post-featured-image:not(.wp-block-post-template *),'
+		. 'body.single-pnb_wydarzenie .wp-block-post-featured-image + .wp-block-group:not(.wp-block-post-template *)'
+		. '{display:none;}';
+	wp_register_style( 'pnb-singiel-cudzy-motyw', false, array(), PNB_TOOLKIT_VERSION );
+	wp_enqueue_style( 'pnb-singiel-cudzy-motyw' );
+	wp_add_inline_style( 'pnb-singiel-cudzy-motyw', $css );
 }, 20 );
 
 /* ==== ZAPIS GOŚCIA (admin-post, także niezalogowani) ==== */
