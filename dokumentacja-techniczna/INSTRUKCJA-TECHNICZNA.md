@@ -18,11 +18,17 @@ wymienny). Dwa zewnętrzne serwisy: **Eventbrite** (źródło wydarzeń, polling
 cudzych wydarzeń nie istnieje) i **Claude API** (tłumaczenie, z dziennym limitem znaków jako
 bezpiecznikiem kosztu).
 
+### Przepływ importu — jak wydarzenie trafia na stronę
+
+![Jak działa system](diagramy/2-jak-dziala-system.png)
+
 ---
 
-## 2. Wtyczka `pnb-blocks` — „PNB Galeria i Wydarzenia"
+## 2. Separacja plików — z czego zbudowane są wtyczki
 
-![Pliki pnb-blocks](diagramy/2-pliki-pnb-blocks.png)
+![Pliki wtyczek](diagramy/3-pliki-wtyczek.png)
+
+### `pnb-blocks` — „PNB Galeria i Wydarzenia"
 
 | Plik / folder | Odpowiedzialność |
 |---|---|
@@ -47,9 +53,7 @@ logowane (`pnb_importer_log`). Zero ręcznej ingerencji.
 
 ---
 
-## 3. Wtyczka `pnb-auto-pl` — „PNB Polska Wersja (AI)"
-
-![Pliki pnb-auto-pl](diagramy/3-pliki-pnb-auto-pl.png)
+### `pnb-auto-pl` — „PNB Polska Wersja (AI)"
 
 | Plik | Odpowiedzialność |
 |---|---|
@@ -67,6 +71,21 @@ logowane (`pnb_importer_log`). Zero ręcznej ingerencji.
 **Model tłumaczenia:** treść źródłowa jest angielska (fundament). Wtyczka buduje z niej polską wersję
 dla gości: słownik EN→PL + przełącznik. Raz przetłumaczona fraza ląduje w słowniku (cache) — kolejne
 odsłony są darmowe (zero wywołań AI per wizyta gościa). Limit znaków/dzień = bezpiecznik kosztu.
+
+---
+
+## 3. Odporność — co gdy coś padnie
+
+Automat pracuje 24/7 bez opieki, więc każda awaria ma zaplanowaną reakcję. System nie umiera od jednej
+usterki i nigdy nie kasuje danych klienta przez pomyłkę.
+
+![Odporność systemu](diagramy/4-odpornosc-systemu.png)
+
+Kluczowe mechanizmy (wszystkie w `modules/importer.php`): **lock** (jeden cykl naraz, TTL 5 min +
+`register_shutdown_function`), **circuit breaker** (10→20→40, max 120 min przy serii porażek źródła),
+**dead letter queue** (wydarzenie padające ≥5× odkładane na bok), **ochrona przed pustym źródłem**
+(0 wydarzeń = nie czyści strony), **alert podejrzanego spadku** (22→2 = pauza wygasania), **dedup** po
+`_pnb_source_id`, **samo-naprawa zdjęć**, poszanowanie ręcznych zmian (`_pnb_locked`, `_pnb_img_removed`).
 
 ---
 
@@ -99,6 +118,7 @@ w panelu admina. Odinstalowanie wtyczki usuwa jej dane (higiena + RODO).
 
 ## 6. Pliki źródłowe diagramów
 
-Diagramy są w formacie **draw.io** (`architektura-catsnboard.drawio`, plik wielostronicowy).
-Otwórz go na [app.diagrams.net](https://app.diagrams.net) (web, bez instalacji) albo w drawio-desktop
-— możesz je edytować. PNG-i w `diagramy/` są wygenerowane z tego źródła.
+Diagramy PNG w `diagramy/` są wygenerowane z edytowalnych źródeł HTML w
+`diagramy-zrodla/` (jeden `style.css` + po jednym pliku na diagram). Żeby zmienić diagram: edytuj
+odpowiedni `.html`, otwórz w przeglądarce, zrób zrzut albo wyrenderuj do PNG. Styl (kolory, czcionki)
+jest w `style.css` — zmiana tam przechodzi na wszystkie diagramy naraz.

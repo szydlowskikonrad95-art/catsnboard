@@ -6,11 +6,12 @@ Ten folder zawiera pełną dokumentację produktu — dwie ścieżki, zależnie 
 |---|---|---|
 | **[INSTRUKCJA-PROSTA.md](INSTRUKCJA-PROSTA.md)** | Właściciel strony (bez wiedzy technicznej) | Instalacja krok po kroku, z obrazkami, prostym językiem |
 | **[INSTRUKCJA-TECHNICZNA.md](INSTRUKCJA-TECHNICZNA.md)** | Informatyk / osoba wdrażająca | Architektura, separacja plików, baza, wymagania, uwagi |
-| **[architektura-catsnboard.drawio](architektura-catsnboard.drawio)** | Informatyk | Edytowalne źródło diagramów (otwórz na app.diagrams.net) |
+| **[diagramy/](diagramy/)** | Wszyscy | 4 schematy PNG: architektura, przepływ, pliki wtyczek, odporność |
 
 ## Foldery
 
-- **`diagramy/`** — 3 schematy PNG: architektura produktu + separacja plików każdej wtyczki
+- **`diagramy/`** — 4 schematy PNG: architektura, przepływ importu, pliki wtyczek, odporność
+- **`diagramy-zrodla/`** — edytowalne źródła HTML diagramów (+ wspólny `style.css`)
 - **`zrzuty/`** — zrzuty ekranu paneli i strony (użyte w instrukcji prostej)
 
 ## Szybki start (skrót)

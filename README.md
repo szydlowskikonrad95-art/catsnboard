@@ -42,7 +42,7 @@ W folderze **[`dokumentacja-techniczna/`](dokumentacja-techniczna/)** — dwie �
 |---|---|
 | **[Instrukcja prosta](dokumentacja-techniczna/INSTRUKCJA-PROSTA.md)** (ze zrzutami krok po kroku) | Właściciel strony, bez wiedzy technicznej |
 | **[Instrukcja techniczna](dokumentacja-techniczna/INSTRUKCJA-TECHNICZNA.md)** (architektura, pliki, baza) | Informatyk / osoba wdrażająca |
-| **[Diagramy](dokumentacja-techniczna/diagramy/)** + [źródło `.drawio`](dokumentacja-techniczna/architektura-catsnboard.drawio) | Architektura + separacja plików każdej wtyczki |
+| **[Diagramy](dokumentacja-techniczna/diagramy/)** (architektura · przepływ · pliki · odporność) | Jak działa system + z czego zbudowany |
 
 ---
 

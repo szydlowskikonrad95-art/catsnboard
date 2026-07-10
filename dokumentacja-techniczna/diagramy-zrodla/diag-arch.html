@@ -1,0 +1,128 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+  :root{
+    --teal:#2E8CA3; --teal-d:#1F6879; --coral:#E08A6E; --coral-d:#C56B4E;
+    --green:#4E9E6A; --ground:#F5F7F8; --panel:#FFFFFF; --ink:#1D2A2E; --ink-soft:#52646A;
+    --line:#D9E2E5; --code-bg:#EEF4F5; --radius:14px;
+    --shadow:0 1px 2px rgba(30,60,70,.06), 0 4px 16px rgba(30,60,70,.07);
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;width:1200px;padding:44px 48px}
+  .brand{display:flex;align-items:center;gap:.55rem;color:var(--teal);font-weight:700;
+    letter-spacing:.05em;font-size:.95rem;text-transform:uppercase}
+  h1{font-size:2rem;line-height:1.12;margin:.5rem 0 .4rem;letter-spacing:-.02em}
+  .sub{color:var(--ink-soft);font-size:1.02rem;max-width:70ch}
+  .flow{display:flex;align-items:stretch;gap:0;margin-top:34px}
+  .col{display:flex;flex-direction:column;gap:14px;flex:1}
+  .actor{background:#EFE7F2;border:1px solid #C9B3D4;border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);align-self:center}
+  .actor h3{font-size:1.05rem;display:flex;align-items:center;gap:.5rem}
+  .actor p{color:#6a5877;font-size:.85rem;margin-top:.25rem}
+  .arrow-h{display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:0 18px;color:var(--teal);min-width:120px}
+  .arrow-h .ln{font-size:1.5rem;line-height:1;font-weight:700}
+  .arrow-h small{font-family:var(--mono);font-size:.66rem;color:var(--ink-soft);text-align:center;margin-top:.35rem}
+  .wp{background:linear-gradient(180deg,#fbfdfd,#f7fafb);border:1.5px solid var(--line);
+    border-radius:18px;padding:20px;box-shadow:var(--shadow);flex:2.3}
+  .wp-h{font-weight:700;font-size:1.02rem;color:var(--ink);display:flex;align-items:center;gap:.5rem;
+    padding-bottom:14px;border-bottom:1px dashed var(--line);margin-bottom:16px}
+  .wp-h .badge{font-family:var(--mono);font-size:.66rem;font-weight:600;color:#fff;background:var(--green);
+    padding:.2rem .5rem;border-radius:5px;text-transform:uppercase;letter-spacing:.04em}
+  .plugins{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .plug{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:0 0 12px;overflow:hidden;box-shadow:var(--shadow)}
+  .plug .cap{padding:11px 14px;font-weight:700;font-size:.9rem;color:#fff;display:flex;align-items:center;gap:.45rem}
+  .plug.p1 .cap{background:var(--teal)}
+  .plug.p2 .cap{background:var(--green)}
+  .plug .cap .mono{font-family:var(--mono);font-weight:500;font-size:.72rem;opacity:.85;margin-left:auto}
+  .feat{margin:12px 14px 0;padding:9px 12px;border:1px solid var(--line);border-radius:9px;font-size:.85rem;background:#fcfefe}
+  .feat b{color:var(--ink)}
+  .feat .d{color:var(--ink-soft);font-size:.78rem;margin-top:.1rem}
+  .feat.auto{border:1.5px solid var(--coral);background:#FDF3EE}
+  .feat.auto b{color:var(--coral-d)}
+  .feat.auto::before{content:"⚙ AUTOMAT";font-family:var(--mono);font-size:.6rem;font-weight:700;
+    color:var(--coral-d);letter-spacing:.06em;display:block;margin-bottom:.25rem}
+  .db{margin-top:16px;background:#FCEEF0;border:1px solid #E7B9BE;border-radius:11px;padding:13px 18px;
+    font-size:.88rem;color:#7a3b40;line-height:1.5}
+  .db .mono{font-family:var(--mono);font-size:.78rem;background:#fff;padding:.05rem .35rem;border-radius:4px;border:1px solid #E7B9BE}
+  .ext-col{display:flex;flex-direction:column;gap:16px;justify-content:center;flex:.85}
+  .ext{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 16px;box-shadow:var(--shadow);position:relative}
+  .ext.eb{border-left:4px solid var(--teal)}
+  .ext.cl{border-left:4px solid var(--green)}
+  .ext h3{font-size:.98rem;display:flex;align-items:center;gap:.45rem}
+  .ext p{color:var(--ink-soft);font-size:.8rem;margin-top:.25rem}
+  .ext .tag{position:absolute;top:-10px;right:14px;font-family:var(--mono);font-size:.64rem;font-weight:600;
+    padding:.15rem .5rem;border-radius:5px;background:var(--code-bg);color:var(--teal-d);border:1px solid var(--line)}
+  .legend{display:flex;gap:22px;margin-top:26px;padding:13px 18px;background:var(--panel);
+    border:1px solid var(--line);border-radius:11px;font-size:.82rem;color:var(--ink-soft);flex-wrap:wrap}
+  .legend div{display:flex;align-items:center;gap:.5rem}
+  .sw{width:.95rem;height:.95rem;border-radius:4px;flex:none}
+</style></head><body>
+
+  <div class="brand"><span>🐾</span> Cats'N'Board · dokumentacja</div>
+  <h1>Architektura produktu — jak to działa</h1>
+  <p class="sub">Klient wgrywa <b>2 wtyczki</b> na swój WordPress. Dokładają swoje do jego bazy (prefiks <code>pnb_</code>),
+     niczego nie kasują. Automat sam co 10 minut zwozi wydarzenia i tłumaczy je na polski — bez niczyjej ręki.</p>
+
+  <div class="flow">
+    <div class="col" style="flex:.9">
+      <div class="actor">
+        <h3>👤 Gość / właściciel</h3>
+        <p>przeglądarka</p>
+      </div>
+    </div>
+
+    <div class="arrow-h">
+      <span class="ln">→</span>
+      <small>wchodzi na stronę</small>
+    </div>
+
+    <div class="wp">
+      <div class="wp-h">🌐 WordPress — strona klienta <span class="badge">fundament</span></div>
+      <div class="plugins">
+        <div class="plug p1">
+          <div class="cap">🖼 Galeria i Wydarzenia<span class="mono">pnb-blocks</span></div>
+          <div class="feat"><b>Galeria premium</b><div class="d">taśma zdjęć + lightbox</div></div>
+          <div class="feat"><b>Kalendarz + zapisy gości</b><div class="d">imię · mail · telefon</div></div>
+          <div class="feat auto"><b>Importer — co 10 min</b><div class="d">pobiera wydarzenia + zdjęcia (WP-Cron)</div></div>
+          <div class="feat"><b>2 bloki Gutenberga</b><div class="d">galeria + wydarzenia w edytorze</div></div>
+        </div>
+        <div class="plug p2">
+          <div class="cap">🇵🇱 Polska Wersja AI<span class="mono">pnb-auto-pl</span></div>
+          <div class="feat"><b>Przełącznik PL / EN</b><div class="d">gość wybiera język</div></div>
+          <div class="feat auto"><b>Silnik tłumaczenia AI</b><div class="d">Claude + limit kosztu (znaki/dzień)</div></div>
+          <div class="feat"><b>Słownik EN→PL</b><div class="d">pamięć — raz przetłumaczone, zapisane</div></div>
+          <div class="feat"><b>Podmiana treści</b><div class="d">gość widzi polski, cache</div></div>
+        </div>
+      </div>
+      <div class="db">🗄 &nbsp;<b>Baza danych klienta</b> (MySQL) — jego wpisy + nasza szuflada <span class="mono">wp_pnb_slownik_en_pl</span> &nbsp;·&nbsp; wszystko oznaczone prefiksem <span class="mono">pnb_</span></div>
+    </div>
+
+    <div class="arrow-h">
+      <span class="ln">⇢</span>
+      <small>na zewnątrz</small>
+    </div>
+
+    <div class="ext-col">
+      <div class="ext eb">
+        <span class="tag">polling</span>
+        <h3>🌍 Eventbrite</h3>
+        <p>publiczna lista kocich wydarzeń — źródło automatu (co 10 min)</p>
+      </div>
+      <div class="ext cl">
+        <span class="tag">API</span>
+        <h3>🤖 Claude API</h3>
+        <p>Anthropic — tłumaczy treść na polski (z limitem kosztu)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div><span class="sw" style="background:var(--coral)"></span> automat / koszt — dzieje się sam</div>
+    <div><span class="sw" style="background:var(--teal)"></span> wtyczka Galeria i Wydarzenia</div>
+    <div><span class="sw" style="background:var(--green)"></span> wtyczka Polska Wersja AI</div>
+    <div><span class="sw" style="background:#E7B9BE"></span> dane w bazie klienta</div>
+  </div>
+
+</body></html>
