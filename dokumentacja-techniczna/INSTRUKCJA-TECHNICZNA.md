@@ -18,6 +18,14 @@ wymienny). Dwa zewnętrzne serwisy: **Eventbrite** (źródło wydarzeń, polling
 cudzych wydarzeń nie istnieje) i **Claude API** (tłumaczenie, z dziennym limitem znaków jako
 bezpiecznikiem kosztu).
 
+```
+  Eventbrite ──(polling 10 min)──▶ importer.php ──▶ CPT pnb_wydarzenie ──▶ blok Gutenberg ──▶ front
+                                                          │
+  Claude API ──▶ silnik-claude.php ──▶ wp_pnb_slownik_en_pl (cache) ──▶ front.php (podmiana PL) ──▶ gość
+                                                          │
+                                        baza klienta (MySQL, prefiks pnb_)
+```
+
 ### Przepływ importu — jak wydarzenie trafia na stronę
 
 ![Jak działa system](diagramy/2-jak-dziala-system.png)
@@ -104,7 +112,37 @@ w panelu admina. Odinstalowanie wtyczki usuwa jej dane (higiena + RODO).
 
 ---
 
-## 5. Wymagania i uwagi wdrożeniowe
+## 5. Punkty integracji z WordPressem (hooki)
+
+| Hook / mechanizm | Gdzie | Co robi |
+|---|---|---|
+| `register_activation_hook` / `register_deactivation_hook` | oba pliki główne | samozasiew demo + tabela słownika przy aktywacji; sprzątanie crona przy dezaktywacji |
+| WP-Cron `pnb_importer_cykl` (co 10 min) | `pnb-blocks/modules/importer.php` | automatyczny import wydarzeń z Eventbrite |
+| `save_post` | `pnb-auto-pl/inc/tlumaczenie.php` | wykrycie zmiany treści → dotłumaczenie po zapisie |
+| AJAX `pnb_pl_test` / `pnb_pl_tlumacz_strone` / `pnb_pl_wyczysc_stale` | `pnb-auto-pl/inc/admin.php` | test klucza, „przetłumacz stronę", czyszczenie listy nieaktualnych |
+| AJAX `pnb_galeria_zapisz` | `pnb-blocks/modules/galeria.php` | zapis wyboru zdjęć galerii z edytora |
+| `admin_post[_nopriv]_pnb_zapis` | `pnb-blocks/modules/kalendarz.php` | zapis gościa na wydarzenie (formularz frontowy) |
+| `admin_post_pnb_export_csv` | `pnb-blocks/modules/kalendarz.php` | eksport listy zapisanych gości do CSV |
+
+---
+
+## 6. Bezpieczeństwo
+
+Kod przechodził audyty adwersaryjne — zabezpieczenia są konsekwentnie stosowane:
+
+- **Nonce / weryfikacja żądań** — formularze i endpointy AJAX chronione (`wp_nonce_field`,
+  `wp_verify_nonce`, `check_ajax_referer`).
+- **Kontrola uprawnień** — akcje admina za `current_user_can`; CPT `pnb_zapis` z danymi gości:
+  `public=false, show_ui=false` — niedostępny przez REST ani wyszukiwarkę frontową.
+- **Sanityzacja wejścia** — `sanitize_*` na danych z formularzy.
+- **Escaping wyjścia** — `esc_html` / `esc_attr` / `esc_url` przy renderowaniu (ponad 250 wywołań).
+- **Zapytania SQL** — zawsze przez WP API; bezpośrednie query wyłącznie przez `$wpdb->prepare`.
+- **Klucz API** — w `wp_options` (`autoload=false`), w UI maskowany (widoczne tylko końcowe znaki),
+  nigdy nie wraca do HTML w całości.
+
+---
+
+## 7. Wymagania i uwagi wdrożeniowe
 
 - **Hosting:** zwykły (współdzielony) wystarcza — automat działa na WP-Cron, bez osobnego serwera/VPS.
 - **Język witryny (Ustawienia → Ogólne):** zostaw **English**. Mechanizm PL buduje polską wersję na
@@ -116,9 +154,16 @@ w panelu admina. Odinstalowanie wtyczki usuwa jej dane (higiena + RODO).
 
 ---
 
-## 6. Pliki źródłowe diagramów
+## 8. Pliki źródłowe diagramów
 
 Diagramy PNG w `diagramy/` są wygenerowane z edytowalnych źródeł HTML w
 `diagramy-zrodla/` (jeden `style.css` + po jednym pliku na diagram). Żeby zmienić diagram: edytuj
 odpowiedni `.html`, otwórz w przeglądarce, zrób zrzut albo wyrenderuj do PNG. Styl (kolory, czcionki)
 jest w `style.css` — zmiana tam przechodzi na wszystkie diagramy naraz.
+
+---
+
+## Historia zmian
+
+Pełna historia wersji: **[CHANGELOG.md](../CHANGELOG.md)** (format Keep a Changelog).
+Opisowe wersje wydań dla klienta — w [GitHub Releases](../../../releases).
