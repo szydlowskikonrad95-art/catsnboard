@@ -1,0 +1,38 @@
+name: PHP lint
+
+# Sprawdza składnię PHP obu wtyczek przy każdym push i pull requeście.
+# Łapie literówki/błędy składni (fatal error) ZANIM trafią na main.
+# Lekki: sam `php -l`, bez composera/bazy — sekundy.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Lint składni PHP (pnb-blocks + pnb-auto-pl)
+        run: |
+          set -e
+          BLAD=0
+          for f in $(find pnb-blocks pnb-auto-pl -name '*.php'); do
+            if ! php -l "$f" > /dev/null 2>&1; then
+              echo "❌ Błąd składni: $f"
+              php -l "$f" || true
+              BLAD=1
+            fi
+          done
+          if [ "$BLAD" = "0" ]; then
+            echo "✅ Wszystkie pliki PHP obu wtyczek: składnia OK"
+          fi
+          exit $BLAD
