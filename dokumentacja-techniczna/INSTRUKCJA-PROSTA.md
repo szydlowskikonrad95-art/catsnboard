@@ -43,6 +43,9 @@ Kliknij **Wtyczki** w menu. Powinieneś zobaczyć obie nasze wtyczki jako **akty
 
 To znaczy, że wszystko działa. Wtyczki **same** utworzyły potrzebne strony i przykładowe wydarzenia.
 
+> ⚠️ **Masz na liście wtyczkę „WPML"** (do wielu języków)? **Wyłącz ją** — nasza Polska Wersja robi
+> polski sama, a dwa mechanizmy naraz będą się gryzły. Nie widzisz „WPML" na liście? To nie masz i nic nie robisz.
+
 ---
 
 ## Krok 4 — Podłącz klucz (żeby tłumaczenie działało samo)

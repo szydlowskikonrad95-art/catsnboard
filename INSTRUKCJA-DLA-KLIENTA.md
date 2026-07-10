@@ -154,17 +154,7 @@ zaktualizuje się sama (zapis potrwa 2-3 sekundy dłużej). Odśwież stronę (F
 
 ---
 
-## 📞 KROK 6 — Twoje dane kontaktowe (telefon, adres)
-
-Telefon, e-mail i adres w **nagłówku, stopce i na stronach Kontakt / Lokalizacja** ustawiasz
-w JEDNYM miejscu: **Wygląd → Dostosuj → „Dane kontaktowe"** *(Appearance → Customize)*.
-Wpisz swoje prawdziwe dane → **Opublikuj**.
-
-> Dopóki pole jest puste, ta informacja **w ogóle się nie pokazuje** (nic nie zmyślamy).
-
----
-
-## 🗄️ KROK 7 — Twoja baza danych (nic nie musisz robić)
+## 🗄️ KROK 6 — Twoja baza danych (nic nie musisz robić)
 
 **Baza danych** to magazyn gdzie Twoja strona trzyma WSZYSTKO: wydarzenia, zdjęcia, ustawienia,
 tłumaczenia. **Masz ją już** — WordPress stworzył ją gdy powstała Twoja strona. **Nie budujesz
