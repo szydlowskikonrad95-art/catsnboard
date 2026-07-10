@@ -1,5 +1,28 @@
 # Historia zmian
 
+## v2.2.3 — 10 lipca 2026
+
+Wydanie zbiorcze po całonocnych testach od zera (dwie świeże instalacje: same wtyczki
+na obcym motywie oraz motyw + wtyczki) i przeglądzie porządkowym repozytorium:
+
+Naprawione:
+
+- **Licznik tłumaczeń mówi prawdę** — panel pokazuje realne zaległości („do przetłumaczenia: N")
+  i licznik spada do zera; wcześniej straszył rozmiarem całej witryny i nigdy nie malał.
+- **Strona pojedynczego wydarzenia na motywie klienta** — bez zdublowanego tytułu, drugiego
+  zdjęcia i pustego podpisu autora; sekcja zajmuje pełną szerokość ekranu (wcześniej wąska
+  kolumna „jak telefon na komputerze").
+- **Tytuł wydarzenia po polsku w całości** — tłumaczenie całej frazy przed animacją słów
+  (koniec wpadek typu pojedyncze słowo przetłumaczone bez kontekstu).
+
+Zmienione:
+
+- **„Szczegóły wydarzenia" prowadzi wprost na podstronę wydarzenia** (zamiast rozsuwanego
+  panelu w karcie) — czytelniej i wygodniej na telefonie.
+- Porządek w metadanych paczki (autor: PNB) i komentarzach kodu.
+
+Wersje: pnb-blocks **1.10.40** · pnb-auto-pl **0.3.12** · motyw **1.1.13**.
+
 ## v2.2.2 — 10 lipca 2026
 
 Poprawka niezawodności zdjęć wydarzeń (znaleziona nocnym testem od zera na czystym WordPressie):
