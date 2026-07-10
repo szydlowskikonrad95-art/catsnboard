@@ -124,7 +124,7 @@ Twoją stronę — bez ręcznego wpisywania. Jak nie chcesz, po prostu tego nie 
 1. Menu: **Events → Settings** *(Ustawienia)*
 2. W polu **„Event source (Eventbrite URL)"** wklej adres listy wydarzeń z Eventbrite
 3. **Zapisz**. Od teraz wtyczka **co jakiś czas sama sprawdza** i dodaje nowe wydarzenia
-4. Chcesz sprawdzić od razu? Kliknij **„Sync now"** — pobierze bez czekania
+4. Chcesz sprawdzić od razu? Kliknij **„Sync now (test)"** — pobierze bez czekania
 
 ![Ustawienia wydarzeń i e-mail powiadomień](zrzuty/04-ustawienia-wydarzen.png)
 
@@ -134,6 +134,10 @@ Twoją stronę — bez ręcznego wpisywania. Jak nie chcesz, po prostu tego nie 
 - ✅ **Zdejmuje do kosza** wydarzenia które zniknęły ze źródła
 - ✅ **Szanuje Twoje decyzje** — jak sam usuniesz wydarzenie do kosza, automat go NIE przywróci
 - ✅ **Nie nadpisuje Twoich poprawek** — zmienisz zaimportowane wydarzenie → Twoja wersja zostaje
+
+Efekt widzisz w menu **Events** — wydarzenia zbierają się same, ze zdjęciami:
+
+![Lista wydarzeń w panelu](zrzuty/05-lista-wydarzen.png)
 
 > ⏱️ **Jak często sprawdza?** Automat budzi się **gdy ktoś wchodzi na stronę**. Jak strona ma
 > ruch — działa sam. Jak jest cicha, poproś hosting o **„cron"** pukający w
@@ -165,7 +169,7 @@ tłumaczyły się same. To „silnik" tłumaczenia — Claude AI. Płacisz tylko
 1. W panelu: **Ustawienia → PNB Auto PL** *(Settings → PNB Auto PL)*
 2. **Wklej klucz** w pole → **Zapisz**
 3. Kliknij **Testuj połączenie** — ma pokazać ✅
-4. Kliknij **„Przetłumacz witrynę"** — dotłumaczy wszystko naraz (pasek pokaże postęp, 1-2 min)
+4. Kliknij **„Przetłumacz witrynę na polski"** — dotłumaczy wszystko naraz (pasek pokaże postęp, 1-2 min)
 
 ![Ekran ustawień tłumaczenia](zrzuty/03-ustawienia-tlumacz.png)
 
@@ -203,9 +207,9 @@ i eksportować kopię).
 |---|---|
 | **Przełącznik PL/EN nie przełącza** albo strona pokazuje stary wygląd | Wyczyść cache: jak hosting ma wtyczkę przyspieszającą (np. LiteSpeed), kliknij w niej **„Purge All"**. Potem odśwież stronę (F5). |
 | **Nowe wydarzenie / tekst nie tłumaczy się na polski** | Sprawdź klucz: **Ustawienia → PNB Auto PL** → kliknij **„Testuj połączenie"** (ma pokazać ✅). Brak klucza = brak automatycznego tłumaczenia nowych treści (patrz KROK 5). |
-| **Nie widzę wydarzeń z Eventbrite** | **Events → Settings** → sprawdź czy wpisany jest adres źródła → kliknij **„Sync now"** (pobierze od razu, bez czekania). |
+| **Nie widzę wydarzeń z Eventbrite** | **Events → Settings** → sprawdź czy wpisany jest adres źródła → kliknij **„Sync now (test)"** (pobierze od razu, bez czekania). |
 | **E-mail o zapisie gościa nie przyszedł** | Zajrzyj do **SPAMU**. Zapis i tak jest bezpieczny — pełną listę gości masz zawsze w wydarzeniu (ramka „Zapisani goście"). Chcesz pewnych maili? Poproś hosting o „SMTP" albo wgraj **WP Mail SMTP**. |
-| **Zdjęcia wydarzeń są stare / brakuje ich** | Automat dociąga zdjęcia stopniowo (po kilka na cykl). Poczekaj kilka minut albo kliknij **„Sync now"**. |
+| **Zdjęcia wydarzeń są stare / brakuje ich** | Automat dociąga zdjęcia stopniowo (po kilka na cykl). Poczekaj kilka minut albo kliknij **„Sync now (test)"**. |
 
 ---
 
@@ -218,6 +222,9 @@ i eksportować kopię).
 - **Dane gości (RODO):** formularz zapisów zbiera imię, e-mail i telefon gościa. Jako właściciel
   strony odpowiadasz za te dane — zadbaj o zgodę na ich przetwarzanie i politykę prywatności
   (standard przy każdym formularzu kontaktowym). Wtyczka po odinstalowaniu sama te dane usuwa.
+- **Gość prosi „pokażcie / usuńcie moje dane"?** Masz gotowe narzędzie: **Narzędzia → Eksport
+  danych osobowych** (albo **Usuwanie danych osobowych**) → wpisz jego e-mail — WordPress
+  znajdzie zapisy gościa ze **wszystkich** wydarzeń naraz i wyśle mu paczkę / skasuje je.
 
 ---
 

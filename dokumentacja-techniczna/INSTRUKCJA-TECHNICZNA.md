@@ -45,6 +45,7 @@ bezpiecznikiem kosztu).
 | `modules/galeria.php` | Galeria premium (grid + wybór zdjęć z biblioteki WP), lightbox, assety warunkowe |
 | `modules/kalendarz.php` | CPT `pnb_wydarzenie`, karty nadchodzących, zapisy gości (CPT `pnb_zapis`), szablon singla na cudzym motywie |
 | `modules/importer.php` | **Automat** (WP-Cron, co 10 min): pobiera wydarzenia z Eventbrite + zdjęcia, dedup po `_pnb_source_id`, samo-naprawa zdjęć, sprzątanie wygasłych |
+| `modules/rodo.php` | **RODO**: wpięcie zapisów gości w natywne narzędzia prywatności WP (eksport/usuwanie danych po e-mailu, porcjami po 100) |
 | `modules/blok-galeria.php`, `modules/blok-wydarzenia.php` | Rejestracja 2 bloków Gutenberga |
 | `blocks/galeria/`, `blocks/wydarzenia/` | `block.json`, `editor.js`, `render.php` (dynamiczny render bloków) |
 | `assets/css`, `assets/js` | Style i skrypty galerii/kalendarza — ładowane tylko gdy blok realnie renderuje |
@@ -125,6 +126,7 @@ po e-mailu, przekrojowo przez wszystkie wydarzenia (`modules/rodo.php`). Odinsta
 | AJAX `pnb_galeria_zapisz` | `pnb-blocks/modules/galeria.php` | zapis wyboru zdjęć galerii z edytora |
 | `admin_post[_nopriv]_pnb_zapis` | `pnb-blocks/modules/kalendarz.php` | zapis gościa na wydarzenie (formularz frontowy) |
 | `admin_post_pnb_export_csv` | `pnb-blocks/modules/kalendarz.php` | eksport listy zapisanych gości do CSV |
+| `wp_privacy_personal_data_exporters` / `_erasers` | `pnb-blocks/modules/rodo.php` | RODO: eksport/usuwanie zapisów gościa po e-mailu (Narzędzia → Eksport / Usuwanie danych osobowych) |
 
 ---
 
