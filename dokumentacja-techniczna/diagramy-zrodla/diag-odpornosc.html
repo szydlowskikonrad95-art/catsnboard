@@ -46,7 +46,7 @@
     </div>
     <div class="rc">
       <div class="q"><span class="ico">💥</span> Źródło pada w kółko (ban/500)</div>
-      <div class="a"><b>Bezpiecznik (circuit breaker)</b> — po serii porażek czeka coraz dłużej (10→20→40, max 120 min), nie łomocze martwego źródła.</div>
+      <div class="a"><b>Bezpiecznik (circuit breaker)</b> — po serii porażek czeka coraz dłużej (20→40→80→120 min), nie łomocze martwego źródła.</div>
     </div>
     <div class="rc">
       <div class="q"><span class="ico">☠️</span> Jedno wydarzenie pada 5×</div>
@@ -66,6 +66,8 @@
   <div class="note">
     ✅ <b>Wszystko potwierdzone testami wykonaniem</b> — nie teorią. Trzy nocne testy od zera (świeży WordPress,
      droga klienta) przeszły czysto: automat sam scrapuje, tłumaczy i dodaje zdjęcia, zero duplikatów, zero błędów.
+     Tryby awarii dodatkowo potwierdzone <b>powtarzalną symulacją</b> (lock, breaker, puste źródło, nagły spadek,
+     dead letter — 5/5) — test w repo: <span class="tag">testy/awarie/test-awarie.php</span>
   </div>
 
 </body></html>

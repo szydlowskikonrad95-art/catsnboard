@@ -1,6 +1,6 @@
 # Cats'N'Board — wtyczki WordPress 🐾
 
-![Wersja](https://img.shields.io/badge/wersja-2.3.1-2E8CA3)
+![Wersja](https://img.shields.io/badge/wersja-2.3.3-2E8CA3)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759B)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4)
 ![Licencja](https://img.shields.io/badge/licencja-GPL--2.0--or--later-4E9E6A)
@@ -46,7 +46,8 @@ Kalendarz wydarzeń ze zdjęciami, filtrami i zapisami — po polsku:
 | **`pnb-blocks-…zip`** | Wtyczka „PNB Galeria i Wydarzenia" — galeria premium + kalendarz wydarzeń z zapisami gości (2 bloki Gutenberga, edycja w podglądzie). |
 | **`pnb-auto-pl-…zip`** | Wtyczka „PNB Polska Wersja (AI)" — strona po polsku z przełącznikiem PL/EN; zmiany treści tłumaczą się same po zapisie. |
 | **`catsnboard-motyw-…zip`** | Motyw **do testów** — wygląd strony (hero, sekcje, animacje). Nie dla produkcji. |
-| **`INSTRUKCJA-DLA-KLIENTA.md`** | Instrukcja obsługi krok po kroku (dotyczy TYLKO wtyczek). **Zacznij od niej.** |
+| **`INSTRUKCJA-DLA-KLIENTA.pdf`** | Instrukcja obsługi krok po kroku, ze zrzutami (wygodna do czytania i druku). **Zacznij od niej.** |
+| **`INSTRUKCJA-DLA-KLIENTA.md`** | Ta sama instrukcja w wersji tekstowej (+ folder `zrzuty/`). |
 
 ## 📚 Pełna dokumentacja
 
@@ -87,7 +88,7 @@ pnb-auto-pl/              wtyczka: tłumaczenie AI EN→PL (silnik w inc/)
 catsnboard/               motyw DEMONSTRACYJNY (tylko do testów)
 dokumentacja-techniczna/  instrukcje + diagramy + źródła diagramów
 zrzuty/                   zrzuty ekranu do instrukcji klienta
-testy/                    golden-test (bash, sprawdza produkt na żywym WordPressie)
+testy/                    golden-test (bash) + awarie/ (symulacje trybów awarii importera)
 ```
 
 > **Brak build-stepu.** Kod PHP edytuje się wprost w folderach wtyczek — nie ma `npm install`

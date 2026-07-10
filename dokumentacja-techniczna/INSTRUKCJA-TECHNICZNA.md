@@ -91,7 +91,7 @@ usterki i nigdy nie kasuje danych klienta przez pomyłkę.
 ![Odporność systemu](diagramy/4-odpornosc-systemu.png)
 
 Kluczowe mechanizmy (wszystkie w `modules/importer.php`): **lock** (jeden cykl naraz, TTL 5 min +
-`register_shutdown_function`), **circuit breaker** (10→20→40, max 120 min przy serii porażek źródła),
+`register_shutdown_function`), **circuit breaker** (pauzy 20→40→80→120 min przy serii porażek źródła),
 **dead letter queue** (wydarzenie padające ≥5× odkładane na bok), **ochrona przed pustym źródłem**
 (0 wydarzeń = nie czyści strony), **alert podejrzanego spadku** (22→2 = pauza wygasania), **dedup** po
 `_pnb_source_id`, **samo-naprawa zdjęć**, poszanowanie ręcznych zmian (`_pnb_locked`, `_pnb_img_removed`).
