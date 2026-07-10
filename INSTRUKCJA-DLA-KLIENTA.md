@@ -60,7 +60,9 @@ Po włączeniu obu — na liście wtyczek zobaczysz je jako **aktywne** (podświ
 ![Lista wtyczek](zrzuty/02-lista-wtyczek.png)
 
 ✅ Gotowe! Wejdź na swoją stronę (bez `/wp-admin`) — zobaczysz galerię zdjęć kotów,
-kalendarz wydarzeń i przełącznik **PL / EN** w prawym górnym rogu. **Wszystko po polsku od razu.**
+kalendarz wydarzeń i przełącznik **PL / EN** w prawym górnym rogu. **To, co dodały wtyczki
+(galeria, wydarzenia, przyciski), jest po polsku od razu.** Twoje własne, starsze treści
+przetłumaczysz jednym kliknięciem w KROKU 5.
 Wtyczki działają na Twoim wyglądzie — dokładają do niego galerię i wydarzenia, nic nie psując.
 
 > ⚠️ **Masz na stronie wtyczkę WPML** (do wielu języków)? **Wyłącz ją** przed włączeniem naszej
@@ -207,6 +209,7 @@ i eksportować kopię).
 |---|---|
 | **Przełącznik PL/EN nie przełącza** albo strona pokazuje stary wygląd | Wyczyść cache: jak hosting ma wtyczkę przyspieszającą (np. LiteSpeed), kliknij w niej **„Purge All"**. Potem odśwież stronę (F5). |
 | **Nowe wydarzenie / tekst nie tłumaczy się na polski** | Sprawdź klucz: **Ustawienia → PNB Auto PL** → kliknij **„Testuj połączenie"** (ma pokazać ✅). Brak klucza = brak automatycznego tłumaczenia nowych treści (patrz KROK 5). |
+| **Tłumaczenie stanęło w połowie** (część strony dalej po angielsku) | Zadziałał dzienny bezpiecznik kosztów. Następnego dnia kliknij **„Przetłumacz witrynę na polski"** jeszcze raz — dokończy od miejsca, w którym stanęło (słownik pamięta, nic nie tłumaczy się podwójnie). |
 | **Nie widzę wydarzeń z Eventbrite** | **Events → Settings** → sprawdź czy wpisany jest adres źródła → kliknij **„Sync now (test)"** (pobierze od razu, bez czekania). |
 | **E-mail o zapisie gościa nie przyszedł** | Zajrzyj do **SPAMU**. Zapis i tak jest bezpieczny — pełną listę gości masz zawsze w wydarzeniu (ramka „Zapisani goście"). Chcesz pewnych maili? Poproś hosting o „SMTP" albo wgraj **WP Mail SMTP**. |
 | **Zdjęcia wydarzeń są stare / brakuje ich** | Automat dociąga zdjęcia stopniowo (po kilka na cykl). Poczekaj kilka minut albo kliknij **„Sync now (test)"**. |
@@ -216,7 +219,13 @@ i eksportować kopię).
 ## 💡 Dobre rady i znane sprawy
 
 - **Zdjęcia:** wgrywaj do ~2500px szerokości — wtyczka sama zrobi miniatury.
-- **Wtyczek nie trzeba aktualizować** — nie pobierają nic z internetu (poza tłumaczeniem u Claude).
+- **Aktualizacje wtyczek:** nie dzieją się same (wtyczki nie łączą się z żadnym serwerem
+  aktualizacji). Gdy dostaniesz nową wersję (plik zip), wgrywasz ją jak w KROKU 1 —
+  WordPress zapyta, czy zastąpić obecną → klikasz **„Zastąp"**. Ustawienia, wydarzenia
+  i zapisy gości zostają.
+- **Wyłączenie ≠ usunięcie:** **Deactivate** (wyłącz) niczego nie kasuje — włączysz z powrotem
+  i wszystko wróci. **Delete** (usuń) kasuje dane wtyczki NA STAŁE — w tym listę zapisanych
+  gości. Przed usunięciem wyeksportuj gości do Excela (przycisk masz w wydarzeniu).
 - **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to przypadłość WordPressa, nie wtyczek.
   Jak coś pójdzie nie tak: nie zapisuj, tylko odśwież stronę edytora.
 - **Dane gości (RODO):** formularz zapisów zbiera imię, e-mail i telefon gościa. Jako właściciel
