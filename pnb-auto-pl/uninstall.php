@@ -22,6 +22,8 @@ foreach ( array(
 	'pnb_auto_pl_limit_znakow',
 	'pnb_pl_licznik',
 	'pnb_pl_nieaktualne',
+	'pnb_pl_cache_wersja',      // licznik wersji cache stron PL (front.php)
+	'pnb_pl_cache_kod_wersja',  // wersja wtyczki przy ostatnim czyszczeniu cache (front.php)
 ) as $opcja ) {
 	delete_option( $opcja );
 }

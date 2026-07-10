@@ -127,7 +127,6 @@ po e-mailu, przekrojowo przez wszystkie wydarzenia (`modules/rodo.php`). Odinsta
 | WP-Cron `pnb_importer_cykl` (co 10 min) | `pnb-blocks/modules/importer.php` | automatyczny import wydarzeń z Eventbrite |
 | `save_post` | `pnb-auto-pl/inc/tlumaczenie.php` | wykrycie zmiany treści → dotłumaczenie po zapisie |
 | AJAX `pnb_pl_test` / `pnb_pl_tlumacz_strone` / `pnb_pl_wyczysc_stale` | `pnb-auto-pl/inc/admin.php` | test klucza, „przetłumacz stronę", czyszczenie listy nieaktualnych |
-| AJAX `pnb_galeria_zapisz` | `pnb-blocks/modules/galeria.php` | zapis wyboru zdjęć galerii z edytora |
 | `admin_post[_nopriv]_pnb_zapis` | `pnb-blocks/modules/kalendarz.php` | zapis gościa na wydarzenie (formularz frontowy) |
 | `admin_post_pnb_export_csv` | `pnb-blocks/modules/kalendarz.php` | eksport listy zapisanych gości do CSV |
 | `wp_privacy_personal_data_exporters` / `_erasers` | `pnb-blocks/modules/rodo.php` | RODO: eksport/usuwanie zapisów gościa po e-mailu (Narzędzia → Eksport / Usuwanie danych osobowych) |

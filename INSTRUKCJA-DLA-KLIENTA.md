@@ -10,9 +10,9 @@ Produktem są **2 wtyczki** — wgrywasz je na **swoją istniejącą stronę** (
 | **wtyczka Galeria i Wydarzenia** (`pnb-blocks...zip`) | Galeria zdjęć + kalendarz wydarzeń z zapisami gości |
 | **wtyczka Polska Wersja** (`pnb-auto-pl...zip`) | Cała strona po polsku, z przełącznikiem PL / EN |
 
-> ⚠️ **Uwaga o motywie w paczce:** w paczce jest też plik `catsnboard-motyw...zip` — to
-> **tylko makieta do testów** (odtworzony wygląd, na którym sprawdzaliśmy wtyczki).
-> **NIE wgrywaj go na swoją prawdziwą stronę** — masz już swój wygląd. Potrzebne są tylko 2 wtyczki.
+> ⚠️ **Dostałeś od nas osobno plik `catsnboard-motyw...zip`?** To **tylko makieta do testów**
+> (odtworzony wygląd, na którym sprawdzaliśmy wtyczki). **NIE wgrywaj go na swoją prawdziwą
+> stronę** — masz już swój wygląd. Do działania potrzebne są tylko 2 wtyczki z tej paczki.
 
 > 💡 **Zanim zaczniesz — o co chodzi?** Twoja strona działa na **WordPressie**. Logujesz się do
 > „panelu" (kuchni strony), a goście widzą gotową stronę. Panel otwierasz wpisując w przeglądarce
@@ -106,8 +106,9 @@ blokiem **„PNB Wydarzenia"** na wybranej stronie.
 **Zapisani goście** (z przyciskiem eksportu do Excela).
 
 **Chcesz dostawać e-mail przy każdym zapisie?** Wejdź w **Events → Settings** i wpisz swój adres
-w polu **„Notification email"** (e-mail powiadomień) → **Save settings**. Od teraz przy każdym
-zapisie gościa dostaniesz e-mail z jego danymi (imię, mail, telefon).
+w polu **„E-mail powiadomień"** *(Notification email)* → kliknij **„Zapisz ustawienia"**
+*(Save settings)*. Nazwy widzisz po polsku albo po angielsku — zależnie od języka Twojego panelu.
+Od teraz przy każdym zapisie gościa dostaniesz e-mail z jego danymi (imię, mail, telefon).
 
 > Zostawisz to pole puste? Powiadomienia pójdą na adres administratora strony — też zadziała.
 

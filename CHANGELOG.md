@@ -3,6 +3,26 @@
 Format wg [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/), wersjonowanie [SemVer](https://semver.org/lang/pl/).
 Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../releases).
 
+## [2.3.4] — 2026-07-10
+
+### Naprawione
+- Odinstalowanie sprząta komplet opcji: `pnb_importer_lock` (pnb-blocks) oraz liczniki
+  wersji cache `pnb_pl_cache_wersja` i `pnb_pl_cache_kod_wersja` (pnb-auto-pl) —
+  znalezione ostatnim audytem repozytorium.
+
+### Zmienione
+- Dokumentacja opisuje paczkę zgodnie z jej faktyczną zawartością: paczka klienta =
+  2 wtyczki + instrukcja (MD i PDF) + zrzuty; motyw testowy żyje tylko w repozytorium
+  (wcześniej README i instrukcja twierdziły, że motyw jedzie w paczce).
+- Instrukcja klienta podaje etykiety pól po polsku i angielsku („E-mail powiadomień" /
+  „Zapisz ustawienia") — zależnie od języka panelu klient zobaczy jedną z nich.
+- Z tabeli hooków w dokumentacji technicznej usunięty martwy wpis AJAX `pnb_galeria_zapisz`
+  (endpoint usunięty z kodu już w v1.0.6).
+- Stare wydania (v2.0.3–v2.2.2) na GitHubie: paczki oczyszczone z wewnętrznej notki
+  recenzenckiej, ujednolicone nazwy załączników, opisy wydań bez wewnętrznego żargonu.
+
+Wersje: pnb-blocks 1.11.2 · pnb-auto-pl 0.3.14 · motyw 1.1.13
+
 ## [2.3.3] — 2026-07-10
 
 ### Dodane
@@ -62,7 +82,6 @@ Wersje: pnb-blocks 1.11.0 · pnb-auto-pl 0.3.12 · motyw 1.1.13
 ### Zmienione
 - „Szczegóły wydarzenia" prowadzą wprost na podstronę wydarzenia (zamiast rozsuwanego panelu w karcie).
 
-### Wewnętrzne
 - Ujednolicone metadane paczki (autor: PNB) i komentarze kodu.
 
 Wersje: pnb-blocks 1.10.40 · pnb-auto-pl 0.3.12 · motyw 1.1.13
@@ -110,8 +129,7 @@ Wersje: pnb-blocks 1.10.35 · pnb-auto-pl 0.3.9 · motyw 1.1.12
 - Sprzątanie wygasłych wydarzeń (do kosza) wraz z ich zdjęciami.
 - Ekran stanu importu w panelu (ostatni sync, metryki).
 
-### Uwagi
-- Korzystanie z danych źródła podlega jego regulaminowi; dla własnych wydarzeń zalecane oficjalne API.
+> Uwaga: korzystanie z danych źródła podlega jego regulaminowi; dla własnych wydarzeń zalecane oficjalne API.
 
 Wersje: pnb-blocks 1.9.2 · pnb-auto-pl 0.3.5 · motyw 1.1.7
 
