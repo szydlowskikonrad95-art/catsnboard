@@ -3,13 +3,16 @@
 Cześć! 👋 Ta instrukcja tłumaczy **prostym językiem** jak obsługiwać Twoją stronę.
 Nie musisz się znać na komputerach — każdy krok jest opisany po kolei.
 
-W paczce dostałeś **3 rzeczy do wgrania**:
+Produktem są **2 wtyczki** — wgrywasz je na **swoją istniejącą stronę** (ze swoim wyglądem):
 
 | Co | Do czego służy |
 |---|---|
-| **motyw** (plik `catsnboard-motyw...zip`) | Wygląd całej strony (kolory, układ, zdjęcie kota na górze) |
 | **wtyczka Galeria i Wydarzenia** (`pnb-blocks...zip`) | Galeria zdjęć + kalendarz wydarzeń z zapisami gości |
 | **wtyczka Polska Wersja** (`pnb-auto-pl...zip`) | Cała strona po polsku, z przełącznikiem PL / EN |
+
+> ⚠️ **Uwaga o motywie w paczce:** w paczce jest też plik `catsnboard-motyw...zip` — to
+> **tylko makieta do testów** (odtworzony wygląd, na którym sprawdzaliśmy wtyczki).
+> **NIE wgrywaj go na swoją prawdziwą stronę** — masz już swój wygląd. Potrzebne są tylko 2 wtyczki.
 
 > 💡 **Zanim zaczniesz — o co chodzi?** Twoja strona działa na **WordPressie** (najpopularniejszy
 > system do stron). Logujesz się do „panelu" (kuchni strony), a goście widzą gotową stronę.
@@ -17,26 +20,34 @@ W paczce dostałeś **3 rzeczy do wgrania**:
 
 ---
 
-## ✅ KROK 1 — Wgraj wszystko (raz, 10 minut)
+## 💾 KROK 0 — Zrób kopię zapasową (5 minut, WAŻNE)
 
-Robisz to **w tej kolejności**: najpierw motyw, potem 2 wtyczki.
+Zanim cokolwiek wgrasz — zrób **kopię zapasową strony**. To siatka bezpieczeństwa: gdyby
+cokolwiek poszło nie tak, przywracasz kopię i jest jak było.
 
-### 1a. Wgraj motyw (wygląd)
+- **Najprościej:** poproś swój **hosting** (tam gdzie kupiłeś stronę) o zrobienie backupu — robią to w minutę.
+- **Albo sam:** wgraj darmową wtyczkę **UpdraftPlus** → kliknij **Backup Now**.
+
+> Zawodowiec nigdy nie instaluje niczego bez kopii zapasowej. To standard.
+
+---
+
+## ✅ KROK 1 — Wgraj 2 wtyczki (raz, 5 minut)
+
 1. Zaloguj się: wpisz w przeglądarce **`twojastrona.pl/wp-admin`** → podaj login i hasło
-2. W menu po lewej kliknij: **Wygląd → Motywy** *(Appearance → Themes)*
-3. Na górze kliknij **Dodaj nowy** *(Add New)* → **Wyślij motyw na serwer** *(Upload Theme)*
-4. Kliknij **Wybierz plik**, wskaż plik `catsnboard-motyw...zip` → **Zainstaluj** → **Włącz** *(Activate)*
-
-✅ Gotowe — strona ma teraz nowy wygląd. Strony (Home, Gallery, Kontakt...) **utworzą się same**.
-
-### 1b. Wgraj 2 wtyczki
-1. W menu po lewej: **Wtyczki → Dodaj nową** *(Plugins → Add New)*
-2. Na górze: **Wyślij wtyczkę na serwer** *(Upload Plugin)* → **Wybierz plik**
-3. Wskaż `pnb-blocks...zip` → **Zainstaluj** → **Włącz**
-4. **Powtórz to samo** z drugim plikiem: `pnb-auto-pl...zip`
+2. W menu po lewej: **Wtyczki → Dodaj nową** *(Plugins → Add New)*
+3. Na górze: **Wyślij wtyczkę na serwer** *(Upload Plugin)* → **Wybierz plik**
+4. Wskaż `pnb-blocks...zip` → **Zainstaluj** → **Włącz**
+5. **Powtórz to samo** z drugim plikiem: `pnb-auto-pl...zip`
 
 ✅ Gotowe! Wejdź na swoją stronę (bez `/wp-admin`) — zobaczysz galerię zdjęć kotów,
 kalendarz wydarzeń i przełącznik **PL / EN** w prawym górnym rogu. **Wszystko po polsku od razu.**
+Wtyczki działają na Twoim wyglądzie — dokładają do niego galerię i wydarzenia, nic nie psując.
+
+> ⚠️ **Masz na stronie wtyczkę WPML** (do wielu języków)? **Wyłącz ją** przed włączeniem naszej
+> Polskiej Wersji — inaczej dwa mechanizmy tłumaczenia będą się gryzły. (Nasza wtyczka robi
+> polski sama, WPML nie jest potrzebny.) Nie wiesz czy masz WPML? Zajrzyj w **Wtyczki** — jak
+> nie ma tam „WPML", to nie masz i nic nie robisz.
 
 > 💡 **Chcesz panel po polsku?** Wejdź w **Użytkownicy → Profil → Język → Polski**
 > *(Users → Profile → Language → Polski)*. Wtedy przyciski będą po polsku.
@@ -45,16 +56,20 @@ kalendarz wydarzeń i przełącznik **PL / EN** w prawym górnym rogu. **Wszystk
 
 ---
 
-## 🖼️ KROK 2 — Galeria: jak zmienić zdjęcia
+## 🖼️ KROK 2 — Galeria: gdzie ją wstawić i jak zmienić zdjęcia
 
-1. Menu po lewej: **Strony → Gallery → Edytuj** *(Pages → Gallery → Edit)*
-2. Kliknij w galerię — pokażą się przyciski:
+Galeria to **blok** — wstawiasz go na dowolną swoją stronę:
+
+1. Otwórz stronę, na której chcesz galerię (**Strony → Edytuj** *(Pages → Edit)*)
+2. Kliknij **+** (dodaj blok) → wyszukaj **„PNB Galeria"** → wstaw
+3. Kliknij w galerię — pokażą się przyciski:
    - **Wybierz zdjęcia** — zdjęcia górnej taśmy (ta przewijana)
    - **Wybierz zdjęcia „Moments"** — zdjęcia dolnej sekcji (osobny zestaw!)
-3. Zaznacz zdjęcia (możesz dodać własne z komputera) → **Aktualizuj galerię**
-4. Kliknij niebieski **Zapisz / Aktualizuj** w prawym górnym rogu
+4. Zaznacz zdjęcia (możesz dodać własne z komputera) → **Aktualizuj galerię**
+5. Kliknij niebieski **Zapisz / Aktualizuj** w prawym górnym rogu
 
-Napisy i podpisy zmieniasz klikając prosto w tekst.
+Napisy i podpisy zmieniasz klikając prosto w tekst. Kalendarz wydarzeń wstawiasz tak samo —
+blokiem **„PNB Wydarzenia"** na wybranej stronie.
 
 ---
 
@@ -67,8 +82,13 @@ Napisy i podpisy zmieniasz klikając prosto w tekst.
 5. **Opublikuj** — wydarzenie samo pojawi się na stronie
 
 **Kto się zapisał?** Otwórz wydarzenie do edycji — lista gości jest w ramce
-**Zapisani goście** (z przyciskiem eksportu do Excela). Dodatkowo dostajesz **e-mail** przy
-każdym zapisie (adres ustawiasz w **Events → Settings**).
+**Zapisani goście** (z przyciskiem eksportu do Excela).
+
+**Chcesz dostawać e-mail przy każdym zapisie?** Wejdź w **Events → Settings** i wpisz swój adres
+w polu **„Notification email"** (e-mail powiadomień) → **Save settings**. Od teraz przy każdym
+zapisie gościa dostaniesz e-mail z jego danymi (imię, mail, telefon).
+
+> Zostawisz to pole puste? Powiadomienia pójdą na adres administratora strony — też zadziała.
 
 > ⚠️ **E-maile mogą wpadać do SPAMU** — tak działają serwery, nie wtyczka. Ale zapisy
 > **zawsze** są w panelu, nic nie ginie. Chcesz pewnych maili? Poproś hosting o „SMTP"
@@ -186,10 +206,14 @@ Wgraj darmową wtyczkę **„WP Data Access"** — podejrzysz bazę prosto z pan
 - **Wtyczek nie trzeba aktualizować** — nie pobierają nic z internetu (poza tłumaczeniem u Claude).
 - **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to przypadłość WordPressa, nie wtyczek.
   Jak coś pójdzie nie tak: nie zapisuj, tylko odśwież stronę edytora.
+- **Dane gości (RODO):** formularz zapisów zbiera imię, e-mail i telefon gościa. Jako właściciel
+  strony odpowiadasz za te dane — zadbaj o zgodę na ich przetwarzanie i politykę prywatności
+  (standard przy każdym formularzu kontaktowym). Wtyczka po odinstalowaniu sama te dane usuwa.
 
 ---
 
 ## ❓ Coś nie działa?
 
-Napisz do nas — opisz **co klikasz i co się dzieje** (najlepiej ze zrzutem ekranu).
-Zapisy gości i tłumaczenia są bezpieczne w bazie — nawet jak coś wygląda dziwnie, **nic nie ginie**.
+Opisz **co klikasz i co się dzieje** (najlepiej ze zrzutem ekranu) i wyślij do osoby, która
+przekazała Ci tę paczkę. Zapisy gości i tłumaczenia są bezpieczne w bazie — nawet jak coś
+wygląda dziwnie, **nic nie ginie**.
