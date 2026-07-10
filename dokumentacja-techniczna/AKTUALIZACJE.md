@@ -7,8 +7,9 @@ Dokument dla osoby utrzymującej produkt. Klientowi wystarcza skrót w
 
 - Wersjonowanie **SemVer** (MAJOR.MINOR.PATCH) per komponent; wersja paczki = tag `vX.Y.Z`.
 - Każda zmiana przechodzi cykl **branch → test → PR → merge** (historia w Pull Requests).
-- Wydanie: `CHANGELOG.md` (Keep a Changelog) → build paczki z bramkami → tag → **GitHub Release**
-  z paczką `catsnboard-vX.Y.Z.zip` jako załącznikiem. Najnowsza wersja = release oznaczony **Latest**.
+- Wydanie: `CHANGELOG.md` (Keep a Changelog) → **badge wersji w README** (łatwo zapomnieć!) →
+  build paczki z bramkami → tag → **GitHub Release** z paczką `catsnboard-vX.Y.Z.zip` jako
+  załącznikiem. Najnowsza wersja = release oznaczony **Latest**.
 
 ## Jak dostarczyć aktualizację klientowi (ręcznie — obecny kanał)
 

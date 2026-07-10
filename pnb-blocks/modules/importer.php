@@ -101,7 +101,7 @@ function pnb_importer_jeden_cykl() {
 	// 1. Czytaj CAŁE źródło (lekko — bez dociągania pełnych danych; pełne tylko dla nowych niżej).
 	$wydarzenia = pnb_importer_pobierz_wydarzenia( $source, false );
 	if ( is_wp_error( $wydarzenia ) ) {
-		// Porażka źródła → zwiększ licznik i otwórz breaker na coraz dłużej (10→20→40→max 120 min).
+		// Porażka źródła → zwiększ licznik i otwórz breaker na coraz dłużej (20→40→80→120 min).
 		$porazki = (int) get_option( 'pnb_importer_porazki', 0 ) + 1;
 		update_option( 'pnb_importer_porazki', $porazki );
 		$przerwa = min( 120, 10 * pow( 2, min( $porazki, 4 ) ) ); // 20,40,80,120,120 min
@@ -130,7 +130,7 @@ function pnb_importer_jeden_cykl() {
 	update_option( 'pnb_importer_porazki', 0 );
 	update_option( 'pnb_importer_breaker_do', 0 );
 
-	// PRÓG SPADKU: nagły spadek (22→3) = podejrzana zmiana API → alarm + pomiń wygasanie.
+	// PRÓG SPADKU: nagły spadek (22→2) = podejrzana zmiana API → alarm + pomiń wygasanie.
 	$ostatnia = (int) get_option( 'pnb_importer_ostatnia_liczba', 0 );
 	$podejrzany_spadek = ( $ostatnia >= 10 && count( $wydarzenia ) < $ostatnia * 0.3 );
 	update_option( 'pnb_importer_ostatnia_liczba', count( $wydarzenia ) );
