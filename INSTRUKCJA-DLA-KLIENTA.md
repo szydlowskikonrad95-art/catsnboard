@@ -14,9 +14,21 @@ Produktem są **2 wtyczki** — wgrywasz je na **swoją istniejącą stronę** (
 > **tylko makieta do testów** (odtworzony wygląd, na którym sprawdzaliśmy wtyczki).
 > **NIE wgrywaj go na swoją prawdziwą stronę** — masz już swój wygląd. Potrzebne są tylko 2 wtyczki.
 
-> 💡 **Zanim zaczniesz — o co chodzi?** Twoja strona działa na **WordPressie** (najpopularniejszy
-> system do stron). Logujesz się do „panelu" (kuchni strony), a goście widzą gotową stronę.
-> Panel otwierasz wpisując w przeglądarce adres: **`twojastrona.pl/wp-admin`**
+> 💡 **Zanim zaczniesz — o co chodzi?** Twoja strona działa na **WordPressie**. Logujesz się do
+> „panelu" (kuchni strony), a goście widzą gotową stronę. Panel otwierasz wpisując w przeglądarce
+> adres: **`twojastrona.pl/wp-admin`**
+
+### ⏱️ Ile to zajmie i czego potrzebujesz
+
+Całość zajmie Ci **około 15–20 minut**. Przygotuj:
+
+- ✅ **login i hasło** do panelu (`twojastrona.pl/wp-admin`)
+- ✅ **2 pliki ZIP** z wtyczkami (są w tej paczce)
+- ✅ **internet**
+- ✅ *opcjonalnie:* klucz **Claude API** (KROK 5) — tylko jeśli chcesz, żeby NOWE treści tłumaczyły się same
+
+**Co po którym kroku:** KROK 0 kopia (5 min) → 1 wtyczki (5 min) → 2 galeria (3 min) →
+3 wydarzenia (3 min) → 4 automat (opcja, 2 min) → 5 tłumaczenie (10 min) → 6 baza (0 min, nic nie robisz).
 
 ---
 
@@ -28,7 +40,7 @@ cokolwiek poszło nie tak, przywracasz kopię i jest jak było.
 - **Najprościej:** poproś swój **hosting** (tam gdzie kupiłeś stronę) o zrobienie backupu — robią to w minutę.
 - **Albo sam:** wgraj darmową wtyczkę **UpdraftPlus** → kliknij **Backup Now**.
 
-> Zawodowiec nigdy nie instaluje niczego bez kopii zapasowej. To standard.
+> Zalecamy zrobienie kopii zapasowej przed każdą instalacją — to Twoja siatka bezpieczeństwa.
 
 ---
 
@@ -63,7 +75,7 @@ Wtyczki działają na Twoim wyglądzie — dokładają do niego galerię i wydar
 
 ---
 
-## 🖼️ KROK 2 — Galeria: gdzie ją wstawić i jak zmienić zdjęcia
+## 🖼️ KROK 2 — Galeria: gdzie ją wstawić i jak zmienić zdjęcia (~3 min)
 
 Galeria to **blok** — wstawiasz go na dowolną swoją stronę:
 
@@ -80,7 +92,7 @@ blokiem **„PNB Wydarzenia"** na wybranej stronie.
 
 ---
 
-## 📅 KROK 3 — Wydarzenia: jak dodać samemu
+## 📅 KROK 3 — Wydarzenia: jak dodać samemu (~3 min)
 
 1. Menu po lewej: **Events → Dodaj nowe** *(Events → Add New)*
 2. Wpisz **tytuł i opis** (po angielsku — polski zrobi się sam, patrz KROK 5)
@@ -135,7 +147,7 @@ Twoją stronę — bez ręcznego wpisywania. Jak nie chcesz, po prostu tego nie 
 
 ---
 
-## 🇵🇱 KROK 5 — Polska wersja i klucz do tłumaczenia
+## 🇵🇱 KROK 5 — Polska wersja i klucz do tłumaczenia (~10 min)
 
 **Dobra wiadomość:** teksty strony są **już po polsku** (słownik jest w paczce) — przełącznik
 **PL / EN** działa od pierwszego dnia, bez niczego.
@@ -165,7 +177,7 @@ zaktualizuje się sama (zapis potrwa 2-3 sekundy dłużej). Odśwież stronę (F
 
 ---
 
-## 🗄️ KROK 6 — Twoja baza danych (nic nie musisz robić)
+## 🗄️ KROK 6 — Twoja baza danych (0 min — nic nie musisz robić)
 
 **Baza danych** to magazyn gdzie Twoja strona trzyma WSZYSTKO: wydarzenia, zdjęcia, ustawienia,
 tłumaczenia. **Masz ją już** — WordPress stworzył ją gdy powstała Twoja strona. **Nie budujesz
@@ -176,33 +188,29 @@ tłumaczenia. **Masz ją już** — WordPress stworzył ją gdy powstała Twoja 
 > Twoje strony, wpisy i ustawienia zostają nietknięte. Jeśli masz już stronę „Events" albo
 > „Gallery" — wtyczka jej **nie ruszy** (tworzy tylko te których nie masz).
 
-**Zaglądać do bazy zwykle nie musisz.** Ale jak chcesz zobaczyć co w środku (albo hosting poprosi):
+**Do bazy zwykle nie musisz w ogóle zaglądać.** Gdyby hosting kiedyś o to poprosił — znajdziesz ją
+w panelu hostingu pod ikoną **„phpMyAdmin"** albo **„Bazy danych"** (tam można ją przeglądać
+i eksportować kopię).
 
-**Sposób 1 — przez hosting (najczęstszy):**
-1. Zaloguj się do panelu swojego **hostingu** (tam gdzie kupiłeś stronę — np. cyber_Folks, home.pl, OVH)
-2. Znajdź ikonę **„phpMyAdmin"** albo **„Bazy danych"**
-3. Klikasz → widzisz listę „tabel" (magazynów). Możesz je przeglądać i eksportować (robić kopię)
+> 🔒 **Ważne o kluczu API:** Twój klucz do tłumaczenia jest zapisany w bazie i jest **tylko Twój** —
+> nikt z zewnątrz go nie widzi. Ale **nie pokazuj go nikomu** (to jak hasło do Twoich pieniędzy za tłumaczenie).
 
-**Sposób 2 — wtyczka w WordPressie:**
-Wgraj darmową wtyczkę **„WP Data Access"** — podejrzysz bazę prosto z panelu, bez hostingu.
+---
 
-**Co gdzie siedzi** (gdybyś szukał):
-| Tabela | Co trzyma |
+## 🔧 Najczęstsze problemy (rozwiąż sam w 10 sekund)
+
+| Problem | Rozwiązanie |
 |---|---|
-| `wp_posts` | wydarzenia i strony |
-| `wp_pnb_slownik_en_pl` | polskie tłumaczenia |
-| `wp_options` | ustawienia (w tym Twój klucz API) |
-
-> 🔒 **Ważne o kluczu API:** Twój klucz jest w bazie (tabela `wp_options`, pozycja
-> `pnb_auto_pl_klucz`). Baza jest **Twoja i tylko Twoja** — nikt z zewnątrz jej nie widzi.
-> Ale **nie pokazuj nikomu** tego klucza (to jak hasło do Twoich pieniędzy za tłumaczenie).
+| **Przełącznik PL/EN nie przełącza** albo strona pokazuje stary wygląd | Wyczyść cache: jak hosting ma wtyczkę przyspieszającą (np. LiteSpeed), kliknij w niej **„Purge All"**. Potem odśwież stronę (F5). |
+| **Nowe wydarzenie / tekst nie tłumaczy się na polski** | Sprawdź klucz: **Ustawienia → PNB Auto PL** → kliknij **„Testuj połączenie"** (ma pokazać ✅). Brak klucza = brak automatycznego tłumaczenia nowych treści (patrz KROK 5). |
+| **Nie widzę wydarzeń z Eventbrite** | **Events → Settings** → sprawdź czy wpisany jest adres źródła → kliknij **„Sync now"** (pobierze od razu, bez czekania). |
+| **E-mail o zapisie gościa nie przyszedł** | Zajrzyj do **SPAMU**. Zapis i tak jest bezpieczny — pełną listę gości masz zawsze w wydarzeniu (ramka „Zapisani goście"). Chcesz pewnych maili? Poproś hosting o „SMTP" albo wgraj **WP Mail SMTP**. |
+| **Zdjęcia wydarzeń są stare / brakuje ich** | Automat dociąga zdjęcia stopniowo (po kilka na cykl). Poczekaj kilka minut albo kliknij **„Sync now"**. |
 
 ---
 
 ## 💡 Dobre rady i znane sprawy
 
-- **Cache (przyspieszacz):** jak hosting ma wtyczkę przyspieszającą (np. LiteSpeed), po dużym
-  tłumaczeniu kliknij w niej **„Purge All"** (wyczyść), żeby goście od razu widzieli świeżą wersję.
 - **Zdjęcia:** wgrywaj do ~2500px szerokości — wtyczka sama zrobi miniatury.
 - **Wtyczek nie trzeba aktualizować** — nie pobierają nic z internetu (poza tłumaczeniem u Claude).
 - **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to przypadłość WordPressa, nie wtyczek.
