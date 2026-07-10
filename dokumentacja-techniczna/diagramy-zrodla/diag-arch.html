@@ -14,6 +14,10 @@
     letter-spacing:.05em;font-size:.95rem;text-transform:uppercase}
   h1{font-size:2rem;line-height:1.12;margin:.5rem 0 .4rem;letter-spacing:-.02em}
   .sub{color:var(--ink-soft);font-size:1.02rem;max-width:70ch}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--coral-d);font-weight:600;display:flex;align-items:center;gap:.5rem;margin:.5rem 0 0}
+  .eyebrow .num{background:var(--coral);color:#fff;width:1.4rem;height:1.4rem;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;font-size:.76rem}
   .flow{display:flex;align-items:stretch;gap:0;margin-top:34px}
   .col{display:flex;flex-direction:column;gap:14px;flex:1}
   .actor{background:#EFE7F2;border:1px solid #C9B3D4;border-radius:var(--radius);
@@ -61,6 +65,7 @@
 </style></head><body>
 
   <div class="brand"><span>🐾</span> Cats'N'Board · dokumentacja</div>
+  <div class="eyebrow"><span class="num">1</span> Architektura · jak to działa</div>
   <h1>Architektura produktu — jak to działa</h1>
   <p class="sub">Klient wgrywa <b>2 wtyczki</b> na swój WordPress. Dokładają swoje do jego bazy (prefiks <code>pnb_</code>),
      niczego nie kasują. Automat sam co 10 minut zwozi wydarzenia i tłumaczy je na polski — bez niczyjej ręki.</p>
