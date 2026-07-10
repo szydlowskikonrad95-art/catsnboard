@@ -3,6 +3,16 @@
 Format wg [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/), wersjonowanie [SemVer](https://semver.org/lang/pl/).
 Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../releases).
 
+## [2.3.2] — 2026-07-10
+
+### Zmienione
+- Instrukcja klienta mówi uczciwie: jak wgrywać nowe wersje wtyczek (zamiast obietnicy
+  „nie trzeba aktualizować"), co dokładnie jest po polsku od razu (treści od wtyczek —
+  własne strony klienta tłumaczy KROK 5), ostrzeżenie Wyłączenie ≠ Usunięcie (eksport
+  gości przed Delete), wiersz FAQ o tłumaczeniu zatrzymanym przez dzienny limit kosztów.
+
+Wersje: pnb-blocks 1.11.1 · pnb-auto-pl 0.3.13 · motyw 1.1.13 (bez zmian — wydanie dokumentacyjne)
+
 ## [2.3.1] — 2026-07-10
 
 ### Naprawione
