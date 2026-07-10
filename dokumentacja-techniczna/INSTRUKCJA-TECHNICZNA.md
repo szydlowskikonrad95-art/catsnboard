@@ -21,7 +21,7 @@ bezpiecznikiem kosztu).
 ```
   Eventbrite ──(polling 10 min)──▶ importer.php ──▶ CPT pnb_wydarzenie ──▶ blok Gutenberg ──▶ front
                                                           │
-  Claude API ──▶ silnik-claude.php ──▶ wp_pnb_slownik_en_pl (cache) ──▶ front.php (podmiana PL) ──▶ gość
+  Claude API ──▶ silnik-claude.php ──▶ {prefiks}pnb_slownik_en_pl (cache) ──▶ front.php (podmiana PL) ──▶ gość
                                                           │
                                         baza klienta (MySQL, prefiks pnb_)
 ```
@@ -66,7 +66,7 @@ logowane (`pnb_importer_log`). Zero ręcznej ingerencji.
 | Plik | Odpowiedzialność |
 |---|---|
 | `pnb-auto-pl.php` | Plik główny: wersja, ładowanie `inc/`, `CREATE TABLE` słownika przy aktywacji |
-| `inc/slownik.php` | Tabela `wp_pnb_slownik_en_pl` — pamięć par EN→PL (cache tłumaczeń) |
+| `inc/slownik.php` | Tabela `{prefiks}pnb_slownik_en_pl` — pamięć par EN→PL (cache tłumaczeń) |
 | `inc/segmentacja.php` | Tnie HTML strony na segmenty blokowe + pary linków do tłumaczenia |
 | `inc/silnik-claude.php` | Claude API (batch), walidacja, **limit kosztu** (znaki/dzień) |
 | `inc/tlumaczenie.php` | AJAX „przetłumacz stronę", wykrywanie zmian treści (`save_post`) |
@@ -101,14 +101,16 @@ Kluczowe mechanizmy (wszystkie w `modules/importer.php`): **lock** (jeden cykl n
 
 Wtyczki dokładają do bazy klienta:
 
-- **Tabela** `wp_pnb_slownik_en_pl` — słownik tłumaczeń (tworzona przez `dbDelta` przy aktywacji)
+- **Tabela** `{prefiks}pnb_slownik_en_pl` — słownik tłumaczeń (tworzona przez `dbDelta` przy aktywacji)
 - **Wpisy** w `wp_posts`: CPT `pnb_wydarzenie` (wydarzenia), `pnb_zapis` (zapisy gości)
 - **Meta** w `wp_postmeta` z prefiksem `_pnb_` (daty, źródło, dane zapisu)
 - **Opcje** w `wp_options` z prefiksem `pnb_` (ustawienia, log importera, cache)
 
-**Prywatność:** CPT `pnb_zapis` jest `public=false, show_ui=false` — dane gości (imię/mail/tel)
-nie są dostępne przez REST API ani wyszukiwarkę frontową; widoczne tylko w metaboxie wydarzenia
-w panelu admina. Odinstalowanie wtyczki usuwa jej dane (higiena + RODO).
+**Prywatność (RODO):** CPT `pnb_zapis` jest `public=false, show_ui=false` — dane gości (imię/mail/tel)
+nie są dostępne przez REST API ani wyszukiwarkę frontową; widoczne w metaboxie wydarzenia w panelu
+admina (+ eksport CSV). Zapisy są wpięte w **natywne narzędzia prywatności WordPressa**
+(Narzędzia → Eksport / Usuwanie danych osobowych): żądanie „pokaż / usuń moje dane" obsługuje się
+po e-mailu, przekrojowo przez wszystkie wydarzenia (`modules/rodo.php`). Odinstalowanie wtyczki usuwa dane.
 
 ---
 

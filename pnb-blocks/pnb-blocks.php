@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       PNB Gallery & Events
  * Description:       Premium gallery (film strip + "Moments" section) and an events calendar with guest sign-ups — two Gutenberg blocks (Gallery and Events pages), editable in the block editor. Does not touch the rest of the site.
- * Version:           1.10.40
+ * Version:           1.11.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            PNB
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* Stałe — nazwy PNB_TOOLKIT_* zachowane (moduły galerii/kalendarza ich używają; brak przepisywania). */
-define( 'PNB_TOOLKIT_VERSION', '1.10.40' );
+define( 'PNB_TOOLKIT_VERSION', '1.11.0' );
 define( 'PNB_TOOLKIT_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PNB_TOOLKIT_URL', plugin_dir_url( __FILE__ ) );
 
@@ -37,6 +37,7 @@ require_once PNB_TOOLKIT_DIR . 'modules/blok-galeria.php';
 require_once PNB_TOOLKIT_DIR . 'modules/kalendarz.php';
 require_once PNB_TOOLKIT_DIR . 'modules/blok-wydarzenia.php';
 require_once PNB_TOOLKIT_DIR . 'modules/importer.php'; // automat wydarzeń W PLUGINIE (WP-Cron, bez Pythona)
+require_once PNB_TOOLKIT_DIR . 'modules/rodo.php';     // zapisy gości w narzędziach prywatności WP (RODO)
 
 /* Aktywacja: rejestracja CPT wydarzeń + flush rewrite (żeby /events/, single wydarzeń działały od razu). */
 register_activation_hook( __FILE__, 'pnb_blocks_aktywacja' );
