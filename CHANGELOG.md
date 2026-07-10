@@ -1,5 +1,18 @@
 # Historia zmian
 
+## v2.2.2 — 10 lipca 2026
+
+Poprawka niezawodności zdjęć wydarzeń (znaleziona nocnym testem od zera na czystym WordPressie):
+
+- Wydarzenie, któremu nie udało się pobrać zdjęcia (chwilowy problem sieci/serwera), dostaje je
+  teraz **automatycznie w kolejnych cyklach importu** (po kilka na cykl, aż do kompletu) —
+  wcześniej zostawało bez zdjęcia na zawsze.
+- Nieudane pobrania zdjęć są **widoczne w dzienniku importu** z podpowiedzią przyczyny
+  (wcześniej znikały bez śladu).
+- Po dociągnięciu zdjęć polska wersja strony odświeża się sama (goście nie oglądają starych ikonek).
+
+Wersje: pnb-blocks **1.10.36** · pnb-auto-pl **0.3.10** · motyw **1.1.12**.
+
 ## v2.2.1 — 10 lipca 2026
 
 Poprawka po debug-przeglądzie całego produktu (każda warstwa sprawdzona narzędziami):
