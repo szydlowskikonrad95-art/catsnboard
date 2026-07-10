@@ -1744,7 +1744,10 @@ function pnb_kalendarz_render_single() {
 	/* ── HERO ~55vh: featured full-bleed + welon marki (lżejszy) + tytuł splitwords + mono-linia ── */
 	// WYDAJNOŚĆ: wp_get_attachment_image z 'large'+srcset zamiast surowego 'full' (oryginał klienta = MB).
 	$hero_id = (int) get_post_thumbnail_id( $id );
-	$out  = '<section class="pnb-events pnb-events--single">';
+	// alignfull: na CUDZYM motywie blokowym treść singla siedzi w wąskiej kolumnie motywu
+	// (~640px — „wygląda jak telefon na desktopie", znalazł Dzidek 2026-07-10); klasa alignfull
+	// każe motywowi dać sekcji pełną szerokość. Na naszym motywie neutralna (brak kontenera).
+	$out  = '<section class="pnb-events pnb-events--single alignfull">';
 	$out .= '<header class="pnb-evh pnb-evh--single">';
 	if ( $hero_id ) {
 		$out .= '<div class="pnb-evh-img" aria-hidden="true">'
@@ -1761,7 +1764,18 @@ function pnb_kalendarz_render_single() {
 	$out .= '<div class="pnb-evh-grain" aria-hidden="true"></div>';
 	$out .= '<div class="pnb-evh-in">';
 	$out .= '<span class="pnb-ev-eyebrow">' . esc_html( pnb_txt( 'events.single.eyebrow', "Cats'N'Board · Event" ) ) . '</span>';
-	$out .= '<h1 class="pnb-ev-h1">' . pnb_kalendarz_splitwords( pnb_event_tytul( $id ) ) . '</h1>';
+	// TYTUŁ: przetłumacz CAŁOŚĆ zanim potniemy na słowa do animacji (2026-07-10, znalazł Dzidek:
+	// „Heidi Wrangles Cats DATĘ Documentary"). Pocięte >słowo< łapało błędne pary słowo-po-słowie
+	// (trucizna z pociętego „Save the date”: the→datę), a pełna para tytułu nie miała się jak
+	// dopasować do spanów. Teraz: pełny tytuł PL → tniemy PL na słowa → pary EN nic nie łapią.
+	$tytul_hero = pnb_event_tytul( $id );
+	if ( function_exists( 'pnb_pl_podmieniac' ) && pnb_pl_podmieniac() && function_exists( 'pnb_pl_fraza' ) ) {
+		$tytul_pl = pnb_pl_fraza( $tytul_hero );
+		if ( '' !== $tytul_pl ) {
+			$tytul_hero = $tytul_pl;
+		}
+	}
+	$out .= '<h1 class="pnb-ev-h1">' . pnb_kalendarz_splitwords( $tytul_hero ) . '</h1>';
 	$mono = array();
 	if ( $ts ) {
 		$data_hero = date_i18n( 'l, F j', $ts );
