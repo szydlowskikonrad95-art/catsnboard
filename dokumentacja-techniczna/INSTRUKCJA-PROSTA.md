@@ -78,7 +78,27 @@ dodaje zdjęcia i tłumaczy na polski. **Nic nie musisz robić.**
 
 ---
 
-## Krok 6 — Zobacz efekt
+## Krok 6 — Wpisz swój e-mail (żeby wiedzieć, kto się zapisał)
+
+Na **tym samym ekranie** (Events → Settings) jest pole **„Notification email"** (e-mail powiadomień):
+
+- Wpisz tam **swój adres e-mail**
+- Kliknij **„Save settings"** (Zapisz) na dole
+
+Od teraz **za każdym razem, gdy gość zapisze się na wydarzenie**, dostaniesz o tym e-mail z jego
+danymi (imię, mail, telefon). Dzięki temu wiesz od razu, kto przychodzi.
+
+> ℹ️ Jeśli zostawisz to pole puste, powiadomienia pójdą na adres administratora strony.
+>
+> ⚠️ E-maile czasem wpadają do **SPAMU** — tak działają serwery pocztowe, nie wtyczka. Nawet gdyby
+> mail nie doszedł, **zapis nigdy nie ginie**: pełną listę gości masz zawsze w wydarzeniu (patrz niżej).
+
+**Gdzie widać wszystkich zapisanych?** Otwórz dowolne wydarzenie do edycji — na dole jest ramka
+**„Zapisani goście"** z listą i przyciskiem eksportu do Excela.
+
+---
+
+## Krok 7 — Zobacz efekt
 
 Wydarzenia zbierają się same. Możesz je podejrzeć w **Events**:
 
