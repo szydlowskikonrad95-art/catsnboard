@@ -33,6 +33,8 @@ $opcje = array(
 	'pnb_importer_dead',            // importer: dead-letter (odłożone wydarzenia)
 	'pnb_importer_log',             // importer: dziennik cykli
 	'pnb_scraper_status',           // importer: status ostatniego syncu (ekran stanu)
+	'pnb_importer_lock',            // importer: blokada „jeden cykl naraz" (zwykle self-cleaning,
+	                                // ale przy usunięciu w trakcie cyklu mogłaby zostać — audyt 2026-07-10)
 );
 foreach ( $opcje as $o ) {
 	delete_option( $o );
