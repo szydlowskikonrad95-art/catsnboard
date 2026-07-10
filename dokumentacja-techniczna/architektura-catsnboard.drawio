@@ -1,0 +1,213 @@
+<mxfile host="app.diagrams.net" compressed="false">
+  <diagram id="p1arch" name="1 - Architektura produktu">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="tytul" value="Cats'N'Board — architektura produktu (jak to działa)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#2D2A26;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="700" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="podtytul" value="Klient wgrywa 2 wtyczki na SWÓJ WordPress. Wtyczki dokładają swoje do jego bazy (prefiks pnb_), niczego nie kasują." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=12;fontColor=#6B6B6B;" vertex="1" parent="1">
+          <mxGeometry x="40" y="56" width="820" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gosc" value="👤 Gość / właściciel&#10;(przeglądarka)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=13;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="120" width="180" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wp" value="WordPress (strona klienta)" style="swimlane;startSize=30;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=14;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="340" y="110" width="620" height="470" as="geometry" />
+        </mxCell>
+
+        <mxCell id="motyw" value="Motyw (wygląd)&#10;— klienta ALBO nasz testowy" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=12;" vertex="1" parent="wp">
+          <mxGeometry x="30" y="50" width="240" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="blocks" value="Wtyczka 1: PNB Galeria i Wydarzenia (pnb-blocks)" style="swimlane;startSize=26;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;fontSize=12;verticalAlign=top;" vertex="1" parent="wp">
+          <mxGeometry x="30" y="130" width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="b_gal" value="Galeria premium&#10;(taśma zdjęć + lightbox)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="blocks">
+          <mxGeometry x="20" y="40" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="b_kal" value="Kalendarz wydarzeń&#10;+ zapisy gości (imię/mail/tel)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="blocks">
+          <mxGeometry x="20" y="95" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="b_imp" value="Importer (automat, WP-Cron co 10 min)&#10;pobiera wydarzenia + zdjęcia" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;fontStyle=1;" vertex="1" parent="blocks">
+          <mxGeometry x="20" y="150" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="b_bloki" value="2 bloki Gutenberga&#10;(galeria + wydarzenia w edytorze)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="blocks">
+          <mxGeometry x="20" y="210" width="230" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="autopl" value="Wtyczka 2: PNB Polska Wersja AI (pnb-auto-pl)" style="swimlane;startSize=26;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;fontSize=12;verticalAlign=top;" vertex="1" parent="wp">
+          <mxGeometry x="320" y="130" width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="a_switch" value="Przełącznik PL | EN&#10;(gość wybiera język)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="autopl">
+          <mxGeometry x="20" y="40" width="230" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="a_engine" value="Silnik tłumaczenia (Claude AI)&#10;+ limit kosztu (znaki/dzień)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;fontStyle=1;" vertex="1" parent="autopl">
+          <mxGeometry x="20" y="95" width="230" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="a_slownik" value="Słownik EN→PL&#10;(pamięć tłumaczeń — raz przetłumaczone, zapisane)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="autopl">
+          <mxGeometry x="20" y="155" width="230" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="a_front" value="Podmiana treści na stronie&#10;(gość widzi polski, cache)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="autopl">
+          <mxGeometry x="20" y="220" width="230" height="45" as="geometry" />
+        </mxCell>
+
+        <mxCell id="baza" value="🗄 Baza danych klienta (MySQL)&#10;— jego wpisy + tabela wp_pnb_slownik_en_pl (nasza szuflada)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="wp">
+          <mxGeometry x="30" y="440" width="560" height="24" as="geometry" />
+        </mxCell>
+
+        <mxCell id="eventbrite" value="🌐 Eventbrite&#10;(publiczna lista&#10;kocich wydarzeń)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="300" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="claude" value="🤖 Claude API&#10;(Anthropic)&#10;tłumaczy na polski" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="430" width="130" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_gosc_wp" value="wchodzi na stronę" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;strokeColor=#9673A6;" edge="1" parent="1" source="gosc" target="wp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_imp_eb" value="co 10 min pobiera&#10;(polling)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;startArrow=none;fontSize=10;dashed=1;strokeColor=#D79B00;" edge="1" parent="1" source="b_imp" target="eventbrite">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_eng_claude" value="wysyła tekst&#10;do tłumaczenia" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;dashed=1;strokeColor=#82B366;" edge="1" parent="1" source="a_engine" target="claude">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legenda" value="Legenda:&#10;🟧 pomarańczowy = automat / koszt (dzieje się sam)&#10;⬜ dashed żółty = element opcjonalny (motyw)&#10;🟥 czerwony = dane w bazie klienta" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#B3B3B3;align=left;fontSize=10;verticalAlign=top;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="470" width="250" height="90" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="p2blocks" name="2 - Pliki pnb-blocks">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t2" value="Wtyczka „PNB Galeria i Wydarzenia” (pnb-blocks) — co za co odpowiada" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=18;fontStyle=1;fontColor=#2D2A26;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="main2" value="pnb-blocks.php&#10;(plik główny: definicje wersji, ładuje moduły, demo przy aktywacji)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="420" y="90" width="330" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="grp_mod" value="modules/ — logika" style="swimlane;startSize=26;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="60" y="200" width="520" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="m_rdzen" value="rdzen.php — wspólne funkcje, wykrywanie języka (?lang=pl)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="grp_mod">
+          <mxGeometry x="20" y="40" width="480" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="m_gal" value="galeria.php — premium grid + wybór zdjęć z biblioteki WP + lightbox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="grp_mod">
+          <mxGeometry x="20" y="84" width="480" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="m_kal" value="kalendarz.php — CPT wydarzenie, karty, zapisy gości, singiel na cudzym motywie" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="grp_mod">
+          <mxGeometry x="20" y="128" width="480" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="m_imp" value="importer.php — AUTOMAT: pobiera wydarzenia z Eventbrite + zdjęcia (WP-Cron)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;fontStyle=1;" vertex="1" parent="grp_mod">
+          <mxGeometry x="20" y="172" width="480" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="m_bg" value="blok-galeria.php / blok-wydarzenia.php — rejestracja 2 bloków edytora" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="grp_mod">
+          <mxGeometry x="20" y="216" width="480" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="m_note" value="Każdy moduł = jedna odpowiedzialność (łatwo znaleźć i naprawić)." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontColor=#6B6B6B;" vertex="1" parent="grp_mod">
+          <mxGeometry x="20" y="260" width="480" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="grp_res" value="zasoby i bloki" style="swimlane;startSize=26;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="620" y="200" width="490" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="r_blocks" value="blocks/galeria/ + blocks/wydarzenia/ — block.json, editor.js, render.php" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_res">
+          <mxGeometry x="20" y="40" width="450" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="r_assets" value="assets/css + assets/js — style i skrypty galerii/kalendarza (ładowane tylko gdy trzeba)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_res">
+          <mxGeometry x="20" y="84" width="450" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="r_lib" value="assets/lib — GSAP + ScrollTrigger + Lenis (animacje, bundlowane lokalnie)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_res">
+          <mxGeometry x="20" y="128" width="450" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="r_fonts" value="assets/fonts — Poppins + Varela Round (lokalnie, OFL, działa offline)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_res">
+          <mxGeometry x="20" y="172" width="450" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="r_lang" value="languages/ — polskie tłumaczenia interfejsu (.po/.mo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_res">
+          <mxGeometry x="20" y="216" width="450" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="r_lic" value="LICENSE + CREDITS.md — GPL v2+ i noty bibliotek" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_res">
+          <mxGeometry x="20" y="260" width="450" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_main_mod" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="main2" target="grp_mod">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_main_res" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="main2" target="grp_res">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram id="p3autopl" name="3 - Pliki pnb-auto-pl">
+    <mxGraphModel dx="1100" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t3" value="Wtyczka „PNB Polska Wersja (AI)” (pnb-auto-pl) — co za co odpowiada" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=18;fontStyle=1;fontColor=#2D2A26;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="800" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="main3" value="pnb-auto-pl.php&#10;(plik główny: wersja, ładuje moduły inc/, tworzy tabelę słownika)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="420" y="90" width="330" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="grp_inc" value="inc/ — silnik tłumaczenia" style="swimlane;startSize=26;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="120" y="200" width="560" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="i_slownik" value="slownik.php — tabela wp_pnb_slownik_en_pl (pamięć par EN→PL, cache)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="grp_inc">
+          <mxGeometry x="20" y="40" width="520" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="i_seg" value="segmentacja.php — tnie HTML strony na kawałki do tłumaczenia (bloki + linki)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="grp_inc">
+          <mxGeometry x="20" y="84" width="520" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="i_engine" value="silnik-claude.php — Claude API (batch) + walidacja + LIMIT KOSZTU (znaki/dzień)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;fontStyle=1;" vertex="1" parent="grp_inc">
+          <mxGeometry x="20" y="128" width="520" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="i_tlum" value="tlumaczenie.php — AJAX „przetłumacz stronę” + wykrywanie zmian treści" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="grp_inc">
+          <mxGeometry x="20" y="172" width="520" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="i_front" value="front.php — podmiana par na stronie gościa (strtr) + przełącznik PL|EN + cache" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="grp_inc">
+          <mxGeometry x="20" y="216" width="520" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="i_admin" value="admin.php — ekran ustawień (klucz API, model, limit) + „Przetłumacz witrynę”" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#82B366;fontSize=11;" vertex="1" parent="grp_inc">
+          <mxGeometry x="20" y="260" width="520" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="grp_dane" value="dane + higiena" style="swimlane;startSize=26;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontStyle=1;fontSize=13;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="720" y="200" width="390" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="d_slownik" value="dane/slownik-startowy.json — gotowe tłumaczenia w paczce (działa od razu)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_dane">
+          <mxGeometry x="20" y="40" width="350" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="d_uninstall" value="uninstall.php — SPRZĄTA po sobie przy odinstalowaniu (RODO: tabela + wpisy znikają)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;" vertex="1" parent="grp_dane">
+          <mxGeometry x="20" y="94" width="350" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="d_lic" value="LICENSE — GPL v2+ (wieczysta, nie wygasa)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#666666;fontSize=11;" vertex="1" parent="grp_dane">
+          <mxGeometry x="20" y="148" width="350" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e3_main_inc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="main3" target="grp_inc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3_main_dane" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;fontSize=10;" edge="1" parent="1" source="main3" target="grp_dane">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
