@@ -154,9 +154,14 @@ function pnb_pl_ekran_admina() {
 		<hr>
 		<h2><?php esc_html_e( 'Site translation', 'pnb-auto-pl' ); ?></h2>
 		<p><?php
-			/* translators: 1: number of translated phrases, 2: number of manually corrected phrases, 3: number of pages */
-			echo wp_kses( sprintf( __( 'Dictionary: <strong>%1$s</strong> translated phrases (%2$s corrected by hand). Pages to translate: <strong>%3$s</strong>.', 'pnb-auto-pl' ),
-				esc_html( $staty['gotowe'] ), esc_html( $staty['czlowiek'] ), esc_html( count( $strony ) ) ), array( 'strong' => array() ) );
+			// LICZNIK (naprawa 2026-07-10, znalazł Dzidek): pokazywał ROZMIAR witryny (count stron),
+			// więc po pełnym tłumaczeniu dalej straszył „37 do przetłumaczenia". Teraz: zaległości
+			// z listy pnb_pl_nieaktualne (spada do 0), a rozmiar witryny osobno — bez kłamstwa.
+			$zaleglosci = get_option( 'pnb_pl_nieaktualne', array() );
+			$zaleglosci = is_array( $zaleglosci ) ? count( $zaleglosci ) : 0;
+			/* translators: 1: translated phrases, 2: corrected by hand, 3: pages in the site, 4: pages awaiting translation */
+			echo wp_kses( sprintf( __( 'Dictionary: <strong>%1$s</strong> translated phrases (%2$s corrected by hand). Site pages: %3$s, awaiting translation: <strong>%4$s</strong>.', 'pnb-auto-pl' ),
+				esc_html( $staty['gotowe'] ), esc_html( $staty['czlowiek'] ), esc_html( count( $strony ) ), esc_html( $zaleglosci ) ), array( 'strong' => array() ) );
 		?></p>
 		<p>
 			<button type="button" class="button button-primary button-hero" id="pnb-tlumacz-wszystko">
@@ -239,9 +244,13 @@ function pnb_pl_ekran_admina() {
 			}
 			pasek.style.width = '100%';
 			status.textContent = t.gotowe + ' ' + razem + '. ' + t.sprawdz;
-			// wyczyść listę "nieaktualne"
-			fetch(ajax, { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-				body: new URLSearchParams({ action: 'pnb_pl_wyczysc_stale', nonce: nonce }) });
+			// Listę "nieaktualne" zdejmuje SERWER per przetłumaczoną stronę (odporne na przerwanie).
+			// Globalne czyszczenie TYLKO gdy przebieg doszedł do końca (przy stopie limitem zostają
+			// realne zaległości — wcześniej czyściło wszystko i kłamało, naprawa 2026-07-10).
+			if (!limitStop) {
+				fetch(ajax, { method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+					body: new URLSearchParams({ action: 'pnb_pl_wyczysc_stale', nonce: nonce }) });
+			}
 			btn.disabled = false;
 		});
 	})();

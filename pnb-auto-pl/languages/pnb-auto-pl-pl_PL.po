@@ -72,6 +72,9 @@ msgstr "Tłumaczenie witryny"
 msgid "Dictionary: <strong>%1$s</strong> translated phrases (%2$s corrected by hand). Pages to translate: <strong>%3$s</strong>."
 msgstr "Słownik: <strong>%1$s</strong> przetłumaczonych fraz (%2$s poprawionych ręcznie). Stron do przetłumaczenia: <strong>%3$s</strong>."
 
+msgid "Dictionary: <strong>%1$s</strong> translated phrases (%2$s corrected by hand). Site pages: %3$s, awaiting translation: <strong>%4$s</strong>."
+msgstr "Słownik: <strong>%1$s</strong> przetłumaczonych fraz (%2$s poprawionych ręcznie). Stron w witrynie: %3$s, do przetłumaczenia: <strong>%4$s</strong>."
+
 msgid "Translate site to Polish"
 msgstr "Przetłumacz witrynę na polski"
 

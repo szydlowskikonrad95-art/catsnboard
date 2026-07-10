@@ -32,6 +32,11 @@ add_action( 'wp_ajax_pnb_pl_tlumacz_strone', function () {
 	try {
 		$raport = pnb_pl_przetlumacz_html_strony( $html );
 		$raport['url'] = $url;
+		// strona przetłumaczona → zdejmij ją z listy „nieaktualne" (per strona = odporne na przerwanie)
+		$pid = url_to_postid( (string) $url );
+		if ( $pid ) {
+			pnb_pl_zdejmij_nieaktualna( $pid );
+		}
 		wp_send_json_success( $raport );
 	} catch ( \Throwable $e ) {
 		wp_send_json_error( array( 'blad' => __( 'Exception: ', 'pnb-auto-pl' ) . $e->getMessage() ) );
@@ -152,6 +157,25 @@ function pnb_pl_wyczysc_nieaktualne() {
 	delete_option( 'pnb_pl_nieaktualne' );
 }
 
+/*
+ * Zdejmuje JEDNĄ stronę z listy „nieaktualne" — wołane W MOMENCIE jej przetłumaczenia
+ * (naprawa 2026-07-10, znalazł Dzidek: po imporcie pasek straszył „22 strony zmienione",
+ * choć automat wszystko przetłumaczył — save_post DODAWAŁ wpis, a nikt go nie zdejmował.
+ * Zdejmowanie per strona jest też odporne na PRZERWANY pełny przebieg i na stop limitem:
+ * z listy schodzi dokładnie to, co realnie przetłumaczone).
+ */
+function pnb_pl_zdejmij_nieaktualna( $post_id ) {
+	$stale = get_option( 'pnb_pl_nieaktualne', array() );
+	if ( is_array( $stale ) && isset( $stale[ (string) $post_id ] ) ) {
+		unset( $stale[ (string) $post_id ] );
+		if ( ! empty( $stale ) ) {
+			update_option( 'pnb_pl_nieaktualne', $stale, false );
+		} else {
+			delete_option( 'pnb_pl_nieaktualne' );
+		}
+	}
+}
+
 /* ===== AUTO-TŁUMACZENIE SERWEROWE PO ZAPISIE (GŁÓWNY mechanizm) =====
  * Przeglądarkowy watcher zawodził (stare karty). To odpala się W SAMYM zapisie (rest_after_insert
  * = Gutenberg „Zapisz"), na serwerze: renderuje treść TEGO posta (do_blocks → HTML z heroTitle itd.),
@@ -199,6 +223,7 @@ function pnb_pl_auto_po_zapisie( $post ) {
 			return;
 		}
 		pnb_pl_przetlumacz_html_strony( $html ); // segmenty → cache → tylko NOWE do Claude → słownik
+		pnb_pl_zdejmij_nieaktualna( $post->ID ); // przetłumaczone od ręki → nie strasz adminem na liście
 	} catch ( \Throwable $e ) {
 		// nic — zapis ważniejszy niż tłumaczenie; braki dotłumaczy przycisk/następny zapis
 	}
