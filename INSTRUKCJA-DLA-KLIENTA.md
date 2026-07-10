@@ -37,8 +37,15 @@ cokolwiek poszło nie tak, przywracasz kopię i jest jak było.
 1. Zaloguj się: wpisz w przeglądarce **`twojastrona.pl/wp-admin`** → podaj login i hasło
 2. W menu po lewej: **Wtyczki → Dodaj nową** *(Plugins → Add New)*
 3. Na górze: **Wyślij wtyczkę na serwer** *(Upload Plugin)* → **Wybierz plik**
+
+![Wgrywanie wtyczki](zrzuty/01-dodaj-wtyczke.png)
+
 4. Wskaż `pnb-blocks...zip` → **Zainstaluj** → **Włącz**
 5. **Powtórz to samo** z drugim plikiem: `pnb-auto-pl...zip`
+
+Po włączeniu obu — na liście wtyczek zobaczysz je jako **aktywne** (podświetlone):
+
+![Lista wtyczek](zrzuty/02-lista-wtyczek.png)
 
 ✅ Gotowe! Wejdź na swoją stronę (bez `/wp-admin`) — zobaczysz galerię zdjęć kotów,
 kalendarz wydarzeń i przełącznik **PL / EN** w prawym górnym rogu. **Wszystko po polsku od razu.**
@@ -107,6 +114,8 @@ Twoją stronę — bez ręcznego wpisywania. Jak nie chcesz, po prostu tego nie 
 3. **Zapisz**. Od teraz wtyczka **co jakiś czas sama sprawdza** i dodaje nowe wydarzenia
 4. Chcesz sprawdzić od razu? Kliknij **„Sync now"** — pobierze bez czekania
 
+![Ustawienia wydarzeń i e-mail powiadomień](zrzuty/04-ustawienia-wydarzen.png)
+
 **Co automat robi sam (bez Ciebie):**
 - ✅ **Dodaje** nowe wydarzenia + pobiera im zdjęcia
 - ✅ **Tłumaczy** je na polski (jeśli masz wpięty klucz — patrz KROK 5)
@@ -145,6 +154,8 @@ tłumaczyły się same. To „silnik" tłumaczenia — Claude AI. Płacisz tylko
 2. **Wklej klucz** w pole → **Zapisz**
 3. Kliknij **Testuj połączenie** — ma pokazać ✅
 4. Kliknij **„Przetłumacz witrynę"** — dotłumaczy wszystko naraz (pasek pokaże postęp, 1-2 min)
+
+![Ekran ustawień tłumaczenia](zrzuty/03-ustawienia-tlumacz.png)
 
 **Od teraz działa samo:** zmienisz albo dopiszesz tekst → zapisz → polska wersja
 zaktualizuje się sama (zapis potrwa 2-3 sekundy dłużej). Odśwież stronę (F5) żeby zobaczyć.
@@ -199,6 +210,22 @@ Wgraj darmową wtyczkę **„WP Data Access"** — podejrzysz bazę prosto z pan
 - **Dane gości (RODO):** formularz zapisów zbiera imię, e-mail i telefon gościa. Jako właściciel
   strony odpowiadasz za te dane — zadbaj o zgodę na ich przetwarzanie i politykę prywatności
   (standard przy każdym formularzu kontaktowym). Wtyczka po odinstalowaniu sama te dane usuwa.
+
+---
+
+## 🎉 Jak to wygląda u gości
+
+Tak wygląda **kalendarz wydarzeń** ze zdjęciami, filtrami i zapisami:
+
+![Wydarzenia na stronie](zrzuty/07-wydarzenia-front.png)
+
+I **galeria** zdjęć:
+
+![Galeria](zrzuty/08-galeria-front.png)
+
+Gość przełącza stronę na polski jednym kliknięciem (przełącznik **PL | EN** w rogu):
+
+![Strona po polsku](zrzuty/09-strona-pl.png)
 
 ---
 
