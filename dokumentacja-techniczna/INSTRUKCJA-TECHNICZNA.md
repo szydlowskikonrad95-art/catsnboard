@@ -96,6 +96,10 @@ Kluczowe mechanizmy (wszystkie w `modules/importer.php`): **lock** (jeden cykl n
 (0 wydarzeń = nie czyści strony), **alert podejrzanego spadku** (22→2 = pauza wygasania), **dedup** po
 `_pnb_source_id`, **samo-naprawa zdjęć**, poszanowanie ręcznych zmian (`_pnb_locked`, `_pnb_img_removed`).
 
+Mechanizmy są **potwierdzone symulacją na żywym WordPressie** (lock, breaker z eskalacją, puste
+źródło ×3, podejrzany spadek, dead letter) — powtarzalny test: `testy/awarie/test-awarie.php`
+(instrukcja uruchomienia w nagłówku pliku).
+
 ---
 
 ## 4. Baza danych
