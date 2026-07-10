@@ -21,6 +21,7 @@ const PNB_IMP_EXPAND     = 'image,primary_venue,primary_organizer,ticket_availab
 const PNB_IMP_BATCH       = 20;   // ile ID na jedno zapytanie do API
 const PNB_IMP_MAX_NEW     = 5;    // ile NOWYCH dodać w jednym cyklu (bieżące — nie zalewać)
 const PNB_IMP_MAX_FIRST   = 20;   // PIERWSZE napełnienie (świeża instalacja): komplet aktywnych naraz
+const PNB_IMP_FOTO_NA_CYKL = 5;   // ile BRAKUJĄCYCH zdjęć dociągnąć na cykl (samo-naprawa znanych bez foto)
 const PNB_IMP_UA          = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 
 /* ============================ WP-CRON: harmonogram ============================ */
@@ -152,6 +153,8 @@ function pnb_importer_jeden_cykl() {
 	$limit_nowych = empty( $juz_zaimportowane ) ? PNB_IMP_MAX_FIRST : PNB_IMP_MAX_NEW;
 
 	// 2+3. Dedup + zapis. Limit = ile NOWYCH na cykl (pierwsze napełnienie = komplet, potem 5).
+	$foto_dociagniete = 0; // licznik samo-naprawy zdjęć (znane bez foto) w TYM cyklu
+	$foto_porazki     = 0; // ile prób zdjęć PADŁO (będzie w logu — koniec CICHYCH porażek foto)
 	foreach ( $wydarzenia as $w ) {
 		$sid = $w['source_id'];
 		// Dead Letter: to wydarzenie padło za dużo razy → nie próbujemy więcej (do resetu w panelu).
@@ -161,7 +164,32 @@ function pnb_importer_jeden_cykl() {
 
 		$status = pnb_importer_status( $w );
 		if ( 'znane' === $status ) {
-			continue; // już jest, bez zmian
+			// DOCIĄGANIE ZDJĘĆ (2026-07-10, znalezione debug-testem na dziewiczym WP): pobranie
+			// zdjęcia potrafi paść przy tworzeniu (sieć/wygasający URL CDN Eventbrite) i pada CICHO
+			// (pnb_importer_pobierz_obrazek zwraca 0, w logu błędy=0) — a status 'znane' pomijał
+			// wydarzenie NA ZAWSZE → łapka-placeholder zostawała NA STAŁE. Teraz: znane BEZ zdjęcia
+			// dostaje ponowną próbę ze świeżego image_url z API — max PNB_IMP_FOTO_NA_CYKL na cykl
+			// (grzeczność dla źródła), aż do kompletu. Szanuje _pnb_img_removed (decyzję admina).
+			if ( $foto_dociagniete < PNB_IMP_FOTO_NA_CYKL && ! empty( $w['image_url'] ) ) {
+				$id_znanego = pnb_importer_znajdz( $w );
+				if ( $id_znanego
+					&& ! has_post_thumbnail( $id_znanego )
+					&& ! get_post_meta( $id_znanego, '_pnb_img_removed', true ) ) {
+					$att = pnb_importer_pobierz_obrazek( $w['image_url'], $id_znanego );
+					if ( $att ) {
+						set_post_thumbnail( $id_znanego, $att );
+						// ALT = tytuł wydarzenia (SEO/dostępność) — jak przy tworzeniu.
+						$tytul_alt = get_the_title( $id_znanego );
+						if ( '' !== $tytul_alt && '' === (string) get_post_meta( (int) $att, '_wp_attachment_image_alt', true ) ) {
+							update_post_meta( (int) $att, '_wp_attachment_image_alt', sanitize_text_field( $tytul_alt ) );
+						}
+						$foto_dociagniete++;
+					} else {
+						$foto_porazki++; // pobranie/zapis padło — pokaż w logu, nie milcz
+					}
+				}
+			}
+			continue; // już jest, bez zmian (poza ewentualnym dociągnięciem zdjęcia wyżej)
 		}
 		if ( 'nowe' === $status && $stat['nowe'] >= $limit_nowych ) {
 			break; // limit nowych — resztę weźmiemy w następnym cyklu
@@ -217,10 +245,15 @@ function pnb_importer_jeden_cykl() {
 		'zapisano'     => current_time( 'mysql' ),
 	) );
 
+	// Zdjęcia doszły → odśwież cache stron PL (goście nie mogą oglądać łapek z 6h cache, skoro foto już są).
+	if ( $foto_dociagniete > 0 && function_exists( 'pnb_pl_cache_bump' ) ) {
+		pnb_pl_cache_bump();
+	}
 	pnb_importer_log( sprintf(
 		'Cykl: pobrane=%d nowe=%d dodane=%d zaktualizowane=%d wygasłe=%d błędy=%d',
 		$stat['pobrane'], $stat['nowe'], $stat['dodane'], $stat['zaktualizowane'], $stat['wygasle'], $stat['bledy']
-	) );
+	) . ( $foto_dociagniete > 0 ? sprintf( ' zdjęcia=+%d', $foto_dociagniete ) : '' )
+	. ( $foto_porazki > 0 ? sprintf( ' ⚠️ zdjęcia-nieudane=%d (sprawdź uprawnienia uploads / sieć)', $foto_porazki ) : '' ) );
 }
 
 /* ============================ POBIERANIE ZE ŹRÓDŁA ============================ */
