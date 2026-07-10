@@ -6,6 +6,7 @@ Ten folder zawiera pełną dokumentację produktu — dwie ścieżki, zależnie 
 |---|---|---|
 | **[INSTRUKCJA-DLA-KLIENTA.md](../INSTRUKCJA-DLA-KLIENTA.md)** | Właściciel strony (bez wiedzy technicznej) | Instalacja krok po kroku, ze zrzutami, prostym językiem |
 | **[INSTRUKCJA-TECHNICZNA.md](INSTRUKCJA-TECHNICZNA.md)** | Informatyk / osoba wdrażająca | Architektura, separacja plików, baza, wymagania, uwagi |
+| **[AKTUALIZACJE.md](AKTUALIZACJE.md)** | Osoba utrzymująca | Jak wydajemy i dostarczamy nowe wersje, rollback, plan na skalę |
 | **[diagramy/](diagramy/)** | Wszyscy | 4 schematy PNG: architektura, przepływ, pliki wtyczek, odporność |
 
 ## Foldery
