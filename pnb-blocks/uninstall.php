@@ -25,6 +25,14 @@ $opcje = array(
 	'pnb_teksty',             // słownik tekstów rdzenia (czytany w rdzen.php — audyt 2026-07-05)
 	'pnb_kontakt_tel',        // kontakt w sekcji mapy
 	'pnb_kontakt_mail',
+	'pnb_events_hero_id',           // zdjęcie hero kalendarza
+	'pnb_importer_source_url',      // importer: adres źródła wydarzeń
+	'pnb_importer_breaker_do',      // importer: circuit breaker (pauza „do kiedy")
+	'pnb_importer_porazki',         // importer: licznik porażek źródła
+	'pnb_importer_ostatnia_liczba', // importer: liczba wydarzeń z ostatniego cyklu
+	'pnb_importer_dead',            // importer: dead-letter (odłożone wydarzenia)
+	'pnb_importer_log',             // importer: dziennik cykli
+	'pnb_scraper_status',           // importer: status ostatniego syncu (ekran stanu)
 );
 foreach ( $opcje as $o ) {
 	delete_option( $o );

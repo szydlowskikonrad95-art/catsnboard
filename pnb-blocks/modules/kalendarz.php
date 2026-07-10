@@ -1195,7 +1195,7 @@ add_action( 'wp_head', 'pnb_kalendarz_preload_fontow', 1 );
 function pnb_kalendarz_preload_fontow() {
 	// Tylko tam gdzie kalendarz się renderuje (strona z blokiem wydarzeń albo single wydarzenia) —
 	// nie ładujemy fontu priorytetowo na każdej podstronie sklepu klienta.
-	$strona_ev = (int) get_option( 'pnb_events_page_id', 0 );
+	$strona_ev = (int) get_option( 'pnb_wydarzenia_strona', 0 );
 	$na_wydarzeniach = is_singular( 'pnb_wydarzenie' )
 		|| ( $strona_ev && is_page( $strona_ev ) )
 		|| ( is_a( get_post(), 'WP_Post' ) && has_block( 'pnb/wydarzenia', get_post() ) );
@@ -1956,7 +1956,8 @@ function pnb_kalendarz_przyjmij_zapis() {
 	}
 
 	$imie  = isset( $_POST['pnb_imie'] ) ? sanitize_text_field( wp_unslash( $_POST['pnb_imie'] ) ) : '';
-	$email = isset( $_POST['pnb_email'] ) ? sanitize_email( wp_unslash( $_POST['pnb_email'] ) ) : '';
+	// małe litery: dopasowanie RODO po e-mailu nie może zależeć od collation bazy
+	$email = isset( $_POST['pnb_email'] ) ? strtolower( sanitize_email( wp_unslash( $_POST['pnb_email'] ) ) ) : '';
 	$tel   = isset( $_POST['pnb_tel'] ) ? sanitize_text_field( wp_unslash( $_POST['pnb_tel'] ) ) : '';
 	if ( ! $imie || ! is_email( $email ) ) {
 		$wroc( 'blad' );
