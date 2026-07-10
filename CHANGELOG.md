@@ -3,6 +3,14 @@
 Format wg [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/), wersjonowanie [SemVer](https://semver.org/lang/pl/).
 Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../releases).
 
+## [2.3.0] — 2026-07-10
+
+### Dodane
+- Zapisy gości wpięte w natywne narzędzia prywatności WordPressa (Narzędzia → Eksport / Usuwanie
+  danych osobowych) — obsługa żądań RODO po adresie e-mail, przekrojowo przez wszystkie wydarzenia.
+
+Wersje: pnb-blocks 1.11.0 · pnb-auto-pl 0.3.12 · motyw 1.1.13
+
 ## [2.2.3] — 2026-07-10
 
 ### Naprawione
