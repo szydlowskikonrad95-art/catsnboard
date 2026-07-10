@@ -379,7 +379,7 @@ function pnb_galeria_znajdz_handle_po_src( $fragmenty, $wyklucz_prefix = '' ) {
 /* ==== ASSETY: ładowane tylko gdy galeria realnie renderuje (zero narzutu na resztę strony) ==== */
 
 function pnb_galeria_zaladuj_assety( $pula = array(), $pula_moments = array() ) {
-	// CDN z pinem wersji; przed paczką dla klienta → zbundlować lokalnie (RUBRYKA, ograniczenie v1).
+	// Biblioteki bundlowane LOKALNIE w paczce (bez CDN — działa offline, stała wersja).
 	// Prefiks pnb- w handlach: generyczne 'gsap' mogłaby nadpisać inna wtyczka starszą wersją.
 	wp_enqueue_style( 'pnb-fonty', PNB_TOOLKIT_URL . 'assets/fonts/fonts.css', array(), PNB_TOOLKIT_VERSION ); // fonty LOKALNIE (OFL), offline
 	wp_enqueue_style( 'pnb-galeria', PNB_TOOLKIT_URL . 'assets/css/galeria.css', array(), PNB_TOOLKIT_VERSION );

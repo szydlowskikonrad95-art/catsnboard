@@ -1,6 +1,6 @@
 <?php
 /* Moduł KALENDARZ WYDARZEŃ: CPT wydarzenie + karty nadchodzących + zapisy gości (panel+mail) + CSV.
-   Spec: ZROZUMIENIE.md. Miny z audytu: LiteSpeed-nonce (no-cache), wp_mail→spam (zapis nigdy nie blokowany mailem). */
+   Znane miny: LiteSpeed-nonce (no-cache), wp_mail→spam (zapis nigdy nie blokowany mailem). */
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* ==== REJESTRACJA (wspólna dla init i aktywacji — lekcja lifecycle: flush dopiero PO rejestracji) ==== */
@@ -1733,7 +1733,7 @@ function pnb_kalendarz_render_single() {
 	// WYDAJNOŚĆ: wp_get_attachment_image z 'large'+srcset zamiast surowego 'full' (oryginał klienta = MB).
 	$hero_id = (int) get_post_thumbnail_id( $id );
 	// alignfull: na CUDZYM motywie blokowym treść singla siedzi w wąskiej kolumnie motywu
-	// (~640px — „wygląda jak telefon na desktopie", znalazł Dzidek 2026-07-10); klasa alignfull
+	// (~640px — „wygląda jak telefon na desktopie", znalezione w testach 2026-07-10); klasa alignfull
 	// każe motywowi dać sekcji pełną szerokość. Na naszym motywie neutralna (brak kontenera).
 	$out  = '<section class="pnb-events pnb-events--single alignfull">';
 	$out .= '<header class="pnb-evh pnb-evh--single">';
@@ -1752,7 +1752,7 @@ function pnb_kalendarz_render_single() {
 	$out .= '<div class="pnb-evh-grain" aria-hidden="true"></div>';
 	$out .= '<div class="pnb-evh-in">';
 	$out .= '<span class="pnb-ev-eyebrow">' . esc_html( pnb_txt( 'events.single.eyebrow', "Cats'N'Board · Event" ) ) . '</span>';
-	// TYTUŁ: przetłumacz CAŁOŚĆ zanim potniemy na słowa do animacji (2026-07-10, znalazł Dzidek:
+	// TYTUŁ: przetłumacz CAŁOŚĆ zanim potniemy na słowa do animacji (2026-07-10, znalezione w testach:
 	// „Heidi Wrangles Cats DATĘ Documentary"). Pocięte >słowo< łapało błędne pary słowo-po-słowie
 	// (trucizna z pociętego „Save the date”: the→datę), a pełna para tytułu nie miała się jak
 	// dopasować do spanów. Teraz: pełny tytuł PL → tniemy PL na słowa → pary EN nic nie łapią.
@@ -1879,7 +1879,7 @@ add_filter( 'the_content', function ( $tresc ) {
 	return pnb_kalendarz_render_single();
 } );
 
-/* Szablon singla na CUDZYM motywie (rozszerzenie 2026-07-10, znalazł Dzidek na teście
+/* Szablon singla na CUDZYM motywie (rozszerzenie 2026-07-10, znalezione na teście
    „same wtyczki bez motywu": singiel = SKLEJKA — surowy tytuł+zdjęcie+pusty „Written by"
    motywu NAD naszym pełnym layoutem → to samo zdjęcie 2×, H1 2×).
    - Motyw KLASYCZNY (np. BeTheme u klienta): nasz wrapper (get_header/footer) → nagłówek

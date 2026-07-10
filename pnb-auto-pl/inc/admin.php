@@ -154,7 +154,7 @@ function pnb_pl_ekran_admina() {
 		<hr>
 		<h2><?php esc_html_e( 'Site translation', 'pnb-auto-pl' ); ?></h2>
 		<p><?php
-			// LICZNIK (naprawa 2026-07-10, znalazł Dzidek): pokazywał ROZMIAR witryny (count stron),
+			// LICZNIK (naprawa 2026-07-10, znalezione w testach): pokazywał ROZMIAR witryny (count stron),
 			// więc po pełnym tłumaczeniu dalej straszył „37 do przetłumaczenia". Teraz: zaległości
 			// z listy pnb_pl_nieaktualne (spada do 0), a rozmiar witryny osobno — bez kłamstwa.
 			$zaleglosci = get_option( 'pnb_pl_nieaktualne', array() );
