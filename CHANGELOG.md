@@ -3,6 +3,24 @@
 Format wg [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/), wersjonowanie [SemVer](https://semver.org/lang/pl/).
 Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../releases).
 
+## [2.3.1] — 2026-07-10
+
+### Naprawione
+- Słownik startowy zawierał adresy środowiska deweloperskiego — zastąpione neutralną domeną
+  (mechanizm zasiewu bez zmian: przy aktywacji przepisuje domenę na adres strony klienta).
+- Odinstalowanie pnb-blocks nie usuwało części opcji importera (log, breaker, źródło i in.) —
+  lista sprzątania uzupełniona.
+- Eksport RODO: dodane stronicowanie wyników (kontrakt WP Privacy), dopasowanie e-maila
+  niezależne od ustawień bazy (normalizacja do małych liter), myślnik zamiast pustego pola
+  przy trwale usuniętym wydarzeniu.
+- Preload fontów kalendarza czytał niewłaściwą nazwę opcji strony wydarzeń.
+
+### Zmienione
+- README i dokumentacja techniczna uzupełnione o funkcję RODO; nazwy przycisków w instrukcji
+  zgodne 1:1 z interfejsem; instrukcja klienta opisuje obsługę żądań RODO gościa.
+
+Wersje: pnb-blocks 1.11.1 · pnb-auto-pl 0.3.13 · motyw 1.1.13
+
 ## [2.3.0] — 2026-07-10
 
 ### Dodane
