@@ -159,7 +159,7 @@ function pnb_pl_wyczysc_nieaktualne() {
 
 /*
  * Zdejmuje JEDNĄ stronę z listy „nieaktualne" — wołane W MOMENCIE jej przetłumaczenia
- * (naprawa 2026-07-10, znalazł Dzidek: po imporcie pasek straszył „22 strony zmienione",
+ * (naprawa 2026-07-10, znalezione w testach: po imporcie pasek straszył „22 strony zmienione",
  * choć automat wszystko przetłumaczył — save_post DODAWAŁ wpis, a nikt go nie zdejmował.
  * Zdejmowanie per strona jest też odporne na PRZERWANY pełny przebieg i na stop limitem:
  * z listy schodzi dokładnie to, co realnie przetłumaczone).
