@@ -1532,8 +1532,6 @@ function pnb_kalendarz_render() {
 			// Guzik „Sign up" + formularz wyjechały PONIŻEJ karty (rodzeństwo .pnb-ev-card w .pnb-ev-cardwrap)
 			// — patrz blok „ZAPIS POZA KARTĄ" po </article>. Formularz nie ma czego rozpychać, bo nie jest
 			// w karcie. Logika zapisu (form/action/nonce/pola) NIETKNIĘTA.
-			$det_id  = 'pnb-detbox-' . (int) $id;
-			$dojazd  = $it['miejsce'] ? 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $it['miejsce'] ) : '';
 			$out .= '<div class="pnb-ev-cta">';
 			// ── RZĄD GUZIKÓW W KARCIE: zawsze poziomo (flex-wrap — zawija równymi parami gdy ciasno) ──
 			$out .= '<div class="pnb-ev-actrow">';
@@ -1541,9 +1539,10 @@ function pnb_kalendarz_render() {
 			if ( $gcal ) {
 				$out .= '<a class="pnb-ev-gcal" href="' . esc_url( $gcal ) . '" target="_blank" rel="noopener noreferrer">' . pnb_kalendarz_ikona( 'plus' ) . ' ' . esc_html__( 'Add to Google Calendar', 'pnb-toolkit' ) . '</a>';
 			}
-			// „Event details" = guzik-przełącznik (ghost); steruje panelem linków PONIŻEJ (w karcie, drobne linki).
-			$out .= '<button type="button" class="pnb-ev-toggle pnb-ev-detbtn" aria-expanded="false" aria-controls="' . esc_attr( $det_id ) . '">'
-				. '<span>' . esc_html__( 'Event details', 'pnb-toolkit' ) . '</span><span class="pnb-ev-chev" aria-hidden="true">▾</span></button>';
+			// „Event details" = BEZPOŚREDNI link do podstrony wydarzenia (2026-07-10, decyzja Dzidka:
+			// rozsuwak z 2 linkami był zbędnym klikiem — „Wyznacz trasę" i zapis SĄ na podstronie).
+			$out .= '<a class="pnb-ev-detbtn pnb-ev-golink" href="' . esc_url( get_permalink( $id ) ) . '">'
+				. '<span>' . esc_html__( 'Event details', 'pnb-toolkit' ) . '</span><span class="pnb-ev-arrow" aria-hidden="true">→</span></a>';
 			// PRZYCISK EDYCJI dla właściciela (widoczny TYLKO zalogowanemu z prawem edycji — gość go nie widzi).
 			// Natywny get_edit_post_link (wzorzec WP: edycja treści prosto z frontu dla admina).
 			$edit = get_edit_post_link( $id );
@@ -1551,17 +1550,6 @@ function pnb_kalendarz_render() {
 				$out .= '<a class="pnb-ev-edit" href="' . esc_url( $edit ) . '">✎ ' . esc_html__( 'Edit event', 'pnb-toolkit' ) . '</a>';
 			}
 			$out .= '</div>'; // .pnb-ev-actrow
-			// ── Panel „Event details" (rodzeństwo rzędu, rozsuwa się POD nim; nie rusza guzików) ──
-			$out .= '<div class="pnb-ev-panels">';
-			$out .= '<div class="pnb-ev-panel pnb-ev-detpanel" id="' . esc_attr( $det_id ) . '" hidden>';
-			$out .= '<div class="pnb-ev-detacts">';
-			if ( $dojazd ) {
-				$out .= '<a class="pnb-ev-gcal" href="' . esc_url( $dojazd ) . '" target="_blank" rel="noopener noreferrer">' . pnb_kalendarz_ikona( 'pinezka' ) . ' ' . esc_html__( 'Get directions', 'pnb-toolkit' ) . '</a>';
-			}
-			$out .= '<a class="pnb-ev-det pnb-ev-golink" href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html__( 'Open event page', 'pnb-toolkit' ) . '<span class="pnb-ev-arrow" aria-hidden="true">→</span></a>';
-			$out .= '</div>'; // .pnb-ev-detacts
-			$out .= '</div>'; // .pnb-ev-detpanel
-			$out .= '</div>'; // .pnb-ev-panels
 			$out .= '</div>'; // .pnb-ev-cta
 			$out .= '</div>'; // .pnb-ev-main
 			// zdjęcie po prawej (link do singla) — hover-zoom żyje na IMG w masce .pnb-ev-zoom (reveal karty = osobny kanał)

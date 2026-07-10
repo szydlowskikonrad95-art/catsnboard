@@ -292,11 +292,16 @@ body.admin-bar .pnb-ev-chips{top:calc(42px - 1.1rem);}
   transition:background .3s,border-color .3s;}
 .pnb-ev-gcal:hover{background:rgba(163,207,216,.22);border-color:var(--teal-d);color:var(--teal-d);}
 
-/* GUZIK-PRZEŁĄCZNIK „Event details" = ghost (obrys neutralny, nie konkuruje z koralem) */
-.pnb-ev-detbtn{background:transparent;color:var(--ink);border:1.5px solid rgba(45,42,38,.16);
+/* „Event details" = BEZPOŚREDNI LINK do podstrony (był przełącznik panelu; 2026-07-10 decyzja
+   Dzidka — rozsuwak był zbędnym klikiem). Ghost-pill jak dotąd + własny layout
+   (wcześniej dziedziczył go z .pnb-ev-toggle, którym już nie jest). */
+.pnb-ev-detbtn{display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;
+  font-family:'Varela Round',sans-serif;line-height:1;text-decoration:none;
+  background:transparent;color:var(--ink);border:1.5px solid rgba(45,42,38,.16);
   border-radius:100px;padding:.72rem 1.35rem;font-size:.92rem;
   transition:background .3s,border-color .3s;}
 .pnb-ev-detbtn:hover{background:rgba(45,42,38,.05);border-color:rgba(45,42,38,.3);}
+.pnb-ev-detbtn:hover .pnb-ev-arrow{transform:translateX(4px);}
 .pnb-ev-chev{transition:transform .3s var(--ease);}
 .pnb-ev-detbtn[aria-expanded="true"] .pnb-ev-chev{transform:rotate(180deg);}
 
