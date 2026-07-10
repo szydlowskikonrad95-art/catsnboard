@@ -21,7 +21,7 @@ je na polski — bez niczyjej ręki.
 
 Kalendarz wydarzeń ze zdjęciami, filtrami i zapisami — po polsku:
 
-![Wydarzenia na stronie](dokumentacja-techniczna/zrzuty/07-wydarzenia-front.png)
+![Wydarzenia na stronie](zrzuty/07-wydarzenia-front.png)
 
 ---
 
@@ -40,7 +40,7 @@ W folderze **[`dokumentacja-techniczna/`](dokumentacja-techniczna/)** — dwie �
 
 | Dokument | Dla kogo |
 |---|---|
-| **[Instrukcja prosta](dokumentacja-techniczna/INSTRUKCJA-PROSTA.md)** (ze zrzutami krok po kroku) | Właściciel strony, bez wiedzy technicznej |
+| **[Instrukcja dla klienta](INSTRUKCJA-DLA-KLIENTA.md)** (ze zrzutami krok po kroku) | Właściciel strony, bez wiedzy technicznej |
 | **[Instrukcja techniczna](dokumentacja-techniczna/INSTRUKCJA-TECHNICZNA.md)** (architektura, pliki, baza) | Informatyk / osoba wdrażająca |
 | **[Diagramy](dokumentacja-techniczna/diagramy/)** (architektura · przepływ · pliki · odporność) | Jak działa system + z czego zbudowany |
 
@@ -57,4 +57,4 @@ W folderze **[`dokumentacja-techniczna/`](dokumentacja-techniczna/)** — dwie �
 
 > ⚠️ Jeśli na stronie jest WPML — wyłącz go przed włączeniem Polskiej Wersji (szczegóły w instrukcji).
 
-Pełna instalacja krok po kroku ze zrzutami: **[instrukcja prosta](dokumentacja-techniczna/INSTRUKCJA-PROSTA.md)**.
+Pełna instalacja krok po kroku ze zrzutami: **[instrukcja dla klienta](INSTRUKCJA-DLA-KLIENTA.md)**.
