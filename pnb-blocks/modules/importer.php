@@ -28,7 +28,7 @@ const PNB_IMP_UA          = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 
 
 // Własny interwał „co 10 minut".
 add_filter( 'cron_schedules', function ( $sched ) {
-	$sched['pnb_co_10_min'] = array( 'interval' => 600, 'display' => __( 'Every 10 minutes (Pawsnboard importer)', 'pnb-toolkit' ) );
+	$sched['pnb_co_10_min'] = array( 'interval' => 600, 'display' => __( 'Every 10 minutes (PNB importer)', 'pnb-toolkit' ) );
 	return $sched;
 } );
 

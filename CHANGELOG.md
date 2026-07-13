@@ -3,6 +3,12 @@
 Format wg [Keep a Changelog](https://keepachangelog.com/pl/1.1.0/), wersjonowanie [SemVer](https://semver.org/lang/pl/).
 Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../releases).
 
+## [Unreleased]
+
+### Zmienione
+- Neutralna etykieta harmonogramu importera w narzędziach WordPressa: „Every 10 minutes
+  (PNB importer)" — bez nazwy konkretnej strony (kosmetyka, nie zmienia działania).
+
 ## [2.3.4] — 2026-07-10
 
 ### Naprawione
