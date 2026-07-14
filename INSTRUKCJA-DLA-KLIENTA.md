@@ -227,6 +227,10 @@ i eksportować kopię).
 - **Wyłączenie ≠ usunięcie:** **Deactivate** (wyłącz) niczego nie kasuje — włączysz z powrotem
   i wszystko wróci. **Delete** (usuń) kasuje dane wtyczki NA STAŁE — w tym listę zapisanych
   gości. Przed usunięciem wyeksportuj gości do Excela (przycisk masz w wydarzeniu).
+  Przy usunięciu znikają też rzeczy, które wtyczka **sama stworzyła na start** (podstrony
+  Events i Gallery oraz 3 przykładowe wydarzenia) — ale **tylko jeśli ich nie zmieniałeś**.
+  Wszystko, co edytowałeś lub dodałeś sam (Twoje wydarzenia, zmienione strony), zostaje.
+  Zdjęcia w Bibliotece mediów zawsze zostają.
 - **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to przypadłość WordPressa, nie wtyczek.
   Jak coś pójdzie nie tak: nie zapisuj, tylko odśwież stronę edytora.
 - **Dane gości (RODO):** formularz zapisów zbiera imię, e-mail i telefon gościa. Jako właściciel

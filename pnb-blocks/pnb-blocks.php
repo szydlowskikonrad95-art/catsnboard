@@ -244,6 +244,9 @@ function pnb_blocks_zasiej_demo_wydarzenia() {
 		update_post_meta( $id, '_pnb_event_place', "Cats'N'Board" );
 		update_post_meta( $id, '_pnb_event_limit', (int) $w['limit'] );
 		update_post_meta( $id, '_pnb_event_cat', $w['cat'] );
+		// Odcisk palca DEMA (2026-07-14, recenzja): uninstall kasuje wydarzenie demo TYLKO gdy
+		// hash się zgadza (klient nic nie zmienił). Edytowane demo = treść klienta, zostaje.
+		update_post_meta( $id, '_pnb_demo_hash', md5( $w['title'] . '|' . $w['content'] ) );
 		$foto = pnb_blocks_demo_zalacznik( $w['foto'] );
 		if ( $foto ) {
 			set_post_thumbnail( $id, $foto );
