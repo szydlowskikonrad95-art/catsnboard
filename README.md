@@ -94,5 +94,5 @@ testy/                    golden-test (bash) + awarie/ (symulacje trybów awarii
 > **Brak build-stepu.** Kod PHP edytuje się wprost w folderach wtyczek — nie ma `npm install`
 > ani bundlera. Biblioteki (GSAP, Lenis) i fonty są bundlowane lokalnie w repo.
 
-**Licencja:** kod obu wtyczek i motywu — **GPL-2.0-or-later** (pełny tekst w `LICENSE` każdego
-komponentu; noty bibliotek w `CREDITS.md`).
+**Licencja:** kod obu wtyczek i motywu — **GPL-2.0-or-later** (pełny tekst: `LICENSE` w głównym
+folderze repozytorium oraz w każdym komponencie; noty bibliotek w `CREDITS.md`).
