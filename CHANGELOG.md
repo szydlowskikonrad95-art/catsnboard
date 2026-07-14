@@ -18,6 +18,11 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
   WordPressa — INSERT IGNORE): równoczesny cron i przycisk „Sync now" nie mogą już wejść
   w import podwójnie i tworzyć duplikatów wydarzeń. Dowód: test wyścigu 15 rund × 2
   równoległe procesy — za każdym razem dokładnie jeden zwycięzca.
+- Odinstalowanie sprząta teraz także to, co wtyczka sama stworzyła przy aktywacji —
+  podstrony Events/Gallery i 3 przykładowe wydarzenia — ale **wyłącznie w stanie
+  nietkniętym** (jakakolwiek edycja klienta = treść zostaje). Wydarzenia własne
+  i zaimportowane oraz zdjęcia w mediach — bez zmian, zostają. CI dodatkowo sprawdza
+  teraz składnię na PHP 7.4 oraz 8.2–8.5 (matrix).
 
 ## [2.3.4] — 2026-07-10
 
