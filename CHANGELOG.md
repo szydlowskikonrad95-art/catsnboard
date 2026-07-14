@@ -13,6 +13,12 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 - Neutralna etykieta harmonogramu importera w narzędziach WordPressa: „Every 10 minutes
   (PNB importer)" — bez nazwy konkretnej strony (kosmetyka, nie zmienia działania).
 
+### Naprawione
+- Blokada „jeden cykl importu naraz" jest teraz naprawdę atomowa (wzorzec z rdzenia
+  WordPressa — INSERT IGNORE): równoczesny cron i przycisk „Sync now" nie mogą już wejść
+  w import podwójnie i tworzyć duplikatów wydarzeń. Dowód: test wyścigu 15 rund × 2
+  równoległe procesy — za każdym razem dokładnie jeden zwycięzca.
+
 ## [2.3.4] — 2026-07-10
 
 ### Naprawione

@@ -48,6 +48,33 @@ function pnb_importer_odplanuj() {
 // Hook cronu → jeden cykl.
 add_action( 'pnb_importer_cykl', 'pnb_importer_jeden_cykl' );
 
+/**
+ * Atomowa blokada „jeden cykl importu naraz" — wzorzec z rdzenia WP (WP_Upgrader::create_lock).
+ *
+ * Surowy INSERT IGNORE: gdy wiersz locka już istnieje, baza zwraca 0 zmienionych wierszy —
+ * przegrany wyścigu WIE, że przegrał. ⚠️ add_option NIE nadaje się na mutex: w rdzeniu to
+ * INSERT ... ON DUPLICATE KEY UPDATE, więc przegrany nadpisuje wartość i też dostaje sukces.
+ * Opcja trzyma czas ZAŁOŻENIA locka; ważność (TTL) liczona przy odczycie — zawieszony cykl
+ * nie blokuje importu na zawsze. Zwolnienie: delete_option (shutdown w cyklu). 2026-07-14.
+ *
+ * @param int $ttl Ważność cudzego locka w sekundach (domyślnie 300 = 5 min).
+ * @return bool True = lock nasz, można importować; false = inny cykl trwa.
+ */
+function pnb_importer_zloz_lock( $ttl = 300 ) {
+	global $wpdb;
+	$lock = 'pnb_importer_lock';
+	$sql  = "INSERT IGNORE INTO `{$wpdb->options}` (`option_name`, `option_value`, `autoload`) VALUES (%s, %s, 'off') /* LOCK */";
+	if ( $wpdb->query( $wpdb->prepare( $sql, $lock, (string) time() ) ) ) {
+		return true; // wiersz wstawiony = lock nasz
+	}
+	$od_kiedy = (int) get_option( $lock, 0 );
+	if ( $od_kiedy + $ttl > time() ) {
+		return false; // cudzy lock, wciąż ważny
+	}
+	delete_option( $lock ); // wygasły — spróbuj przejąć…
+	return (bool) $wpdb->query( $wpdb->prepare( $sql, $lock, (string) time() ) ); // …atomowo (ktoś mógł być szybszy)
+}
+
 /* ============================ GŁÓWNY CYKL ============================ */
 
 /**
@@ -61,29 +88,19 @@ function pnb_importer_jeden_cykl() {
 	}
 
 	// LOCK ANTY-DUPLIKAT: tylko JEDEN cykl importu naraz. Bez tego dwa cykle nakładające się w czasie
-	// (np. WP-Cron + wizyta gościa w tej samej sekundzie) oba czytały "czy wydarzenie istnieje?" ZANIM
-	// którykolwiek zapisał → oba widziały "nie ma" → oba dodawały → DUPLIKATY (ten sam source_id 2×).
-	// add_option zwraca false gdy opcja już istnieje = atomowa blokada (bezpieczniejsza niż get+set).
-	// TTL 5 min: zawieszony cykl sam zwalnia lock (nie blokuje importu na zawsze). 2026-07-09.
-	$lock = 'pnb_importer_lock';
-	$teraz = time();
-	$zajety = (int) get_option( $lock, 0 );
-	if ( $zajety > $teraz ) {
-		return; // inny cykl trwa (lock jeszcze ważny) → pomiń, żeby nie dublować
-	}
-	// ustaw lock na 5 min (autoload=false — nie ładuj przy każdym żądaniu)
-	if ( false === get_option( $lock, false ) ) {
-		add_option( $lock, $teraz + 300, '', false );
-	} else {
-		update_option( $lock, $teraz + 300, false );
+	// (WP-Cron co 10 min × przycisk „Sync now" w adminie × zewnętrzne budzenie crona) oba czytały
+	// "czy wydarzenie istnieje?" ZANIM którykolwiek zapisał → oba dodawały → DUPLIKATY (source_id 2×).
+	// Blokada atomowa wzorcem rdzenia WP — szczegóły w pnb_importer_zloz_lock(). 2026-07-14.
+	if ( ! pnb_importer_zloz_lock() ) {
+		return; // inny cykl trwa → pomiń, żeby nie dublować
 	}
 	// ZWOLNIENIE LOCKA gwarantowane — register_shutdown_function odpali się niezależnie jak funkcja
 	// wyjdzie (return w breakerze/błędzie/końcu, wyjątek, nawet fatal). Bez tego którykolwiek wczesny
 	// return zostawiłby lock i blokował import do wygaśnięcia TTL (5 min). Tak lock trwa dokładnie tyle
 	// ile cykl. delete_option = zwolnij; guard na wypadek gdyby WP już był w shutdown.
-	register_shutdown_function( function () use ( $lock ) {
+	register_shutdown_function( function () {
 		if ( function_exists( 'delete_option' ) ) {
-			delete_option( $lock );
+			delete_option( 'pnb_importer_lock' );
 		}
 	} );
 
