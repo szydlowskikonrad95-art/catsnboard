@@ -5,13 +5,7 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
-### Dodane
-- Kopia pełnego tekstu licencji GPL-2.0 w głównym folderze repozytorium (`LICENSE`) —
-  GitHub pokazuje teraz licencję na stronie repo. Zawartość paczki i wersje wtyczek bez zmian.
-
-### Zmienione
-- Neutralna etykieta harmonogramu importera w narzędziach WordPressa: „Every 10 minutes
-  (PNB importer)" — bez nazwy konkretnej strony (kosmetyka, nie zmienia działania).
+## [2.3.5] — 2026-07-14
 
 ### Naprawione
 - Blokada „jeden cykl importu naraz" jest teraz naprawdę atomowa (wzorzec z rdzenia
@@ -21,8 +15,13 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 - Odinstalowanie sprząta teraz także to, co wtyczka sama stworzyła przy aktywacji —
   podstrony Events/Gallery i 3 przykładowe wydarzenia — ale **wyłącznie w stanie
   nietkniętym** (jakakolwiek edycja klienta = treść zostaje). Wydarzenia własne
-  i zaimportowane oraz zdjęcia w mediach — bez zmian, zostają. CI dodatkowo sprawdza
-  teraz składnię na PHP 7.4 oraz 8.2–8.5 (matrix).
+  i zaimportowane oraz zdjęcia w mediach — bez zmian, zostają.
+
+### Dodane
+- Kopia pełnego tekstu licencji GPL-2.0 w głównym folderze repozytorium (`LICENSE`) —
+  GitHub pokazuje teraz licencję na stronie repo.
+- CI sprawdza składnię PHP na wielu wersjach: 7.4 oraz 8.2–8.5 (matrix) — łapie problemy
+  na wersjach, na których realnie działają dzisiejsze hostingi.
 
 ## [2.3.4] — 2026-07-10
 
