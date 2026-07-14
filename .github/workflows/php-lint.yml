@@ -3,6 +3,8 @@ name: PHP lint
 # Sprawdza składnię PHP obu wtyczek przy każdym push i pull requeście.
 # Łapie literówki/błędy składni (fatal error) ZANIM trafią na main.
 # Lekki: sam `php -l`, bez composera/bazy — sekundy.
+# MATRIX (z recenzji 2026-07-14): 7.4 = strażnik minimalnej zgodności (Requires PHP wtyczek),
+# 8.2–8.5 = fatalne/nowa składnia na wersjach, na których realnie chodzą dzisiejsze hostingi.
 
 on:
   push:
@@ -13,13 +15,18 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.2', '8.3', '8.4', '8.5']
+    name: lint (PHP ${{ matrix.php }})
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '${{ matrix.php }}'
 
       - name: Lint składni PHP (pnb-blocks + pnb-auto-pl + testy)
         run: |
