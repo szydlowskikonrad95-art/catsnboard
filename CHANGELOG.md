@@ -5,6 +5,10 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+### Dodane
+- Kopia pełnego tekstu licencji GPL-2.0 w głównym folderze repozytorium (`LICENSE`) —
+  GitHub pokazuje teraz licencję na stronie repo. Zawartość paczki i wersje wtyczek bez zmian.
+
 ### Zmienione
 - Neutralna etykieta harmonogramu importera w narzędziach WordPressa: „Every 10 minutes
   (PNB importer)" — bez nazwy konkretnej strony (kosmetyka, nie zmienia działania).
