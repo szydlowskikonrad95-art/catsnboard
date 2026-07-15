@@ -1,7 +1,13 @@
 <?php
 /*
- * SPRZĄTANIE przy odinstalowaniu (RODO + higiena): tabela słownika, opcje, klucz API, transienty.
- * Odpala się TYLKO gdy właściciel usuwa wtyczkę w panelu (WP wywołuje ten plik sam).
+ * SPRZĄTANIE przy odinstalowaniu (RODO + higiena). Odpala się TYLKO gdy właściciel usuwa wtyczkę
+ * w panelu (WP wywołuje ten plik sam).
+ *
+ * CO KASUJEMY (stan na v2.4.1 — lista musi być KOMPLETNA, patrz bramka niżej):
+ *  - tabelę słownika (+ stare tabele prototypu v0.1),
+ *  - WSZYSTKIE opcje wtyczki — w tym KLUCZE API OBU silników (Claude i Gemini): sekrety klienta
+ *    nie mogą zostać w bazie po usunięciu narzędzia,
+ *  - transienty wtyczki (cache par + cache stron PL) — z escapowanym LIKE, żeby nie tknąć cudzych.
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -15,18 +21,55 @@ $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}pnb_slownik_en_pl" ); // phpc
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}pnb_auto_pl" );       // phpcs:ignore WordPress.DB
 $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}pnb_auto_pl_cache" ); // phpcs:ignore WordPress.DB
 
-// opcje (w tym KLUCZ API — sekret klienta nie zostaje w bazie)
+/*
+ * OPCJE — w tym KLUCZE API obu silników (sekrety klienta NIE zostają w bazie).
+ *
+ * ⚠️ ŻELAZNA ZASADA (lekcja z recenzji 2026-07-15): dodajesz opcję gdziekolwiek w kodzie →
+ * DOPISZ JĄ TUTAJ w tym samym PR. Recenzent wyłapał, że silnik Gemini (v2.4.0) dodał 6 opcji,
+ * a uninstall nie znał ŻADNEJ — klucz API klienta zostawał w bazie po usunięciu wtyczki.
+ *
+ * 🛡️ NIE MUSISZ JUŻ O TYM PAMIĘTAĆ — pilnuje tego AUTOMAT: `testy/straznik-sprzatania.sh`
+ * (job „strażnik sprzątania" w CI, leci przy każdym PR). Zapiszesz opcję i nie dopiszesz jej
+ * tutaj → CI nie przepuści zmiany i wypisze jej nazwę.
+ * Wcześniej stała tu instrukcja „uruchom ten grep przed wydaniem" — czyli ludzka pamięć.
+ * Dokładnie ona zawiodła przy Gemini, dlatego bramka jest teraz maszyną, a nie notatką.
+ * Sprawdzić strażnika ręcznie: `bash testy/straznik-sprzatania.sh`
+ */
 foreach ( array(
-	'pnb_auto_pl_klucz',
+	// --- silnik Claude ---
+	'pnb_auto_pl_klucz',              // KLUCZ API Anthropic (sekret!)
 	'pnb_auto_pl_model',
 	'pnb_auto_pl_limit_znakow',
-	'pnb_pl_licznik',
+	'pnb_pl_licznik',                 // licznik znaków/dzień
+	// --- silnik Gemini (v2.4.0) ---
+	'pnb_auto_pl_gemini_klucz',       // KLUCZ API Google (sekret!)
+	'pnb_auto_pl_gemini_model',
+	'pnb_auto_pl_gemini_limit_rpd',
+	'pnb_pl_gemini_licznik',          // licznik zapytań/dobę
+	'pnb_pl_gemini_ostatnie',         // znacznik throttle RPM
+	// --- wspólne ---
+	'pnb_auto_pl_silnik',             // wybór silnika (claude/gemini)
 	'pnb_pl_nieaktualne',
-	'pnb_pl_cache_wersja',      // licznik wersji cache stron PL (front.php)
-	'pnb_pl_cache_kod_wersja',  // wersja wtyczki przy ostatnim czyszczeniu cache (front.php)
+	'pnb_pl_cache_wersja',            // licznik wersji cache stron PL (front.php)
+	'pnb_pl_cache_kod_wersja',        // wersja wtyczki przy ostatnim czyszczeniu cache (front.php)
 ) as $opcja ) {
 	delete_option( $opcja );
 }
 
-// transienty (cache par + stare pnb_cs_*)
-$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_pnb_%' OR option_name LIKE '_transient_timeout_pnb_%'" ); // phpcs:ignore WordPress.DB
+/*
+ * TRANSIENTY (cache par „pnb_pl_pary" + cache stron PL „pnb_plc_<hash>").
+ *
+ * ⚠️ POPRAWKA 2026-07-15 (recenzja kolegi): było `LIKE '_transient_pnb_%'` — BEZ escape.
+ * W SQL podkreślnik `_` w LIKE to WILDCARD („dowolny pojedynczy znak"), nie dosłowny znak.
+ * Wzorzec łapał więc szerzej niż nasze transienty i mógł skasować CUDZE dane (innej wtyczki).
+ *
+ * WZORZEC Z RDZENIA WORDPRESSA (wp-includes/option.php:1645-1655, funkcja delete_expired_transients):
+ * `$wpdb->prepare(... LIKE %s ..., $wpdb->esc_like( '_transient_' ) . '%')`
+ * — esc_like() = addcslashes($text,'_%\\') escapuje `_` i `%`, znak `%` doklejamy PO escapowaniu.
+ * Kopiujemy dokładnie tę metodę — to sposób twórców WP, nie nasz wymysł.
+ */
+$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+	$wpdb->esc_like( '_transient_pnb_' ) . '%',
+	$wpdb->esc_like( '_transient_timeout_pnb_' ) . '%'
+) );

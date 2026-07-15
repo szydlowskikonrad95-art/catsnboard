@@ -137,8 +137,18 @@ function pnb_pl_pary_do_podmiany() {
 		}
 		$typ = (string) $w->block_type;
 		if ( 'link' === $typ ) {
-			// zapis dosłowny — już pełny 'href="..."'
-			$pary[ $w->original ] = $w->translated;
+			/*
+			 * Zapis dosłowny — para NIESIE własną kotwicę: pełne 'href="..."'.
+			 * ⚠️ WALIDACJA (recenzja 2026-07-15): wcześniej kod ZAKŁADAŁ, że tak jest, i wpisywał
+			 * parę na ślepo. To była JEDYNA para bez kotwicy w całym słowniku — gdyby kiedykolwiek
+			 * (błąd zapisu, ręczna edycja bazy, migracja) trafił tu zwykły tekst, strtr podmieniłby
+			 * go w CAŁYM dokumencie — dokładnie katastrofa „in"→„w" z 2026-07-05 (<link> → <lwk).
+			 * Teraz: sprawdzamy zamiast zakładać. Para bez href=" jest pomijana (bezpieczniej niż
+			 * ślepa podmiana; brak tłumaczenia linku = link zostaje EN, nic się nie psuje).
+			 */
+			if ( 0 === strpos( $w->original, 'href="' ) && 0 === strpos( $w->translated, 'href="' ) ) {
+				$pary[ $w->original ] = $w->translated;
+			}
 		} elseif ( false === strpos( $w->original, '<' ) && false === strpos( $w->original, '"' )
 			&& false === strpos( $w->translated, '"' ) ) {
 			// CZYSTY TEKST (bez tagów/cudzysłowów) → forma zawartości elementu ZAWSZE.

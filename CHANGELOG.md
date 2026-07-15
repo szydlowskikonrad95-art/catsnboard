@@ -5,6 +5,22 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+## [2.4.1] — 2026-07-15
+
+### Naprawione
+- **Klucz do tłumaczenia zostawał w bazie po usunięciu wtyczki.** Po dodaniu darmowego silnika
+  Gemini (v2.4.0) odinstalowanie Polskiej Wersji nie kasowało jego klucza ani ustawień — klucz
+  (Twój sekret) zostawał w bazie strony na zawsze. Teraz usuwane są **klucze obu silników**
+  i wszystkie ustawienia. Wyłapał to kolega-recenzent.
+- **Sprzątanie pamięci podręcznej mogło tknąć dane innych wtyczek.** Wzorzec wyszukiwania przy
+  odinstalowaniu był zbyt szeroki (podkreślnik w SQL działa jak „dowolny znak"). Poprawione
+  wzorcem z rdzenia WordPressa — teraz kasujemy wyłącznie własne wpisy.
+- **Zabezpieczenie tłumaczenia linków:** wtyczka sprawdza teraz, że wpis jest naprawdę adresem
+  (`href=`), zamiast to zakładać. Chroni przed sytuacją, w której błędny wpis mógłby podmienić
+  tekst w całej stronie (zgłoszone przez recenzenta przy okazji przeglądu kodu).
+- Dokumentacja i opisy zgodne z kodem: mówią teraz wprost, że przy odinstalowaniu znikają klucze
+  obu silników (wcześniej opis wspominał tylko o kluczu Claude — po dodaniu Gemini przestał być prawdą).
+
 ## [2.4.0] — 2026-07-15
 
 ### Zmienione

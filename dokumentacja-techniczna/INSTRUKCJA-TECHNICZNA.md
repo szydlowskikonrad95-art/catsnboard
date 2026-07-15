@@ -96,7 +96,7 @@ logowane (`pnb_importer_log`). Zero ręcznej ingerencji.
 | `inc/front.php` | Podmiana par na stronie gościa (`strtr`), przełącznik PL\|EN, cache przetłumaczonego HTML |
 | `inc/admin.php` | Ekran ustawień (klucz API, model, limit) + „Przetłumacz witrynę" |
 | `dane/slownik-startowy.json` | Gotowe tłumaczenia w paczce — polski działa od razu po instalacji |
-| `uninstall.php` | **RODO:** przy odinstalowaniu usuwa tabelę słownika i wpisy |
+| `uninstall.php` | **RODO + higiena sekretów:** przy odinstalowaniu usuwa tabelę słownika, **wszystkie opcje wtyczki — w tym KLUCZE API obu silników** (Claude `pnb_auto_pl_klucz` i Gemini `pnb_auto_pl_gemini_klucz`) oraz transienty (LIKE **escapowany** przez `$wpdb->esc_like()` — wzorzec z rdzenia WP, żeby nie tknąć cudzych). ⚠️ Dodajesz opcję w kodzie → dopisz ją tam w tym samym PR (bramka: grep w komentarzu pliku) |
 | `LICENSE` | GPL-2.0-or-later |
 
 **Model tłumaczenia:** treść źródłowa jest angielska (fundament). Wtyczka buduje z niej polską wersję
