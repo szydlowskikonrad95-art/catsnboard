@@ -5,6 +5,12 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+### Naprawione
+- **Kilkadziesiąt tekstów wtyczki zostawało po angielsku mimo polskiej wersji strony.** Najbardziej
+  widoczne dla gościa: zasady zwrotów na karcie wydarzenia („Refunds up to 1 day before the event"
+  zamiast „Zwroty do 1 dnia przed wydarzeniem"). Dotyczyło też panelu (etykiety przy edycji wydarzenia
+  i ustawieniach importera). Uzupełniono 58 brakujących tłumaczeń — teraz i panel, i strona są po polsku.
+
 ### Dodane
 - **Darmowy silnik tłumaczenia — Google Gemini (bez karty kredytowej).** W ustawieniach wtyczki
   „Polska wersja" jest teraz przełącznik silnika: **Claude** (płatny, grosze — najlepsza polszczyzna)

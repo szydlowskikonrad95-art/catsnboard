@@ -712,3 +712,179 @@ msgstr "Poprzednia strona"
 
 msgid "Next page"
 msgstr "Następna strona"
+
+# --- Uzupełnienie 2026-07-15: teksty które nie miały tłumaczenia (audyt i18n) ---
+
+msgid "Added"
+msgstr "Dodano"
+
+msgid "Age"
+msgstr "Wiek"
+
+msgid "ask your host to add a cron job hitting"
+msgstr "poproś hosting o dodanie zadania cron wywołującego"
+
+msgid "Change image"
+msgstr "Zmień obraz"
+
+msgid "Check status"
+msgstr "Sprawdź status"
+
+msgid "Choose header image"
+msgstr "Wybierz obraz nagłówka"
+
+msgid "Choose image"
+msgstr "Wybierz obraz"
+
+msgid "Demo photos from the theme — edit this page and use “Choose photos” to show your own."
+msgstr "Zdjęcia demonstracyjne z motywu — edytuj tę stronę i użyj „Wybierz zdjęcia”, aby pokazać własne."
+
+msgid "Duration (min)"
+msgstr "Czas trwania (min)"
+
+msgid "e.g. 20 USD, Free, £15"
+msgstr "np. 20 PLN, Bezpłatnie, 50 PLN"
+
+msgid "Errors"
+msgstr "Błędy"
+
+msgid "Event importer status"
+msgstr "Status importera wydarzeń"
+
+msgid "Event importer stopped:"
+msgstr "Importer wydarzeń zatrzymany:"
+
+msgid "Event source (Eventbrite URL)"
+msgstr "Źródło wydarzeń (URL Eventbrite)"
+
+msgid "Event source returned far fewer events than usual — it may have changed. Expiry is paused for safety."
+msgstr "Źródło zwróciło znacznie mniej wydarzeń niż zwykle — mogło ulec zmianie. Wygasanie wstrzymano dla bezpieczeństwa."
+
+msgid "Events page header image"
+msgstr "Obraz nagłówka strony wydarzeń"
+
+msgid "every 10 minutes — or use a free service like cron-job.org to visit that URL. No code needed."
+msgstr "co 10 minut — lub użyj darmowej usługi typu cron-job.org, aby odwiedzać ten URL. Nie wymaga kodowania."
+
+msgid "Every 10 minutes (PNB importer)"
+msgstr "Co 10 minut (importer PNB)"
+
+msgid "Expired→trash"
+msgstr "Wygasłe→kosz"
+
+msgid "Extra details (optional — shown on the event page)"
+msgstr "Dodatkowe szczegóły (opcjonalnie — widoczne na stronie wydarzenia)"
+
+msgid "Fetched"
+msgstr "Pobrano"
+
+msgid "For clockwork timing (optional):"
+msgstr "Dla precyzyjnego taktowania (opcjonalnie):"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Full address (for the map / directions)"
+msgstr "Pełny adres (do mapy / wskazówek dojazdu)"
+
+msgid "How does the 10-minute timing work? (important)"
+msgstr "Jak działa 10-minutowe taktowanie? (ważne)"
+
+msgid "Imported event"
+msgstr "Zaimportowane wydarzenie"
+
+msgid "Leave empty if not applicable. Type \"Free\" for free events."
+msgstr "Pozostaw puste, jeśli nie dotyczy. Wpisz „Bezpłatnie” dla darmowych wydarzeń."
+
+msgid "New event sign-up.\\n\\nName: %1\\$s\\nE-mail: %2\\$s\\nPhone: %3\\$s\\nEvent: %4\\$s (%5\\$s)\\n\\nFull list: dashboard → Events."
+msgstr "Nowy zapis na wydarzenie.\\n\\nImię i nazwisko: %1\\$s\\nE-mail: %2\\$s\\nTelefon: %3\\$s\\nWydarzenie: %4\\$s (%5\\$s)\\n\\nPełna lista: kokpit → Wydarzenia."
+
+msgid "No photos chosen yet — the page temporarily shows the theme’s demo cats. Click “Choose photos” to use your own."
+msgstr "Nie wybrano jeszcze zdjęć — strona tymczasowo pokazuje kocie zdjęcia demonstracyjne motywu. Kliknij „Wybierz zdjęcia”, aby użyć własnych."
+
+msgid "On site"
+msgstr "Na miejscu"
+
+msgid "Online"
+msgstr "Online"
+
+msgid "Parking"
+msgstr "Parking"
+
+msgid "Paste an Eventbrite listing URL. The importer checks it every 10 minutes and adds new events automatically. Leave empty to turn the importer off."
+msgstr "Wklej URL listy Eventbrite. Importer sprawdza go co 10 minut i automatycznie dodaje nowe wydarzenia. Pozostaw puste, aby wyłączyć importer."
+
+msgid "Price"
+msgstr "Cena"
+
+msgid "Refunds up to 1 day before"
+msgstr "Zwroty do 1 dnia przed"
+
+msgid "Refunds up to 1 day before the event"
+msgstr "Zwroty do 1 dnia przed wydarzeniem"
+
+msgid "Refunds up to 30 days before"
+msgstr "Zwroty do 30 dni przed"
+
+msgid "Refunds up to 30 days before the event"
+msgstr "Zwroty do 30 dni przed wydarzeniem"
+
+msgid "Refunds up to 7 days before"
+msgstr "Zwroty do 7 dni przed"
+
+msgid "Refunds up to 7 days before the event"
+msgstr "Zwroty do 7 dni przed wydarzeniem"
+
+msgid "Run one import cycle right now instead of waiting."
+msgstr "Uruchom cykl importu teraz, zamiast czekać."
+
+msgid "(set by the importer — shown as the \"View event & tickets\" button)"
+msgstr "(ustawiane przez importera — wyświetlane jako przycisk „Zobacz wydarzenie i bilety”)"
+
+msgid "Street, city, postcode"
+msgstr "Ulica, miasto, kod pocztowy"
+
+msgid "Strip 1 (flows right →)"
+msgstr "Pasek 1 (płynie w prawo →)"
+
+msgid "Strip 2 (flows left ←)"
+msgstr "Pasek 2 (płynie w lewo ←)"
+
+msgid "Sudden drop in event count — the source may have changed. Expiry paused for safety."
+msgstr "Nagły spadek liczby wydarzeń — źródło mogło ulec zmianie. Wygasanie wstrzymano dla bezpieczeństwa."
+
+msgid "Sync everything with the source again (discard my manual title/description)"
+msgstr "Synchronizuj wszystko ponownie ze źródłem (odrzuć mój ręczny tytuł/opis)"
+
+msgid "Sync now (test)"
+msgstr "Synchronizuj teraz (test)"
+
+msgid "The big background image at the top of your Events page. Choose your own photo so it always looks the way you want. Leave empty and the page will use the photo of the next upcoming event instead."
+msgstr "Duży obraz tła na górze strony wydarzeń. Wybierz własne zdjęcie, aby zawsze wyglądało tak, jak chcesz. Pozostaw puste, a strona użyje zdjęcia kolejnego nadchodzącego wydarzenia."
+
+msgid "The importer has not run recently. WordPress only runs scheduled tasks when someone visits the site — on a quiet site it can lag. Fix: ask your host to add a real cron job (one line), or use a free pinger like cron-job.org to visit your site every 10 minutes."
+msgstr "Importer nie był ostatnio uruchamiany. WordPress wykonuje zaplanowane zadania tylko wtedy, gdy ktoś odwiedza stronę — na mało uczęszczanych stronach może wystąpić opóźnienie. Rozwiązanie: poproś hosting o dodanie prawdziwego zadania cron (jedna linijka) lub użyj darmowego pingera typu cron-job.org, aby odwiedzał Twoją stronę co 10 minut."
+
+msgid "the importer keeps your title & description, but still updates facts (date, place, price) and cancellations from the source."
+msgstr "importer zachowuje Twój tytuł i opis, ale nadal aktualizuje fakty (datę, miejsce, cenę) oraz odwołania ze źródła."
+
+msgid "this event was added automatically. Source:"
+msgstr "to wydarzenie zostało dodane automatycznie. Źródło:"
+
+msgid "Under 16 with guardian"
+msgstr "Poniżej 16 lat z opiekunem"
+
+msgid "Under 18 with guardian"
+msgstr "Poniżej 18 lat z opiekunem"
+
+msgid "Use this image"
+msgstr "Użyj tego obrazu"
+
+msgid "Used for the \"Get directions\" button. Leave empty to use the Place name above."
+msgstr "Używane do przycisku „Wskazówki dojazdu”. Pozostaw puste, aby użyć nazwy miejsca powyżej."
+
+msgid "WordPress runs scheduled tasks only when someone visits the site. On a busy site this is fine — visitors trigger the importer often enough. On a very quiet site it may lag (e.g. run only when someone finally visits)."
+msgstr "WordPress wykonuje zaplanowane zadania tylko wtedy, gdy ktoś odwiedza stronę. Na ruchliwej stronie jest to w porządku — odwiedzający wyzwalają importer wystarczająco często. Na bardzo cichej stronie może wystąpić opóźnienie (np. uruchomi się dopiero, gdy ktoś w końcu odwiedzi stronę)."
+
+msgid "You edited this event"
+msgstr "Edytowałeś to wydarzenie"
