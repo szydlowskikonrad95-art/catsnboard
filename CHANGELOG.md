@@ -5,6 +5,18 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+### Zmienione
+- **Dokumentacja mówi teraz prawdę o tym, co tłumaczy co.** Dotychczas diagramy i opisy sugerowały,
+  że polska wersja idzie w całości przez płatne AI — stąd naturalne pytanie „po co płacić, skoro
+  WordPress ma darmowe tłumaczenia". W rzeczywistości tłumaczenie ma **trzy warstwy** i płatna jest
+  tylko jedna: **i18n** (stałe teksty wtyczki — za darmo) → **słownik** (powtórki — za darmo) →
+  **API** (tylko nowe treści, 23% — a i to można mieć za darmo na Gemini). Poprawione: diagram
+  architektury, diagram plików, instrukcja techniczna, README, instrukcja klienta.
+- Instrukcja klienta: krok 5 opisuje teraz **dwie drogi** — darmowy Gemini (konto Google, bez karty)
+  albo Claude (grosze) — zamiast zakładania, że jedyną opcją jest płatne konto Anthropic.
+- Nazwa wtyczki: „PNB Polska Wersja (AI)" → **„PNB Polska Wersja"** (dopisek „AI" sugerował, że
+  wszystko idzie przez AI).
+
 ### Naprawione
 - **Kilkadziesiąt tekstów wtyczki zostawało po angielsku mimo polskiej wersji strony.** Najbardziej
   widoczne dla gościa: zasady zwrotów na karcie wydarzenia („Refunds up to 1 day before the event"

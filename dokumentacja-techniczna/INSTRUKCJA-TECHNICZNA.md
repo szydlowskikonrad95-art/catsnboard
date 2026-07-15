@@ -15,16 +15,36 @@ klienta z prefiksem `pnb_`, niczego nie kasują ani nie nadpisują.
 
 Trzy warstwy: **WordPress** (fundament + baza klienta) → **2 wtyczki** (silnik) → **motyw** (wygląd,
 wymienny). Dwa zewnętrzne serwisy: **Eventbrite** (źródło wydarzeń, polling co 10 min — webhook dla
-cudzych wydarzeń nie istnieje) i **Claude API** (tłumaczenie, z dziennym limitem znaków jako
-bezpiecznikiem kosztu).
+cudzych wydarzeń nie istnieje) i **API tłumaczące** (Claude albo darmowe Gemini — wybór w ustawieniach).
 
 ```
   Eventbrite ──(polling 10 min)──▶ importer.php ──▶ CPT pnb_wydarzenie ──▶ blok Gutenberg ──▶ front
                                                           │
-  Claude API ──▶ silnik-claude.php ──▶ {prefiks}pnb_slownik_en_pl (cache) ──▶ front.php (podmiana PL) ──▶ gość
+  API (Claude/Gemini) ──▶ silnik ──▶ {prefiks}pnb_slownik_en_pl (cache) ──▶ front.php (podmiana PL) ──▶ gość
                                                           │
                                         baza klienta (MySQL, prefiks pnb_)
 ```
+
+### ⚠️ Co tłumaczy CO — trzy warstwy, tylko jedna kosztuje
+
+Częste nieporozumienie: **API NIE tłumaczy wszystkiego.** Płatne/limitowane jest tylko to, czego nie
+da się załatwić za darmo. Kolejność od najtańszej:
+
+| Warstwa | Co obsługuje | Czym | Koszt |
+|---|---|---|---|
+| **1. i18n** (standard WordPressa) | **stałe teksty wtyczek** — przyciski, etykiety, komunikaty, zasady zwrotów („Sign up", „Search", „Good to know") | `languages/*.po/.mo` + `__()`; front.php przełącza `locale` na `pl_PL` przy `?lang=pl` | **0 zł** |
+| **2. Słownik-cache** | **powtórki** — każde zdanie tłumaczone RAZ, potem z bazy | tabela `{prefiks}pnb_slownik_en_pl` (schema wzorowana na TranslatePress) | **0 zł** |
+| **3. Silnik API** | **tylko NOWE treści z bazy** — tytuły/opisy wydarzeń z importu, teksty wpisane w edytorze | `silnik-claude.php` / `silnik-gemini.php` przez router `pnb_pl_wywolaj_silnik()` | Claude: grosze · **Gemini: 0 zł** |
+
+**Proporcje z realnego pomiaru** (pełne tłumaczenie witryny, 39 podstron): z **2380 segmentów** tylko
+**548 poszło do API** — resztę (77%) załatwiły warstwy 1-2 za darmo. Po pierwszym przebiegu do API idą
+już tylko nowe wydarzenia (kilka zdań na cykl).
+
+**Dlaczego i18n nie wystarczy na wszystko:** i18n tłumaczy WYŁĄCZNIE teksty zaszyte w kodzie (przez
+`__()`), bo pary EN→PL muszą istnieć w `.po` ZANIM kod pojedzie do klienta. Wydarzenia z Eventbrite
+powstają po stronie organizatora co 10 minut — żaden plik `.po` ich nie zna i znać nie może. Dlatego
+warstwa 3 (silnik). Odwrotnie też: silnik nie tyka tekstów z kodu (segmentacja czyta treść stron,
+nie źródła PHP) — stąd oba mechanizmy są potrzebne i się nie dublują.
 
 ### Przepływ importu — jak wydarzenie trafia na stronę
 
@@ -62,14 +82,16 @@ logowane (`pnb_importer_log`). Zero ręcznej ingerencji.
 
 ---
 
-### `pnb-auto-pl` — „PNB Polska Wersja (AI)"
+### `pnb-auto-pl` — „PNB Polska Wersja"
 
 | Plik | Odpowiedzialność |
 |---|---|
 | `pnb-auto-pl.php` | Plik główny: wersja, ładowanie `inc/`, `CREATE TABLE` słownika przy aktywacji |
 | `inc/slownik.php` | Tabela `{prefiks}pnb_slownik_en_pl` — pamięć par EN→PL (cache tłumaczeń) |
 | `inc/segmentacja.php` | Tnie HTML strony na segmenty blokowe + pary linków do tłumaczenia |
-| `inc/silnik-claude.php` | Claude API (batch), walidacja, **limit kosztu** (znaki/dzień) |
+| `inc/silnik-claude.php` | Claude API (batch), walidacja tagów/kses, **limit kosztu** (znaki/dzień) + **router silnika** (`pnb_pl_wywolaj_silnik()` — wybiera Claude albo Gemini wg ustawień) |
+| `inc/silnik-gemini.php` | **Gemini API — silnik DARMOWY** (bez karty). Throttle 15 zapytań/min i licznik zapytań/dobę (reset o północy pacyficznej — tak resetuje Google), obsługa 429, model w opcji (Google wycofuje modele bez uprzedzenia) |
+| `languages/*.po` + `*.mo` | **Warstwa i18n — ZA DARMO**: gotowe tłumaczenia stałych tekstów wtyczki. To NIE przechodzi przez API |
 | `inc/tlumaczenie.php` | AJAX „przetłumacz stronę", wykrywanie zmian treści (`save_post`) |
 | `inc/front.php` | Podmiana par na stronie gościa (`strtr`), przełącznik PL\|EN, cache przetłumaczonego HTML |
 | `inc/admin.php` | Ekran ustawień (klucz API, model, limit) + „Przetłumacz witrynę" |

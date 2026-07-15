@@ -48,24 +48,25 @@
         <div class="row"><span class="fn">blocks/</span><span class="ds">block.json, editor.js, render.php każdego bloku</span></div>
         <div class="row"><span class="fn">assets/lib</span><span class="ds">GSAP + Lenis — bundlowane lokalnie (offline)</span></div>
         <div class="row"><span class="fn">assets/fonts</span><span class="ds">Poppins + Varela Round (lokalnie, OFL)</span></div>
-        <div class="row"><span class="fn">languages/</span><span class="ds">tłumaczenia interfejsu (.po/.mo)</span></div>
+        <div class="row"><span class="fn">languages/</span><span class="ds">tłumaczenia interfejsu (.po/.mo) — <b>i18n, ZA DARMO bez API</b></span></div>
         <div class="row"><span class="fn">LICENSE · CREDITS</span><span class="ds">GPL v2+ i noty bibliotek</span></div>
       </div>
     </div>
 
     <div class="plug p2">
       <div class="head">
-        <h2>🇵🇱 Polska Wersja AI</h2>
+        <h2>🇵🇱 Polska Wersja</h2>
         <div class="file">pnb-auto-pl · plik główny: pnb-auto-pl.php</div>
       </div>
       <div class="body">
         <div class="grp">inc/ — silnik tłumaczenia</div>
         <div class="row"><span class="fn">slownik.php</span><span class="ds">tabela wp_pnb_slownik_en_pl (pamięć par EN→PL)</span></div>
         <div class="row"><span class="fn">segmentacja.php</span><span class="ds">tnie HTML strony na kawałki do tłumaczenia</span></div>
-        <div class="row auto"><span class="fn">silnik-claude.php</span><span class="ds">Claude API + limit kosztu (znaki/dzień)</span></div>
+        <div class="row auto"><span class="fn">silnik-claude.php</span><span class="ds">Claude API + limit kosztu + <b>router silnika</b></span></div>
+        <div class="row auto"><span class="fn">silnik-gemini.php</span><span class="ds"><b>Gemini — silnik DARMOWY</b> (bez karty) + throttle</span></div>
         <div class="row"><span class="fn">tlumaczenie.php</span><span class="ds">„przetłumacz stronę" + wykrywanie zmian treści</span></div>
         <div class="row"><span class="fn">front.php</span><span class="ds">podmiana treści dla gościa + przełącznik PL|EN + cache</span></div>
-        <div class="row"><span class="fn">admin.php</span><span class="ds">ekran ustawień: klucz API, model, limit</span></div>
+        <div class="row"><span class="fn">admin.php</span><span class="ds">ustawienia: <b>wybór silnika</b>, klucze, model, limity</span></div>
         <div class="grp">dane + higiena</div>
         <div class="row"><span class="fn">slownik-startowy.json</span><span class="ds">gotowe tłumaczenia w paczce — działa od razu</span></div>
         <div class="row rodo"><span class="fn">uninstall.php</span><span class="ds">sprząta po sobie: tabela + wpisy znikają (RODO)</span></div>

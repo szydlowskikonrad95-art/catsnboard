@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name:       PNB Polish Version (AI)
+ * Plugin Name:       PNB Polish Version
  * Description:       Polish version of the site with a PL/EN switcher: the "Translate site" button translates everything with AI (Claude or free Gemini — your choice), and every page save auto-translates the changes. Visitors get ready-made Polish (zero AI calls per visit).
  * Version:           0.4.0
  * Requires at least: 6.0
