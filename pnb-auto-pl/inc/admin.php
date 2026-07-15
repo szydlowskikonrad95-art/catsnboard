@@ -36,6 +36,21 @@ add_action( 'admin_init', function () {
 	$model = sanitize_text_field( wp_unslash( $_POST['pnb_model'] ?? 'claude-haiku-4-5' ) );
 	update_option( 'pnb_auto_pl_model', in_array( $model, array( 'claude-haiku-4-5', 'claude-sonnet-5' ), true ) ? $model : 'claude-haiku-4-5' );
 	update_option( 'pnb_auto_pl_limit_znakow', max( 1000, (int) ( $_POST['pnb_limit'] ?? 100000 ) ) );
+
+	// SILNIK: claude (płatny, grosze) / gemini (darmowy, bez karty)
+	$silnik = sanitize_text_field( wp_unslash( $_POST['pnb_silnik'] ?? 'claude' ) );
+	update_option( 'pnb_auto_pl_silnik', in_array( $silnik, array( 'claude', 'gemini' ), true ) ? $silnik : 'claude' );
+
+	// Klucz Gemini — jak wyżej: zapisz TYLKO gdy wpisano nowy (puste = zostaw stary; maski nie zapisujemy)
+	$gklucz = trim( (string) wp_unslash( $_POST['pnb_gemini_klucz'] ?? '' ) );
+	if ( '' !== $gklucz && false === strpos( $gklucz, '…' ) ) {
+		update_option( 'pnb_auto_pl_gemini_klucz', $gklucz, false );
+	}
+	// Model Gemini — WOLNY tekst: Google wycofuje modele bez uprzedzenia (2.5-flash-lite zniknął dla
+	// nowych kont), więc klient/my musimy móc wpisać nowy bez zmiany kodu. Sanityzacja: tylko znaki nazwy.
+	$gmodel = preg_replace( '/[^a-z0-9.\-]/i', '', (string) wp_unslash( $_POST['pnb_gemini_model'] ?? '' ) );
+	update_option( 'pnb_auto_pl_gemini_model', '' !== $gmodel ? $gmodel : PNB_PL_GEMINI_MODEL_DOMYSLNY );
+	update_option( 'pnb_auto_pl_gemini_limit_rpd', max( 10, (int) ( $_POST['pnb_gemini_limit'] ?? 1000 ) ) );
 	add_settings_error( 'pnb_pl', 'zapisano', __( 'Settings saved.', 'pnb-auto-pl' ), 'success' );
 } );
 
@@ -85,6 +100,13 @@ function pnb_pl_ekran_admina() {
 	$maska   = $klucz ? '…' . substr( $klucz, -4 ) : '';
 	$model   = (string) get_option( 'pnb_auto_pl_model', 'claude-haiku-4-5' );
 	$limit   = (int) get_option( 'pnb_auto_pl_limit_znakow', 100000 );
+	// SILNIK + Gemini (darmowy, bez karty)
+	$silnik   = function_exists( 'pnb_pl_silnik' ) ? pnb_pl_silnik() : 'claude';
+	$gklucz   = (string) get_option( 'pnb_auto_pl_gemini_klucz', '' );
+	$gmaska   = $gklucz ? '…' . substr( $gklucz, -4 ) : '';
+	$gmodel   = (string) get_option( 'pnb_auto_pl_gemini_model', PNB_PL_GEMINI_MODEL_DOMYSLNY );
+	$glimit   = (int) get_option( 'pnb_auto_pl_gemini_limit_rpd', 1000 );
+	$gdzis    = function_exists( 'pnb_pl_gemini_licznik_dzis' ) ? pnb_pl_gemini_licznik_dzis() : 0;
 	$staty   = pnb_pl_statystyki_slownika();
 	$strony  = pnb_pl_lista_stron();
 	$nonce   = wp_create_nonce( 'pnb_pl_tlumacz' );
@@ -93,7 +115,7 @@ function pnb_pl_ekran_admina() {
 	settings_errors( 'pnb_pl' );
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'PNB Auto PL — site translation (Claude)', 'pnb-auto-pl' ); ?></h1>
+		<h1><?php esc_html_e( 'PNB Auto PL — site translation', 'pnb-auto-pl' ); ?></h1>
 
 		<?php if ( $wpml || $polylang ) : ?>
 		<div class="notice notice-error"><p><strong>⚠️ <?php
@@ -107,6 +129,16 @@ function pnb_pl_ekran_admina() {
 		<form method="post">
 			<?php wp_nonce_field( 'pnb_pl_ustawienia' ); ?>
 			<table class="form-table" role="presentation">
+				<tr>
+					<th><label for="pnb_silnik"><?php esc_html_e( 'Translation engine', 'pnb-auto-pl' ); ?></label></th>
+					<td>
+						<select id="pnb_silnik" name="pnb_silnik">
+							<option value="claude" <?php selected( $silnik, 'claude' ); ?>><?php esc_html_e( 'Claude (Anthropic) — best Polish, paid (pennies)', 'pnb-auto-pl' ); ?></option>
+							<option value="gemini" <?php selected( $silnik, 'gemini' ); ?>><?php esc_html_e( 'Gemini (Google) — FREE, no credit card', 'pnb-auto-pl' ); ?></option>
+						</select>
+						<p class="description"><?php esc_html_e( 'Which service translates new content. The dictionary catches repeats for free either way — the engine only handles new sentences. You can switch any time; existing translations stay.', 'pnb-auto-pl' ); ?></p>
+					</td>
+				</tr>
 				<tr>
 					<th><label for="pnb_klucz"><?php esc_html_e( 'Anthropic API key', 'pnb-auto-pl' ); ?></label></th>
 					<td>
@@ -140,6 +172,49 @@ function pnb_pl_ekran_admina() {
 							echo ' ';
 							/* translators: %s: number of characters used today */
 							echo wp_kses( sprintf( __( 'Used today: <strong>%s</strong> characters.', 'pnb-auto-pl' ), number_format_i18n( pnb_pl_licznik_dzis() ) ), array( 'strong' => array() ) );
+						?></p>
+					</td>
+				</tr>
+
+				<tr><th colspan="2"><hr><h3 style="margin:8px 0 0;">🆓 <?php esc_html_e( 'Gemini (free engine) — settings', 'pnb-auto-pl' ); ?></h3></th></tr>
+				<tr>
+					<th><label for="pnb_gemini_klucz"><?php esc_html_e( 'Gemini API key', 'pnb-auto-pl' ); ?></label></th>
+					<td>
+						<input type="password" id="pnb_gemini_klucz" name="pnb_gemini_klucz" class="regular-text"
+							placeholder="<?php echo esc_attr( $gmaska ?: 'AIza…' ); ?>" autocomplete="new-password">
+						<p class="description"><?php
+							if ( $gklucz ) {
+								/* translators: %s: masked ending of the saved API key */
+								echo esc_html( sprintf( __( 'Key saved (ends with %s). Enter a new one only to change it.', 'pnb-auto-pl' ), $gmaska ) );
+							} else {
+								echo wp_kses(
+									__( 'Free, no credit card: go to <strong>aistudio.google.com/apikey</strong>, sign in with a Google account, click “Create API key”, paste it here.', 'pnb-auto-pl' ),
+									array( 'strong' => array() )
+								);
+							}
+						?></p>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="pnb_gemini_model"><?php esc_html_e( 'Gemini model', 'pnb-auto-pl' ); ?></label></th>
+					<td>
+						<input type="text" id="pnb_gemini_model" name="pnb_gemini_model" class="regular-text"
+							value="<?php echo esc_attr( $gmodel ); ?>">
+						<p class="description"><?php
+							/* translators: %s: default Gemini model name */
+							echo esc_html( sprintf( __( 'Default: %s (tested and working). Google retires models without notice — if translation stops with a 404 error, put a newer model name here (no code change needed).', 'pnb-auto-pl' ), PNB_PL_GEMINI_MODEL_DOMYSLNY ) );
+						?></p>
+					</td>
+				</tr>
+				<tr>
+					<th><label for="pnb_gemini_limit"><?php esc_html_e( 'Daily request limit (Gemini)', 'pnb-auto-pl' ); ?></label></th>
+					<td>
+						<input type="number" id="pnb_gemini_limit" name="pnb_gemini_limit" value="<?php echo esc_attr( $glimit ); ?>" min="10" step="10">
+						<p class="description"><?php
+							esc_html_e( 'Google counts REQUESTS (not characters) on the free plan — about 1000 a day, resetting at midnight Pacific time. One request covers up to 25 sentences, so this is plenty for this site.', 'pnb-auto-pl' );
+							echo ' ';
+							/* translators: %s: number of Gemini requests used today */
+							echo wp_kses( sprintf( __( 'Used today: <strong>%s</strong> requests.', 'pnb-auto-pl' ), number_format_i18n( $gdzis ) ), array( 'strong' => array() ) );
 						?></p>
 					</td>
 				</tr>

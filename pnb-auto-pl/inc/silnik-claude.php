@@ -90,6 +90,37 @@ function pnb_pl_wywolaj_claude( $system, $user_content, $max_tokens = 4096 ) {
 	return new WP_Error( 'brak_tresci', 'Claude returned no text.' );
 }
 
+/* ===== ROUTER SILNIKA (Claude / Gemini) =====
+ * Silnik wymienny: cała reszta (batch, walidacja, słownik, front) NIE wie, który jest wybrany.
+ * Dodanie kolejnego = jeden `case` tutaj + plik silnika o tej samej sygnaturze.
+ */
+
+/** Który silnik wybrany w ustawieniach ('claude' domyślnie — zachowanie sprzed dodania Gemini). */
+function pnb_pl_silnik() {
+	$s = (string) get_option( 'pnb_auto_pl_silnik', 'claude' );
+	return in_array( $s, array( 'claude', 'gemini' ), true ) ? $s : 'claude';
+}
+
+/** Wywołanie WYBRANEGO silnika. Sygnatura wspólna: (system, user, max_tokens) → string|WP_Error. */
+function pnb_pl_wywolaj_silnik( $system, $user_content, $max_tokens = 4096 ) {
+	if ( 'gemini' === pnb_pl_silnik() && function_exists( 'pnb_pl_wywolaj_gemini' ) ) {
+		return pnb_pl_wywolaj_gemini( $system, $user_content, $max_tokens );
+	}
+	return pnb_pl_wywolaj_claude( $system, $user_content, $max_tokens );
+}
+
+/**
+ * Czy WYBRANY silnik wyczerpał limit?
+ * - Claude: limit ZNAKÓW/dzień (nasz, chroni portfel).
+ * - Gemini: limit ZAPYTAŃ/dobę (Google, reset o północy pacyficznej) — znaki go nie obchodzą.
+ */
+function pnb_pl_silnik_limit_wyczerpany( $planowane_znaki = 0 ) {
+	if ( 'gemini' === pnb_pl_silnik() && function_exists( 'pnb_pl_gemini_limit_rpd_wyczerpany' ) ) {
+		return pnb_pl_gemini_limit_rpd_wyczerpany();
+	}
+	return pnb_pl_limit_wyczerpany( $planowane_znaki );
+}
+
 /* ===== TŁUMACZENIE ===== */
 
 /** System prompt tłumacza (guard anty-injection + zero meta-gadki + zachowanie tagów). */
@@ -134,11 +165,11 @@ function pnb_pl_tlumacz_batch( $segmenty ) {
 
 	foreach ( $chunki as $chunk ) {
 		$znaki = array_sum( array_map( 'strlen', $chunk ) );
-		if ( pnb_pl_limit_wyczerpany( $znaki ) ) {
-			break; // twardy limit dzienny — reszta zostaje EN, admin widzi komunikat
+		if ( pnb_pl_silnik_limit_wyczerpany( $znaki ) ) {
+			break; // twardy limit dzienny WYBRANEGO silnika — reszta zostaje EN, admin widzi komunikat
 		}
 		$przetlumaczone = pnb_pl_tlumacz_chunk( $chunk );
-		pnb_pl_licznik_dodaj( $znaki );
+		pnb_pl_licznik_dodaj( $znaki ); // licznik znakowy: dla Claude limit, dla Gemini tylko statystyka
 		foreach ( $przetlumaczone as $orig => $pl ) {
 			$wynik[ $orig ] = $pl;
 		}
@@ -157,7 +188,7 @@ function pnb_pl_tlumacz_chunk( $chunk ) {
 	$user = "Translate each item's \"t\" from English to Polish. Reply with ONLY a JSON array, same format, "
 		. "same \"i\" values, translated \"t\". No other text.\n\n" . wp_json_encode( $items, JSON_UNESCAPED_UNICODE );
 
-	$odp = pnb_pl_wywolaj_claude( pnb_pl_system_prompt(), $user, 8192 );
+	$odp = pnb_pl_wywolaj_silnik( pnb_pl_system_prompt(), $user, 8192 );
 
 	$parsed = array();
 	if ( ! is_wp_error( $odp ) ) {
@@ -191,10 +222,10 @@ function pnb_pl_tlumacz_chunk( $chunk ) {
 
 /** Pojedynczy segment (retry/fallback). */
 function pnb_pl_tlumacz_jeden( $tekst_en ) {
-	if ( pnb_pl_limit_wyczerpany( strlen( $tekst_en ) ) ) {
-		return new WP_Error( 'limit', 'Daily character limit reached.' );
+	if ( pnb_pl_silnik_limit_wyczerpany( strlen( $tekst_en ) ) ) {
+		return new WP_Error( 'limit', 'Daily limit reached.' );
 	}
-	$odp = pnb_pl_wywolaj_claude(
+	$odp = pnb_pl_wywolaj_silnik(
 		pnb_pl_system_prompt(),
 		'<source>' . $tekst_en . '</source>' . "\n\nReply with ONLY the Polish translation of the text inside <source>.",
 		2048
@@ -264,8 +295,8 @@ function pnb_pl_wyglada_na_gadke( $tekst ) {
 	return false;
 }
 
-/** Test połączenia (przycisk Test w ustawieniach). */
+/** Test połączenia (przycisk Test w ustawieniach) — testuje WYBRANY silnik. */
 function pnb_auto_pl_test_polaczenia() {
-	$w = pnb_pl_wywolaj_claude( pnb_pl_system_prompt(), '<source>Hello, this is a test.</source>' . "\n\nReply with ONLY the Polish translation.", 256 );
+	$w = pnb_pl_wywolaj_silnik( pnb_pl_system_prompt(), '<source>Hello, this is a test.</source>' . "\n\nReply with ONLY the Polish translation.", 256 );
 	return is_wp_error( $w ) ? $w : true;
 }

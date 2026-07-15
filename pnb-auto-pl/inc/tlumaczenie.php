@@ -104,7 +104,7 @@ function pnb_pl_przetlumacz_html_strony( $html ) {
 		'przetlumaczone'   => count( $nowe ),
 		'pominiete'        => count( $braki ) - count( $nowe ),
 		'linki'            => count( $linki ),
-		'limit_wyczerpany' => pnb_pl_limit_wyczerpany(),
+		'limit_wyczerpany' => pnb_pl_silnik_limit_wyczerpany(), // wg WYBRANEGO silnika (Claude=znaki, Gemini=zapytania)
 		'znaki_dzis'       => pnb_pl_licznik_dzis(),
 	);
 }
