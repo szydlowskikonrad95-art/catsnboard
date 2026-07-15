@@ -29,10 +29,16 @@ jobs:
     runs-on: ubuntu-latest
     name: golden (żywy WP + 2 wtyczki)
 
+    # 🔓 O HASŁACH NIŻEJ (żeby nikt nie musiał pytać): to NIE są sekrety.
+    # Cała ta baza i cały ten WordPress powstają od zera na maszynie GitHuba, żyją ~50 sekund
+    # i giną razem z nią. Nie są wystawione na świat (nasłuch tylko na 127.0.0.1), nie mają
+    # żadnych danych, a hasło admina jest losowane przy każdym przebiegu. Prawdziwe sekrety
+    # (klucze API klienta) NIE są tu potrzebne — golden nie woła żadnego zewnętrznego API.
     services:
       mysql:
         image: mariadb:11
         env:
+          # baza w kontenerze widocznym tylko dla tego joba — ginie po przebiegu
           MARIADB_ROOT_PASSWORD: root
           MARIADB_DATABASE: wp
         ports:
@@ -63,8 +69,11 @@ jobs:
           wp core download --quiet
           wp core version | sed 's/^/   WordPress: /'
           wp config create --dbname=wp --dbuser=root --dbpass=root --dbhost=127.0.0.1 --quiet
+          # hasło admina losowane co przebieg — nikt (łącznie z nami) go nie zna i nie jest do niczego
+          # potrzebne: golden puka wyłącznie na front jako gość, nigdy się nie loguje.
           wp core install --url=http://127.0.0.1:8080 --title="Cats'N'Board" \
-            --admin_user=admin --admin_password=admin123 --admin_email=ci@example.com --skip-email
+            --admin_user=admin --admin_password="$(openssl rand -hex 24)" \
+            --admin_email=ci@example.com --skip-email
           wp rewrite structure '/%postname%/' --quiet
 
       - name: Wgraj obie wtyczki i aktywuj (aktywacja tworzy strony Events/Gallery)
