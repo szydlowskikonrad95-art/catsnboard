@@ -28,7 +28,8 @@ poprzedniego zipa tą samą drogą cofa wersję (dane w bazie nietknięte).
 Repozytorium jest **prywatne**. Automatyczny updater (np. plugin-update-checker) musiałby mieć
 na stronie klienta **token dostępu do repo** — sekret w cudzej bazie, dający wgląd w całe
 repozytorium. Przy skali „jeden klient" ryzyko > wygoda. Wtyczki nie łączą się z żadnym
-serwerem aktualizacji (jedyny ruch wychodzący: Eventbrite — import, Claude API — tłumaczenie).
+serwerem aktualizacji (jedyny ruch wychodzący: Eventbrite — import, API tłumaczące — Gemini albo Claude,
+wg wyboru w ustawieniach; i18n i słownik-cache działają lokalnie, bez ruchu na zewnątrz).
 
 ## Plan na skalę (3–5+ klientów)
 

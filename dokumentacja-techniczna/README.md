@@ -20,7 +20,10 @@ Ten folder zawiera pełną dokumentację produktu — dwie ścieżki, zależnie 
 
 - **WordPress** 6.0+ · **PHP** 7.4+ · **MySQL/MariaDB** (baza WordPressa)
 - **WP-Cron** (import wydarzeń) — na stronie z małym ruchem wymaga zewnętrznego cron pukającego w `wp-cron.php`
-- **Claude API** (Anthropic) — opcjonalnie, do tłumaczenia nowych treści (klucz `sk-ant-…`)
+- **API tłumaczące** — opcjonalnie, **tylko do NOWYCH treści z bazy** (wydarzenia z importu).
+  Stałe teksty wtyczki idą przez i18n (`.po/.mo`), a powtórki przez słownik-cache — **oba za darmo,
+  bez API**. Do wyboru: **Gemini** (Google — darmowy, bez karty, klucz `AIza…` z aistudio.google.com/apikey)
+  albo **Claude** (Anthropic — płatny, grosze, klucz `sk-ant-…`). Przełącznik w *Ustawienia → PNB Auto PL*.
 - **Eventbrite** — źródło wydarzeń dla importera (adres listy w ustawieniach)
 
 ## Szybki start (skrót)

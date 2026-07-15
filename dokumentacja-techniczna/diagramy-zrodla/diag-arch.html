@@ -68,7 +68,8 @@
   <div class="eyebrow"><span class="num">1</span> Architektura · jak to działa</div>
   <h1>Architektura produktu — jak to działa</h1>
   <p class="sub">Klient wgrywa <b>2 wtyczki</b> na swój WordPress. Dokładają swoje do jego bazy (prefiks <code>pnb_</code>),
-     niczego nie kasują. Automat sam co 10 minut zwozi wydarzenia i tłumaczy je na polski — bez niczyjej ręki.</p>
+     niczego nie kasują. Automat sam co 10 minut zwozi wydarzenia i tłumaczy je na polski — bez niczyjej ręki.
+     <br><b>Tłumaczenie ma 3 warstwy — API dostaje tylko 23% (nowe zdania), resztę robią i18n i słownik ZA DARMO.</b></p>
 
   <div class="flow">
     <div class="col" style="flex:.9">
@@ -94,10 +95,11 @@
           <div class="feat"><b>2 bloki Gutenberga</b><div class="d">galeria + wydarzenia w edytorze</div></div>
         </div>
         <div class="plug p2">
-          <div class="cap">🇵🇱 Polska Wersja AI<span class="mono">pnb-auto-pl</span></div>
+          <div class="cap">🇵🇱 Polska Wersja<span class="mono">pnb-auto-pl</span></div>
           <div class="feat"><b>Przełącznik PL / EN</b><div class="d">gość wybiera język</div></div>
-          <div class="feat auto"><b>Silnik tłumaczenia AI</b><div class="d">Claude + limit kosztu (znaki/dzień)</div></div>
-          <div class="feat"><b>Słownik EN→PL</b><div class="d">pamięć — raz przetłumaczone, zapisane</div></div>
+          <div class="feat"><b>1. i18n — teksty wtyczki</b><div class="d">.po/.mo — przyciski, etykiety · <b>ZA DARMO</b>, bez API</div></div>
+          <div class="feat"><b>2. Słownik EN→PL</b><div class="d">powtórki — raz przetłumaczone, zapisane · <b>ZA DARMO</b> (77% treści)</div></div>
+          <div class="feat auto"><b>3. Silnik API — tylko NOWE treści</b><div class="d">Gemini (darmowy) albo Claude (grosze) — wymienny, limit kosztu</div></div>
           <div class="feat"><b>Podmiana treści</b><div class="d">gość widzi polski, cache</div></div>
         </div>
       </div>
@@ -117,8 +119,9 @@
       </div>
       <div class="ext cl">
         <span class="tag">API</span>
-        <h3>🤖 Claude API</h3>
-        <p>Anthropic — tłumaczy treść na polski (z limitem kosztu)</p>
+        <h3>🤖 API tłumaczące</h3>
+        <p><b>Gemini</b> (darmowy, bez karty) albo <b>Claude</b> (grosze) — do wyboru w ustawieniach.
+        Dostaje <b>tylko nowe zdania</b> (23%) — resztę robią i18n i słownik za darmo.</p>
       </div>
     </div>
   </div>
@@ -126,7 +129,7 @@
   <div class="legend">
     <div><span class="sw" style="background:var(--coral)"></span> automat / koszt — dzieje się sam</div>
     <div><span class="sw" style="background:var(--teal)"></span> wtyczka Galeria i Wydarzenia</div>
-    <div><span class="sw" style="background:var(--green)"></span> wtyczka Polska Wersja AI</div>
+    <div><span class="sw" style="background:var(--green)"></span> wtyczka Polska Wersja</div>
     <div><span class="sw" style="background:#E7B9BE"></span> dane w bazie klienta</div>
   </div>
 

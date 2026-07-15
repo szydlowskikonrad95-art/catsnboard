@@ -25,7 +25,8 @@ Całość zajmie Ci **około 15–20 minut**. Przygotuj:
 - ✅ **login i hasło** do panelu (`twojastrona.pl/wp-admin`)
 - ✅ **2 pliki ZIP** z wtyczkami (są w tej paczce)
 - ✅ **internet**
-- ✅ *opcjonalnie:* klucz **Claude API** (KROK 5) — tylko jeśli chcesz, żeby NOWE treści tłumaczyły się same
+- ✅ *opcjonalnie:* klucz do tłumaczenia NOWYCH treści (KROK 5) — **darmowy Gemini** (konto Google,
+  bez karty) albo **Claude** (grosze). Strona jest po polsku od pierwszego dnia bez żadnego klucza.
 
 **Co po którym kroku:** KROK 0 kopia (5 min) → 1 wtyczki (5 min) → 2 galeria (3 min) →
 3 wydarzenia (3 min) → 4 automat (opcja, 2 min) → 5 tłumaczenie (10 min) → 6 baza (0 min, nic nie robisz).
@@ -160,19 +161,50 @@ Efekt widzisz w menu **Events** — wydarzenia zbierają się same, ze zdjęciam
 **PL / EN** działa od pierwszego dnia, bez niczego.
 
 **Klucz API** potrzebujesz TYLKO po to, żeby **NOWE treści** (nowe wydarzenia, Twoje zmiany)
-tłumaczyły się same. To „silnik" tłumaczenia — Claude AI. Płacisz tylko za to co tłumaczysz (grosze).
+tłumaczyły się same. Reszta — przyciski, etykiety i wszystkie zdania, które już raz się pojawiły —
+jest tłumaczona **za darmo** i klucza nie potrzebuje.
 
-**Jak zdobyć klucz (krok po kroku, jak dla laika):**
+### Wybierasz silnik: darmowy albo płatny (grosze)
+
+W **Ustawienia → PNB Auto PL** na górze jest pole **„Translation engine"** *(silnik tłumaczenia)*:
+
+| Silnik | Koszt | Karta? | Jakość polskiego |
+|---|---|---|---|
+| **Gemini (Google)** | **za darmo** | **nie trzeba** | dobra |
+| **Claude (Anthropic)** | grosze | tak (doładowanie) | najlepsza |
+
+Możesz przełączać kiedy chcesz — **dotychczasowe tłumaczenia zostają**.
+
+---
+
+#### 🆓 Wariant A: Gemini — za darmo, bez karty (2 minuty)
+
+1. Wejdź na **`aistudio.google.com/apikey`** → zaloguj się **zwykłym kontem Google** (to samo co Gmail)
+2. Kliknij **„Create API key"** *(Utwórz klucz API)* — Google zrobi wszystko sam
+3. **Skopiuj klucz** (długi kod zaczynający się od `AIza...`) — trzymaj go jak hasło
+4. W panelu: **Ustawienia → PNB Auto PL** → silnik **„Gemini (Google) — FREE"** → wklej klucz
+   w pole **„Gemini API key"** → **Zapisz**
+
+**Ile za darmo?** Około 1000 tłumaczeń dziennie — dla tej strony z ogromnym zapasem (całe tłumaczenie
+witryny to ~95). Gdyby kiedyś zabrakło, tłumaczenie po prostu poczeka do jutra — **nic się nie psuje**,
+strona działa normalnie.
+
+---
+
+#### 💳 Wariant B: Claude — grosze, najlepsza polszczyzna
+
 1. Wejdź na **`console.anthropic.com`** → załóż konto (jak zakładanie maila)
 2. Doładuj konto małą kwotą (np. 5 dolarów — starczy na długo) w zakładce **Billing**
 3. Wejdź w **API Keys** *(Klucze API)* → **Create Key** *(Utwórz klucz)* → **skopiuj** długi kod
    (zaczyna się od `sk-ant-...`) — ⚠️ pokaże się **tylko raz**, zapisz go sobie
+4. W panelu: silnik **„Claude (Anthropic)"** → wklej klucz w pole **„Anthropic API key"** → **Zapisz**
 
-**Jak wpiąć klucz do strony:**
-1. W panelu: **Ustawienia → PNB Auto PL** *(Settings → PNB Auto PL)*
-2. **Wklej klucz** w pole → **Zapisz**
-3. Kliknij **Testuj połączenie** — ma pokazać ✅
-4. Kliknij **„Przetłumacz witrynę na polski"** — dotłumaczy wszystko naraz (pasek pokaże postęp, 1-2 min)
+---
+
+**Po wpięciu klucza (dowolnego):**
+1. Kliknij **Testuj połączenie** — ma pokazać ✅
+2. Kliknij **„Przetłumacz witrynę na polski"** — dotłumaczy wszystko naraz (pasek pokaże postęp;
+   przy Gemini potrwa kilka minut, bo Google prosi o przerwy między zapytaniami — to normalne)
 
 ![Ekran ustawień tłumaczenia](zrzuty/03-ustawienia-tlumacz.png)
 

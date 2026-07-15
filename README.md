@@ -15,7 +15,11 @@ wtyczka **tłumaczenia AI** (EN→PL). W repozytorium jest też motyw demonstrac
 - 📅 Kalendarz wydarzeń z zapisami gości (imię / e-mail / telefon, eksport do Excela)
 - 🔒 RODO: eksport / usuwanie danych gościa po e-mailu (natywne narzędzia prywatności WordPressa)
 - 🤖 Importer wydarzeń z Eventbrite (automat, WP-Cron co 10 min)
-- 🇵🇱 Automatyczne tłumaczenie EN→PL przez Claude AI + przełącznik PL/EN
+- 🇵🇱 Polska wersja EN→PL + przełącznik PL/EN — **trzy warstwy, tylko jedna kosztuje**:
+  **i18n** (`.po/.mo` — stałe teksty wtyczki, za darmo) → **słownik-cache** (powtórki, za darmo)
+  → **API** tylko na NOWE treści z bazy (wydarzenia z importu). Silnik **wymienny**:
+  Claude (grosze) albo **Gemini — całkowicie darmowy, bez karty**. Pomiar: 2380 segmentów,
+  do API poszło 548 (23%) — resztę załatwiły darmowe warstwy.
 - 💾 Pamięć tłumaczeń (cache) — zero wywołań AI na wizytę gościa
 - 🧩 2 bloki Gutenberga (galeria + wydarzenia, edytowalne w podglądzie)
 
@@ -45,7 +49,7 @@ Kalendarz wydarzeń ze zdjęciami, filtrami i zapisami — po polsku:
 | Plik | Opis |
 |------|------|
 | **`pnb-blocks-…zip`** | Wtyczka „PNB Galeria i Wydarzenia" — galeria premium + kalendarz wydarzeń z zapisami gości (2 bloki Gutenberga, edycja w podglądzie). |
-| **`pnb-auto-pl-…zip`** | Wtyczka „PNB Polska Wersja (AI)" — strona po polsku z przełącznikiem PL/EN; zmiany treści tłumaczą się same po zapisie. |
+| **`pnb-auto-pl-…zip`** | Wtyczka „PNB Polska Wersja" — strona po polsku z przełącznikiem PL/EN; zmiany treści tłumaczą się same po zapisie (silnik do wyboru: darmowy Gemini albo Claude). |
 | **`INSTRUKCJA-DLA-KLIENTA.pdf`** | Instrukcja obsługi krok po kroku, ze zrzutami (wygodna do czytania i druku). **Zacznij od niej.** |
 | **`INSTRUKCJA-DLA-KLIENTA.md`** | Ta sama instrukcja w wersji tekstowej (+ folder `zrzuty/`). |
 
@@ -78,7 +82,8 @@ Pełna instalacja krok po kroku ze zrzutami: **[instrukcja dla klienta](INSTRUKC
 
 ## Dla dewelopera
 
-**Technologie:** PHP · WordPress (hooki, WP-Cron, Gutenberg, Settings API) · Claude API (tłumaczenie) · Eventbrite (import wydarzeń).
+**Technologie:** PHP · WordPress (hooki, WP-Cron, Gutenberg, Settings API, **i18n `.po/.mo`**) ·
+API tłumaczące — **Gemini** (darmowe) lub **Claude**, wymienne przez router · Eventbrite (import wydarzeń).
 
 **Struktura repo:**
 
