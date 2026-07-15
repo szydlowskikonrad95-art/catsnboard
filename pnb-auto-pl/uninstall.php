@@ -46,5 +46,20 @@ foreach ( array(
 	delete_option( $opcja );
 }
 
-// transienty (cache par + stare pnb_cs_*)
-$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_pnb_%' OR option_name LIKE '_transient_timeout_pnb_%'" ); // phpcs:ignore WordPress.DB
+/*
+ * TRANSIENTY (cache par „pnb_pl_pary" + cache stron PL „pnb_plc_<hash>").
+ *
+ * ⚠️ POPRAWKA 2026-07-15 (recenzja kolegi): było `LIKE '_transient_pnb_%'` — BEZ escape.
+ * W SQL podkreślnik `_` w LIKE to WILDCARD („dowolny pojedynczy znak"), nie dosłowny znak.
+ * Wzorzec łapał więc szerzej niż nasze transienty i mógł skasować CUDZE dane (innej wtyczki).
+ *
+ * WZORZEC Z RDZENIA WORDPRESSA (wp-includes/option.php:1645-1655, funkcja delete_expired_transients):
+ * `$wpdb->prepare(... LIKE %s ..., $wpdb->esc_like( '_transient_' ) . '%')`
+ * — esc_like() = addcslashes($text,'_%\\') escapuje `_` i `%`, znak `%` doklejamy PO escapowaniu.
+ * Kopiujemy dokładnie tę metodę — to sposób twórców WP, nie nasz wymysł.
+ */
+$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+	"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+	$wpdb->esc_like( '_transient_pnb_' ) . '%',
+	$wpdb->esc_like( '_transient_timeout_pnb_' ) . '%'
+) );
