@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /** Bieżący język: 'pl' gdy ?lang=pl, inaczej 'en'. */
 function pnb_auto_pl_jezyk() {
-	return ( isset( $_GET['lang'] ) && 'polski' === $_GET['lang'] ) ? 'pl' : 'en'; // phpcs:ignore WordPress.Security.NonceVerification
+	return ( isset( $_GET['lang'] ) && 'pl' === $_GET['lang'] ) ? 'pl' : 'en'; // phpcs:ignore WordPress.Security.NonceVerification
 }
 
 /** Czy podmieniać ten request? Tylko front, tylko PL, nigdy admin/ajax/rest/feed. */
