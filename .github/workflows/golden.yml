@@ -1,0 +1,107 @@
+name: Golden test (żywy WordPress)
+
+# PO CO TO JEST (recenzja kolegi, 2026-07-15):
+#   „CI testuje praktycznie tylko składnię PHP 7.4" — miał rację w OBU połowach zdania.
+#   Wersje naprawiliśmy matrycą 7.4–8.5 (php-lint.yml). Ale `php -l` sprawdza tylko, czy plik
+#   DA SIĘ PRZECZYTAĆ — nie czy strona działa. Kod może mieć poprawną składnię na pięciu
+#   wersjach PHP i mimo to zwracać 500 albo zgubić polską wersję.
+#   Ten workflow stawia PRAWDZIWEGO WordPressa, wgrywa obie wtyczki i sprawdza ZACHOWANIE.
+#
+# DWA WZORCE, DWA ŚWIATY (patrz nagłówek testy/test-golden.sh):
+#   golden-dane.txt — klon klienta z jego treścią (/services/, /pricing/…) → ręcznie, na poligonie
+#   golden-ci.txt   — goły WP + nasze 2 wtyczki → TUTAJ. Strony klienta dałyby tu 404,
+#                     bo to jego treść, nie nasz produkt. Sprawdzamy to, co gwarantujemy SAMI:
+#                     Events/Gallery tworzone przez aktywację, przełącznik PL, nonce, lightbox, meta.
+#
+# ⚠️ PUŁAPKA, NA KTÓREJ SIĘ DZIŚ PRZEJECHALIŚMY (15.07): adres MUSI być ten sam w `wp core install`
+#   i w curlu. Inaczej WordPress robi przekierowanie 301 na swój kanoniczny adres, curl dostaje
+#   pustkę i pomiar KŁAMIE (u nas: instalacja na :8223, curl na :80 → 301, „strona nie działa").
+#   Dlatego wszędzie niżej jest dokładnie 127.0.0.1:8080.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  golden:
+    runs-on: ubuntu-latest
+    name: golden (żywy WP + 2 wtyczki)
+
+    services:
+      mysql:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: wp
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP + rozszerzenia WordPressa
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli, zip, gd, mbstring, curl
+
+      - name: WP-CLI
+        run: |
+          curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          chmod +x wp-cli.phar && sudo mv wp-cli.phar /usr/local/bin/wp
+          wp --info | head -3
+
+      - name: WordPress od zera
+        run: |
+          set -e
+          mkdir -p /tmp/wp && cd /tmp/wp
+          wp core download --quiet
+          wp core version | sed 's/^/   WordPress: /'
+          wp config create --dbname=wp --dbuser=root --dbpass=root --dbhost=127.0.0.1 --quiet
+          wp core install --url=http://127.0.0.1:8080 --title="Cats'N'Board" \
+            --admin_user=admin --admin_password=admin123 --admin_email=ci@example.com --skip-email
+          wp rewrite structure '/%postname%/' --quiet
+
+      - name: Wgraj obie wtyczki i aktywuj (aktywacja tworzy strony Events/Gallery)
+        run: |
+          set -e
+          cp -r "$GITHUB_WORKSPACE/pnb-blocks"  /tmp/wp/wp-content/plugins/
+          cp -r "$GITHUB_WORKSPACE/pnb-auto-pl" /tmp/wp/wp-content/plugins/
+          cd /tmp/wp
+          wp plugin activate pnb-blocks pnb-auto-pl
+          wp plugin list --status=active --field=name | sed 's/^/   aktywna: /'
+
+      - name: Wystartuj serwer (router = pretty permalinks bez Apache)
+        run: |
+          set -e
+          cd /tmp/wp
+          cat > router.php <<'ROUTER'
+          <?php
+          // Pliki statyczne oddaje serwer; całą resztę bierze WordPress (odpowiednik .htaccess).
+          $sciezka = parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH );
+          if ( $sciezka !== '/' && file_exists( __DIR__ . $sciezka ) && ! is_dir( __DIR__ . $sciezka ) ) {
+              return false;
+          }
+          require_once __DIR__ . '/index.php';
+          ROUTER
+          php -S 127.0.0.1:8080 router.php > /tmp/serwer.log 2>&1 &
+          for i in $(seq 1 30); do
+            kod=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/ || true)
+            [ "$kod" = "200" ] && { echo "   serwer wstał (HTTP 200 po ${i}s)"; exit 0; }
+            sleep 1
+          done
+          echo "🔴 serwer nie wstał — log:"; cat /tmp/serwer.log; exit 1
+
+      - name: GOLDEN — czy zachowanie zgadza się ze wzorcem
+        env:
+          PNB_STRONY: "/ /events/ /gallery/"
+        run: bash testy/test-golden.sh http://127.0.0.1:8080 testy/golden/golden-ci.txt
+
+      - name: Log serwera (gdy coś padło)
+        if: failure()
+        run: tail -40 /tmp/serwer.log || true
