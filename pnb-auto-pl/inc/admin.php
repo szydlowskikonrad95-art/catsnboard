@@ -288,6 +288,15 @@ function pnb_pl_ekran_admina() {
 			log.innerHTML = '';
 			var razem = 0, limitStop = false;
 
+			/* Dopisek do logu BEZ insertAdjacentHTML (recenzja 2026-07-15): tytuły stron i komunikaty
+			   błędów API to dane, nie kod — textContent gwarantuje, że przeglądarka ich nie wykona,
+			   niezależnie od tego, co WordPress przepuści w post_title. */
+			function dopiszLog(tekst) {
+				var li = document.createElement('li');
+				li.textContent = tekst;
+				log.appendChild(li);
+			}
+
 			for (var i = 0; i < strony.length; i++) {
 				var s = strony[i];
 				status.textContent = t.strona + ' ' + (i + 1) + '/' + strony.length + ': ' + s.tytul;
@@ -302,18 +311,18 @@ function pnb_pl_ekran_admina() {
 					if (odp.success) {
 						var d = odp.data;
 						razem += d.przetlumaczone;
-						log.insertAdjacentHTML('beforeend', '<li>✅ ' + s.tytul + ' — ' + t.segmenty + ' ' + d.segmenty +
+						dopiszLog('✅ ' + s.tytul + ' — ' + t.segmenty + ' ' + d.segmenty +
 							', ' + t.zPamieci + ' ' + d.z_cache + ', ' + t.nowych + ' ' + d.przetlumaczone +
-							(d.pominiete ? ', ' + t.pominiete + ' ' + d.pominiete : '') + '</li>');
+							(d.pominiete ? ', ' + t.pominiete + ' ' + d.pominiete : ''));
 						if (d.limit_wyczerpany) { limitStop = true; }
 					} else {
-						log.insertAdjacentHTML('beforeend', '<li>❌ ' + s.tytul + ' — ' + (odp.data && odp.data.blad || t.blad) + '</li>');
+						dopiszLog('❌ ' + s.tytul + ' — ' + (odp.data && odp.data.blad || t.blad));
 					}
 				} catch (e) {
-					log.insertAdjacentHTML('beforeend', '<li>❌ ' + s.tytul + ' — ' + e + '</li>');
+					dopiszLog('❌ ' + s.tytul + ' — ' + e);
 				}
 				if (limitStop) {
-					log.insertAdjacentHTML('beforeend', '<li>⛔ ' + t.limitStop + '</li>');
+					dopiszLog('⛔ ' + t.limitStop);
 					break;
 				}
 			}

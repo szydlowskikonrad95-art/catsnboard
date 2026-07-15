@@ -205,10 +205,19 @@ function pnb_pl_tlumacz_chunk( $chunk ) {
 		}
 	}
 
+	/*
+	 * RETRY pojedynczo — ale z BUDŻETEM (recenzja 2026-07-15).
+	 * Gdyby CAŁY chunk (do 25 segmentów) nie sparsował, 25 × retry × throttle Gemini (4 s)
+	 * = ~100 s w JEDNYM requeście admin-ajax → przekroczenie max_execution_time (typowy
+	 * hosting: 30 s) i przerwanie tłumaczenia w połowie. Dlatego: max 5 retry na chunk.
+	 * Nieodratowane segmenty zostają EN — dotłumaczy je następny przebieg/cykl (słownik
+	 * łapie już przetłumaczone, więc kolejne podejście zajmie się tylko resztą). Nic nie znika.
+	 */
+	$budzet_retry = 5;
 	foreach ( $chunk as $i => $orig ) {
 		$pl = isset( $parsed[ $i ] ) ? pnb_pl_zweryfikuj_tlumaczenie( $orig, $parsed[ $i ] ) : null;
-		if ( null === $pl ) {
-			// retry pojedynczo (raz) — pojedynczy prompt jest najpewniejszy
+		if ( null === $pl && $budzet_retry > 0 ) {
+			--$budzet_retry;
 			$solo = pnb_pl_tlumacz_jeden( $orig );
 			$pl = is_wp_error( $solo ) ? null : pnb_pl_zweryfikuj_tlumaczenie( $orig, $solo );
 		}
