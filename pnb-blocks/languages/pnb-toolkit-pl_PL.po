@@ -692,8 +692,6 @@ msgstr "%d min"
 msgid "%1$dh %2$dmin"
 msgstr "%1$dh %2$dmin"
 
-msgid "%1$d of %2$d spots left"
-msgstr "Wolne miejsca: %1$d z %2$d"
 
 msgid "Search…"
 msgstr "Szukaj…"
