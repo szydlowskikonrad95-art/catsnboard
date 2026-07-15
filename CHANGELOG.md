@@ -5,6 +5,19 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+### Dodane
+- **Darmowy silnik tłumaczenia — Google Gemini (bez karty kredytowej).** W ustawieniach wtyczki
+  „Polska wersja" jest teraz przełącznik silnika: **Claude** (płatny, grosze — najlepsza polszczyzna)
+  albo **Gemini** (całkowicie darmowy, wystarczy zwykłe konto Google, żadnej karty). Klucz bierze się
+  w 2 minuty na aistudio.google.com/apikey. Przełączyć można w każdej chwili — dotychczasowe
+  tłumaczenia zostają, słownik dalej łapie powtórki za darmo niezależnie od silnika.
+- Ustawienia Gemini: pole klucza, nazwa modelu (do zmiany bez ruszania kodu, gdyby Google wycofał
+  model) oraz dzienny limit zapytań z licznikiem („zużyto dziś: X zapytań").
+- Bezpieczniki dopasowane do darmowego planu Google: automatyczne odstępy między zapytaniami
+  (Google przyjmuje 15 na minutę) i zatrzymanie po wyczerpaniu dziennego limitu — reszta treści
+  dotłumaczy się przy kolejnym cyklu. Strona nigdy nie zostaje bez treści (przy problemie
+  wyświetla się wersja angielska).
+
 ## [2.3.5] — 2026-07-14
 
 ### Naprawione

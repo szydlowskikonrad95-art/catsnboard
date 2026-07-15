@@ -1,8 +1,8 @@
 <?php
 /*
  * Plugin Name:       PNB Polish Version (AI)
- * Description:       Polish version of the site with a PL/EN switcher: the "Translate site" button translates everything with Claude AI, and every page save auto-translates the changes. Visitors get ready-made Polish (zero AI calls per visit).
- * Version:           0.3.14
+ * Description:       Polish version of the site with a PL/EN switcher: the "Translate site" button translates everything with AI (Claude or free Gemini — your choice), and every page save auto-translates the changes. Visitors get ready-made Polish (zero AI calls per visit).
+ * Version:           0.4.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            PNB
@@ -18,6 +18,8 @@
  * - slownik.php: tabela original/translated/status (schema TranslatePress) + cache par
  * - front.php: ?lang=pl → strtr gotowych par w buforze z twardym try/catch; linki niosą lang → język trzyma się
  * - silnik-claude.php: batch JSON + walidacja tagów + wp_kses + dzienny limit znaków (bezpiecznik kosztu)
+ *   + ROUTER SILNIKA (v0.4.0): silnik wymienny — Claude (płatny, grosze) albo Gemini (darmowy, bez karty)
+ * - silnik-gemini.php: Gemini API — throttle 15 RPM (zmierzone) + limit zapytań/dobę (reset o północy PT)
  * ŚWIADOMIE NIE MA: crona, loopbacku, DOMDocument na request, rewrite rules /pl/ (konflikt z WPML klienta).
  */
 
@@ -25,12 +27,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'PNB_AUTO_PL_VERSION', '0.3.14' );
+define( 'PNB_AUTO_PL_VERSION', '0.4.0' );
 define( 'PNB_AUTO_PL_DIR', plugin_dir_path( __FILE__ ) );
 
 require_once PNB_AUTO_PL_DIR . 'inc/slownik.php';      // tabela słownika + pary do podmiany (cache)
 require_once PNB_AUTO_PL_DIR . 'inc/segmentacja.php';  // tnie HTML na segmenty blokowe + pary linków
 require_once PNB_AUTO_PL_DIR . 'inc/silnik-claude.php'; // Claude API: batch + walidacja + limit kosztu
+require_once PNB_AUTO_PL_DIR . 'inc/silnik-gemini.php'; // Gemini API (darmowy, bez karty): throttle + limit RPD
 require_once PNB_AUTO_PL_DIR . 'inc/tlumaczenie.php';  // AJAX „przetłumacz stronę" + wykrywanie zmian
 require_once PNB_AUTO_PL_DIR . 'inc/front.php';        // podmiana par (strtr) + przełącznik PL|EN
 
