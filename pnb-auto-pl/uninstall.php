@@ -1,7 +1,13 @@
 <?php
 /*
- * SPRZĄTANIE przy odinstalowaniu (RODO + higiena): tabela słownika, opcje, klucz API, transienty.
- * Odpala się TYLKO gdy właściciel usuwa wtyczkę w panelu (WP wywołuje ten plik sam).
+ * SPRZĄTANIE przy odinstalowaniu (RODO + higiena). Odpala się TYLKO gdy właściciel usuwa wtyczkę
+ * w panelu (WP wywołuje ten plik sam).
+ *
+ * CO KASUJEMY (stan na v2.4.1 — lista musi być KOMPLETNA, patrz bramka niżej):
+ *  - tabelę słownika (+ stare tabele prototypu v0.1),
+ *  - WSZYSTKIE opcje wtyczki — w tym KLUCZE API OBU silników (Claude i Gemini): sekrety klienta
+ *    nie mogą zostać w bazie po usunięciu narzędzia,
+ *  - transienty wtyczki (cache par + cache stron PL) — z escapowanym LIKE, żeby nie tknąć cudzych.
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {

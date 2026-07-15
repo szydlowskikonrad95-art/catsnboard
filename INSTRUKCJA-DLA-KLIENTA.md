@@ -263,6 +263,10 @@ i eksportować kopię).
   Events i Gallery oraz 3 przykładowe wydarzenia) — ale **tylko jeśli ich nie zmieniałeś**.
   Wszystko, co edytowałeś lub dodałeś sam (Twoje wydarzenia, zmienione strony), zostaje.
   Zdjęcia w Bibliotece mediów zawsze zostają.
+- **Twój klucz do tłumaczenia znika razem z wtyczką.** Przy usuwaniu Polskiej Wersji kasowany jest
+  też klucz API (Gemini albo Claude — ten, którego używałeś) i wszystkie ustawienia silnika.
+  To celowe: klucz to Twój sekret, nie ma go po co zostawiać w bazie strony. Gdybyś wgrywał wtyczkę
+  ponownie — po prostu wklej klucz jeszcze raz (zajmuje chwilę).
 - **Cofnij (Ctrl+Z) w edytorze** bywa kapryśne przy blokach — to przypadłość WordPressa, nie wtyczek.
   Jak coś pójdzie nie tak: nie zapisuj, tylko odśwież stronę edytora.
 - **Dane gości (RODO):** formularz zapisów zbiera imię, e-mail i telefon gościa. Jako właściciel
