@@ -136,11 +136,13 @@ function pnb_pl_wywolaj_gemini( $system, $user_content, $max_tokens = 4096 ) {
 		'body'    => wp_json_encode( $body ),
 	) );
 
-	pnb_pl_gemini_licznik_dodaj(); // liczymy KAŻDĄ próbę (Google też ją liczy)
-
+	// ⚠️ Licznik dopiero PO sprawdzeniu błędu sieci (recenzja 2026-07-15): timeout/DNS/WAF znaczy,
+	// że zapytanie NIE dotarło do Google — Google go nie policzył, więc my też nie możemy (inaczej
+	// awaria sieci zjadałaby dzienny budżet klienta bez jednego przetłumaczonego zdania).
 	if ( is_wp_error( $odp ) ) {
 		return $odp;
 	}
+	pnb_pl_gemini_licznik_dodaj(); // odpowiedź przyszła (200 albo błąd API) = Google to policzył
 	$kod  = (int) wp_remote_retrieve_response_code( $odp );
 	$dane = json_decode( wp_remote_retrieve_body( $odp ), true );
 
