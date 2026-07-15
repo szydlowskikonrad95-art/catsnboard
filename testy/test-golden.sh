@@ -5,21 +5,31 @@
 # odpalamy test — jak wynik równa się wzorcowi, nic się nie zepsuło; jak się różni, to albo
 # regresja (naprawiamy), albo świadoma zmiana (po weryfikacji nadpisujemy wzorzec).
 #
-# Użycie:  bash testy/test-golden.sh [adres]     (domyślnie http://localhost:8212)
+# Użycie:  bash testy/test-golden.sh [adres] [plik-wzorca]   (domyślnie http://localhost:8212)
 #   1. uruchomienie → zapisuje wzorzec do testy/golden/golden-dane.txt
 #   kolejne         → ✅ PASS gdy zgodne, ❌ FAIL + diff gdy coś się zmieniło
 #
 # W goldenie tylko fakty STABILNE (kody stron, tytuły, obecność mechanizmów) — bez liczb
 # wydarzeń/dat, które zmieniają się z każdym importem (te sprawdza się osobno, nie wzorcem).
+#
+# DWA WZORCE, DWA ŚWIATY (rozdzielone 2026-07-15, przy wpinaniu testu do CI):
+#  • golden-dane.txt — KLON KLIENTA: pełny zestaw stron (/services/, /pricing/, /contact/…).
+#    To jego treść, nie nasz produkt. Odpalasz ręcznie na klonie: bash testy/test-golden.sh
+#  • golden-ci.txt   — GOŁY WORDPRESS + nasze 2 wtyczki: tylko to, co gwarantuje PRODUKT
+#    (strony Events/Gallery tworzy aktywacja, przełącznik PL, nonce, lightbox, meta).
+#    Odpala CI przy każdym PR. Strony klienta dalyby tu 404 → stad osobna lista.
+# Liste stron podmienia sie zmienna PNB_STRONY, wzorzec — drugim argumentem. Domyslne
+# zachowanie BEZ argumentow zostaje takie samo jak dotad (zgodnosc wstecz).
 set -u
 BASE="${1:-http://localhost:8212}"
 TU="$(cd "$(dirname "$0")" && pwd)"
-GOLD="$TU/golden/golden-dane.txt"
+GOLD="${2:-$TU/golden/golden-dane.txt}"
+STRONY="${PNB_STRONY:-/ /events/ /gallery/ /services/ /pricing/ /contact/ /our-staff/ /our-location/ /about-us/}"
 WYNIK="$(mktemp)"
 
 pomiar() {
 	echo "== KODY HTTP (strona → kod, EN i PL) =="
-	for u in / /events/ /gallery/ /services/ /pricing/ /contact/ /our-staff/ /our-location/ /about-us/; do
+	for u in $STRONY; do
 		for l in "" "?lang=pl"; do
 			printf '%s%s %s\n' "$u" "$l" "$(curl -s -o /dev/null -w '%{http_code}' "$BASE$u$l")"
 		done
@@ -46,6 +56,11 @@ if [ ! -f "$GOLD" ]; then
 	cp "$WYNIK" "$GOLD"
 	echo "📀 GOLDEN zapisany pierwszy raz → $GOLD"
 	echo "   (od teraz każde uruchomienie porównuje z tym wzorcem)"
+	# Wypisujemy treść, bo w CI plik ginie razem z maszyną — a wzorzec MUSI powstać
+	# w tym samym środowisku, w którym potem będzie porównywany (inaczej fałszywe czerwone).
+	echo "──────── TREŚĆ WZORCA (skopiuj do repo, jeśli powstał w CI) ────────"
+	cat "$GOLD"
+	echo "───────────────────────────────────────────────────────────────────"
 	exit 0
 fi
 
