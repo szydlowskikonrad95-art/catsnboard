@@ -5,6 +5,8 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+## [2.4.0] — 2026-07-15
+
 ### Zmienione
 - **Dokumentacja mówi teraz prawdę o tym, co tłumaczy co.** Dotychczas diagramy i opisy sugerowały,
   że polska wersja idzie w całości przez płatne AI — stąd naturalne pytanie „po co płacić, skoro
@@ -22,6 +24,11 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
   widoczne dla gościa: zasady zwrotów na karcie wydarzenia („Refunds up to 1 day before the event"
   zamiast „Zwroty do 1 dnia przed wydarzeniem"). Dotyczyło też panelu (etykiety przy edycji wydarzenia
   i ustawieniach importera). Uzupełniono 58 brakujących tłumaczeń — teraz i panel, i strona są po polsku.
+- Pełne tłumaczenie witryny nie przerwie się już w połowie na słabszym hostingu (gdyby usługa
+  tłumacząca odpowiedziała nietypowo, wtyczka próbuje ponowić rozsądną liczbę razy zamiast czekać
+  w nieskończoność; reszta dotłumaczy się przy kolejnym podejściu).
+- Awaria internetu po stronie serwera nie zjada już dziennego limitu darmowych tłumaczeń.
+- Lista postępu w panelu wyświetla tytuły stron i komunikaty jako zwykły tekst (bezpieczniej).
 
 ### Dodane
 - **Darmowy silnik tłumaczenia — Google Gemini (bez karty kredytowej).** W ustawieniach wtyczki
