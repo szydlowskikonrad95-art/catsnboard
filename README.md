@@ -1,6 +1,6 @@
 # Cats'N'Board — wtyczki WordPress 🐾
 
-![Wersja](https://img.shields.io/badge/wersja-2.3.5-2E8CA3)
+![Wersja](https://img.shields.io/badge/wersja-2.4.0-2E8CA3)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759B)
 ![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4)
 ![Licencja](https://img.shields.io/badge/licencja-GPL--2.0--or--later-4E9E6A)
