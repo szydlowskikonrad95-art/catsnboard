@@ -27,9 +27,13 @@ $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}pnb_auto_pl_cache" ); // phpc
  * ⚠️ ŻELAZNA ZASADA (lekcja z recenzji 2026-07-15): dodajesz opcję gdziekolwiek w kodzie →
  * DOPISZ JĄ TUTAJ w tym samym PR. Recenzent wyłapał, że silnik Gemini (v2.4.0) dodał 6 opcji,
  * a uninstall nie znał ŻADNEJ — klucz API klienta zostawał w bazie po usunięciu wtyczki.
- * Sprawdzenie kompletności listy (uruchom przed wydaniem):
- *   grep -ohE "(get|update)_option\( *'(pnb[^']+)'" inc/*.php *.php | grep -oE "'pnb[^']*'" | sort -u
- * — każda opcja z tej listy MUSI być poniżej.
+ *
+ * 🛡️ NIE MUSISZ JUŻ O TYM PAMIĘTAĆ — pilnuje tego AUTOMAT: `testy/straznik-sprzatania.sh`
+ * (job „strażnik sprzątania" w CI, leci przy każdym PR). Zapiszesz opcję i nie dopiszesz jej
+ * tutaj → CI nie przepuści zmiany i wypisze jej nazwę.
+ * Wcześniej stała tu instrukcja „uruchom ten grep przed wydaniem" — czyli ludzka pamięć.
+ * Dokładnie ona zawiodła przy Gemini, dlatego bramka jest teraz maszyną, a nie notatką.
+ * Sprawdzić strażnika ręcznie: `bash testy/straznik-sprzatania.sh`
  */
 foreach ( array(
 	// --- silnik Claude ---

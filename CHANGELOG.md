@@ -5,6 +5,8 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+## [2.4.1] — 2026-07-15
+
 ### Naprawione
 - **Klucz do tłumaczenia zostawał w bazie po usunięciu wtyczki.** Po dodaniu darmowego silnika
   Gemini (v2.4.0) odinstalowanie Polskiej Wersji nie kasowało jego klucza ani ustawień — klucz

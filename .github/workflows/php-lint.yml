@@ -13,6 +13,20 @@ on:
     branches: [main]
 
 jobs:
+  # Strażnik sprzątania (dodany 2026-07-15 po 2. recenzji kolegi).
+  # Pilnuje dwóch błędów, które recenzent znalazł CZYTANIEM KODU, a nasze testy przepuściły:
+  #   1) uninstall.php nie kasował 6 opcji Gemini — KLUCZ API klienta zostawał w jego bazie,
+  #   2) LIKE z gołym wzorcem mógł skasować transienty CUDZEJ wtyczki (`_` = wildcard w SQL).
+  # Wcześniej bramką był komentarz w pliku („dopisz opcję tutaj") = ludzka pamięć. Zawiodła.
+  # Sprawdzone kontrolą: podstawiony uninstall.php sprzed naprawy → ten job WYWALA się poprawnie.
+  sprzatanie:
+    runs-on: ubuntu-latest
+    name: strażnik sprzątania (uninstall + SQL)
+    steps:
+      - uses: actions/checkout@v4
+      - name: Uninstall zna każdą zapisywaną opcję + zero LIKE z gołym wzorcem
+        run: bash testy/straznik-sprzatania.sh
+
   lint:
     runs-on: ubuntu-latest
     strategy:
