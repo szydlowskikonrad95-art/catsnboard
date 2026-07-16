@@ -9,7 +9,9 @@ WordPressa (wtyczki, hooki, WP-Cron, baza).
 
 Produkt = **dwie wtyczki** (motyw w paczce jest tylko poligonem testowym — nie dla produkcji).
 Wtyczki są **samowystarczalne**: działają na dowolnym motywie, dokładają swoje dane do bazy
-klienta z prefiksem `pnb_`, niczego nie kasują ani nie nadpisują.
+klienta z prefiksem `pnb_` i nie ruszają istniejących treści klienta ani ich nie nadpisują.
+Przy **odinstalowaniu sprzątają po sobie** — własne opcje, klucze API i dane (szczegóły:
+wiersz `uninstall.php` w tabeli plików niżej); treści i media klienta zostają.
 
 ![Architektura produktu](diagramy/1-architektura-produktu.png)
 
