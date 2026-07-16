@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     name: strażnik sprzątania (uninstall + SQL)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Uninstall zna każdą zapisywaną opcję + zero LIKE z gołym wzorcem
         run: bash testy/straznik-sprzatania.sh
 
@@ -35,7 +35,7 @@ jobs:
         php: ['7.4', '8.2', '8.3', '8.4', '8.5']
     name: lint (PHP ${{ matrix.php }})
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
