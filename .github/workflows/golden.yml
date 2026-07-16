@@ -34,9 +34,13 @@ jobs:
     # i giną razem z nią. Nie są wystawione na świat (nasłuch tylko na 127.0.0.1), nie mają
     # żadnych danych, a hasło admina jest losowane przy każdym przebiegu. Prawdziwe sekrety
     # (klucze API klienta) NIE są tu potrzebne — golden nie woła żadnego zewnętrznego API.
+    # 📌 WERSJE ŚRODOWISKA PRZYPIĘTE (uwaga recenzenta, 2026-07-16): bez przypięcia CI testowało
+    # „najnowsze z dnia" — test mógł paść od zmiany w WordPressie/wp-cli, nie w naszym kodzie,
+    # a wynik sprzed miesiąca nie był porównywalny z dzisiejszym. Wersje podbijamy ŚWIADOMIE
+    # (przy wydaniu), nie „bo samo się zmieniło". Przypięte: mariadb 11.8 · WP 7.0.1 · wp-cli 2.12.0.
     services:
       mysql:
-        image: mariadb:11
+        image: mariadb:11.8
         env:
           # baza w kontenerze widocznym tylko dla tego joba — ginie po przebiegu
           MARIADB_ROOT_PASSWORD: root
@@ -48,7 +52,7 @@ jobs:
           --health-interval=5s --health-timeout=5s --health-retries=20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: PHP + rozszerzenia WordPressa
         uses: shivammathur/setup-php@v2
@@ -56,9 +60,9 @@ jobs:
           php-version: '8.3'
           extensions: mysqli, zip, gd, mbstring, curl
 
-      - name: WP-CLI
+      - name: WP-CLI (przypięty 2.12.0)
         run: |
-          curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          curl -sL -o wp-cli.phar https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar
           chmod +x wp-cli.phar && sudo mv wp-cli.phar /usr/local/bin/wp
           wp --info | head -3
 
@@ -66,7 +70,7 @@ jobs:
         run: |
           set -e
           mkdir -p /tmp/wp && cd /tmp/wp
-          wp core download --quiet
+          wp core download --version=7.0.1 --quiet
           wp core version | sed 's/^/   WordPress: /'
           wp config create --dbname=wp --dbuser=root --dbpass=root --dbhost=127.0.0.1 --quiet
           # hasło admina losowane co przebieg — nikt (łącznie z nami) go nie zna i nie jest do niczego
