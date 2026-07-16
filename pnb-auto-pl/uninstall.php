@@ -7,7 +7,8 @@
  *  - tabelę słownika (+ stare tabele prototypu v0.1),
  *  - WSZYSTKIE opcje wtyczki — w tym KLUCZE API OBU silników (Claude i Gemini): sekrety klienta
  *    nie mogą zostać w bazie po usunięciu narzędzia,
- *  - transienty wtyczki (cache par + cache stron PL) — z escapowanym LIKE, żeby nie tknąć cudzych.
+ *  - transienty wtyczki WYMIENIONE Z NAZWY (pnb_pl_pary + pnb_plc_*) — kasujemy wyłącznie
+ *    własne, nie cały prefiks pnb_ (zasada własności; recenzja 2026-07-16).
  */
 
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
@@ -57,19 +58,24 @@ foreach ( array(
 }
 
 /*
- * TRANSIENTY (cache par „pnb_pl_pary" + cache stron PL „pnb_plc_<hash>").
+ * TRANSIENTY — kasujemy TYLKO WŁASNE, wymienione z nazwy (recenzja 2026-07-16, poprawka #2):
+ *   „pnb_pl_pary"     — cache par słownika (slownik.php)
+ *   „pnb_plc_<hash>"  — cache gotowych stron PL (front.php, pnb_pl_cache_klucz())
+ * To KOMPLETNA lista transientów tej wtyczki — tylko te dwa miejsca wołają set_transient().
  *
- * ⚠️ POPRAWKA 2026-07-15 (recenzja kolegi): było `LIKE '_transient_pnb_%'` — BEZ escape.
- * W SQL podkreślnik `_` w LIKE to WILDCARD („dowolny pojedynczy znak"), nie dosłowny znak.
- * Wzorzec łapał więc szerzej niż nasze transienty i mógł skasować CUDZE dane (innej wtyczki).
- *
- * WZORZEC Z RDZENIA WORDPRESSA (wp-includes/option.php:1645-1655, funkcja delete_expired_transients):
- * `$wpdb->prepare(... LIKE %s ..., $wpdb->esc_like( '_transient_' ) . '%')`
- * — esc_like() = addcslashes($text,'_%\\') escapuje `_` i `%`, znak `%` doklejamy PO escapowaniu.
- * Kopiujemy dokładnie tę metodę — to sposób twórców WP, nie nasz wymysł.
+ * Historia dojścia (dwie poprawki recenzenta):
+ * 15.07: było `LIKE '_transient_pnb_%'` BEZ escape — `_` to wildcard SQL, wzorzec łapał cudze.
+ *        Naprawa: esc_like() + prepare (wzorzec z rdzenia WP, delete_expired_transients).
+ * 16.07: recenzent — „cleanup transientów powinno zawęzić do pnb_pl_pary i pnb_plc_*, wtedy
+ *        będzie elegancko spójne". Racja: escapowany prefiks `pnb_` wciąż obejmował CAŁĄ
+ *        rodzinę pnb (np. przyszłe transienty siostrzanej pnb-blocks). Zasada własności:
+ *        każda wtyczka sprząta wyłącznie to, co sama tworzy.
+ * ⚠️ Dodajesz w kodzie nowy set_transient() → dopisz jego nazwę TUTAJ (jak z opcjami wyżej).
  */
 $wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-	"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-	$wpdb->esc_like( '_transient_pnb_' ) . '%',
-	$wpdb->esc_like( '_transient_timeout_pnb_' ) . '%'
+	"DELETE FROM {$wpdb->options} WHERE option_name IN (%s, %s) OR option_name LIKE %s OR option_name LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
+	'_transient_pnb_pl_pary',
+	'_transient_timeout_pnb_pl_pary',
+	$wpdb->esc_like( '_transient_pnb_plc_' ) . '%',
+	$wpdb->esc_like( '_transient_timeout_pnb_plc_' ) . '%'
 ) );
