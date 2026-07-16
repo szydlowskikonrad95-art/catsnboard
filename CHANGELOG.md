@@ -5,6 +5,20 @@ Opisowe wersje wydań (dla klienta) znajdują się w [GitHub Releases](../../rel
 
 ## [Unreleased]
 
+## [2.4.2] — 2026-07-16
+
+### Zmienione
+- **Sprzątanie przy odinstalowaniu jeszcze precyzyjniejsze.** Polska Wersja kasuje teraz wyłącznie
+  SWOJE wpisy pamięci podręcznej, wymienione z nazwy — nie cały wspólny przedrostek. Gdyby druga
+  wtyczka kiedyś trzymała własną pamięć podręczną, nic jej nie zniknie (uwaga recenzenta:
+  „wtedy będzie elegancko spójne").
+- **Dokumentacja mówi wprost, czego automat NIE robi.** Strona główna projektu (README) wyjaśnia
+  teraz: co znika przy odinstalowaniu (własne dane i klucze — treści i zdjęcia właściciela zostają)
+  oraz granicę tłumaczenia — bez klucza API nowe treści zostają po angielsku, a menu, widżety
+  i teksty motywu tłumaczą się przyciskiem, nie same (to samo w instrukcji, KROK 5).
+- **Testy powtarzalne:** środowisko testowe ma przypięte wersje (WordPress 7.0.1, wp-cli 2.12.0,
+  MariaDB 11.8) i zaktualizowane narzędzia — wersje podbijamy świadomie, nie „bo samo się zmieniło".
+
 ## [2.4.1] — 2026-07-15
 
 ### Naprawione
