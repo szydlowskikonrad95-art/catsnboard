@@ -211,6 +211,10 @@ strona działa normalnie.
 **Od teraz działa samo:** zmienisz albo dopiszesz tekst → zapisz → polska wersja
 zaktualizuje się sama (zapis potrwa 2-3 sekundy dłużej). Odśwież stronę (F5) żeby zobaczyć.
 
+**Co się NIE tłumaczy samo:** „samo po zapisie" dotyczy stron, wpisów i wydarzeń.
+**Menu, widżety (np. stopka) i teksty motywu** tłumaczą się tylko przyciskiem — po ich
+zmianie wejdź w ustawienia i kliknij jeszcze raz **„Przetłumacz witrynę na polski"**.
+
 > 💰 **Bezpiecznik kosztów:** wtyczka ma dzienny limit — nawet gdyby coś poszło nie tak,
 > nie wydasz więcej niż kilka złotych dziennie. Licznik zużycia widzisz w ustawieniach.
 

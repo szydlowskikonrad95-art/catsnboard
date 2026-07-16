@@ -37,7 +37,10 @@ wydarzenia z Eventbrite, dodaje zdjęcia i tłumaczy je na polski.
 
 **Uczciwa granica automatu:** gotowe teksty strony są po polsku od razu (słownik w paczce),
 a **nowe** treści tłumaczą się same tylko z podłączonym kluczem API — **bez klucza nowe zostają
-po angielsku** (szczegóły: instrukcja, KROK 5).
+po angielsku**. Samo po zapisie tłumaczy się to, co zapisujesz w edytorze (**strony, wpisy,
+wydarzenia** — te z importu też). **Menu, widżety i teksty motywu NIE tłumaczą się same** —
+po takiej zmianie kliknij raz **„Przetłumacz witrynę na polski"** w ustawieniach wtyczki
+(szczegóły: instrukcja, KROK 5).
 
 ![Architektura produktu](dokumentacja-techniczna/diagramy/1-architektura-produktu.png)
 
