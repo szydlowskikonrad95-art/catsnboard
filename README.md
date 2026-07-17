@@ -107,5 +107,13 @@ testy/                    golden-test (bash) + awarie/ (symulacje trybów awarii
 > **Brak build-stepu.** Kod PHP edytuje się wprost w folderach wtyczek — nie ma `npm install`
 > ani bundlera. Biblioteki (GSAP, Lenis) i fonty są bundlowane lokalnie w repo.
 
+**Branche i historia zmian:** repo prowadzimy w [GitHub flow](https://docs.github.com/en/get-started/using-github/github-flow) —
+`main` + krótkie gałęzie robocze (jedna zmiana = jedna gałąź → PR → zielone CI → merge → gałąź
+**kasowana**, zgodnie z krokiem „Delete your branch" oficjalnego flow). Lista branchy pokazuje więc
+zwykle tylko `main` — to porządek, nie brak historii. Jak podejrzeć historię:
+- **Pull requests → Closed** — każda dawna gałąź z pełnym diffem i dyskusją (zakładki *Commits* / *Files changed*),
+- na dole zamkniętego PR-a przycisk **Restore branch** — skasowana gałąź wraca jednym klikiem,
+- z konsoli: `git log --oneline --merges` (historia merge'ów) · `gh pr list --state closed`.
+
 **Licencja:** kod obu wtyczek i motywu — **GPL-2.0-or-later** (pełny tekst: `LICENSE` w głównym
 folderze repozytorium oraz w każdym komponencie; noty bibliotek w `CREDITS.md`).
